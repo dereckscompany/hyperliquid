@@ -9,6 +9,7 @@ utils::globalVariables(c(
   ".N",
   ".SD",
   ":=",
+  "..out_cols",
   "symbol",
   "interval",
   "datetime",

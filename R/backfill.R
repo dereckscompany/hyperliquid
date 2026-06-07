@@ -14,7 +14,7 @@
 #' Hyperliquid's `candleSnapshot` returns only the ~5000 most recent candles per
 #' interval, so deep intraday history is not available over REST; coarse
 #' intervals (`"1d"`, `"1h"`) reach back furthest. Within that cap
-#' [hyperliquid_fetch_klines()] segments the range automatically.
+#' `hyperliquid_fetch_klines()` segments the range automatically.
 #'
 #' @param symbols Character vector of canonical coin symbols (e.g.
 #'   `c("BTC", "ETH")`). Must not be NULL or empty.

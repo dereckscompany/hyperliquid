@@ -13,3 +13,8 @@
 ^dev$
 ^scripts$
 ^data-raw$
+^\.cruft\.json$
+^\.lintr$
+^air\.toml$
+^\.Renviron$
+^README\.Rmd$

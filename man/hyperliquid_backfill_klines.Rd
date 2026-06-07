@@ -55,7 +55,7 @@ completed backfill by reading the existing file and continuing each
 Hyperliquid's \code{candleSnapshot} returns only the ~5000 most recent candles per
 interval, so deep intraday history is not available over REST; coarse
 intervals (\code{"1d"}, \code{"1h"}) reach back furthest. Within that cap
-\code{\link[=hyperliquid_fetch_klines]{hyperliquid_fetch_klines()}} segments the range automatically.
+\code{hyperliquid_fetch_klines()} segments the range automatically.
 }
 \examples{
 \dontrun{

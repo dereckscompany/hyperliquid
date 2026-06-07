@@ -24,8 +24,7 @@ Imports:
     lubridate,
     openssl,
     R6,
-    rlang,
-    stats
+    rlang
 Suggests:
     box,
     coro,
