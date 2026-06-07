@@ -81,7 +81,7 @@ HyperliquidTransfers <- R6::R6Class(
         sign_types = USD_CLASS_TRANSFER_SIGN_TYPES,
         primary_type = "HyperliquidTransaction:UsdClassTransfer",
         .parser = function(x) {
-          assert_return_HyperliquidTransfers__usd_class_transfer(parse_transfer_ack(x))
+          return(assert_return_HyperliquidTransfers__usd_class_transfer(parse_transfer_ack(x)))
         }
       ))
     },
@@ -107,7 +107,7 @@ HyperliquidTransfers <- R6::R6Class(
         sign_types = USD_SEND_SIGN_TYPES,
         primary_type = "HyperliquidTransaction:UsdSend",
         .parser = function(x) {
-          assert_return_HyperliquidTransfers__usd_send(parse_transfer_ack(x))
+          return(assert_return_HyperliquidTransfers__usd_send(parse_transfer_ack(x)))
         }
       ))
     },
@@ -136,7 +136,7 @@ HyperliquidTransfers <- R6::R6Class(
         sign_types = SPOT_TRANSFER_SIGN_TYPES,
         primary_type = "HyperliquidTransaction:SpotSend",
         .parser = function(x) {
-          assert_return_HyperliquidTransfers__spot_send(parse_transfer_ack(x))
+          return(assert_return_HyperliquidTransfers__spot_send(parse_transfer_ack(x)))
         }
       ))
     },
@@ -162,7 +162,7 @@ HyperliquidTransfers <- R6::R6Class(
         sign_types = WITHDRAW_SIGN_TYPES,
         primary_type = "HyperliquidTransaction:Withdraw",
         .parser = function(x) {
-          assert_return_HyperliquidTransfers__withdraw(parse_transfer_ack(x))
+          return(assert_return_HyperliquidTransfers__withdraw(parse_transfer_ack(x)))
         }
       ))
     },
@@ -206,7 +206,7 @@ HyperliquidTransfers <- R6::R6Class(
         sign_types = SEND_ASSET_SIGN_TYPES,
         primary_type = "HyperliquidTransaction:SendAsset",
         .parser = function(x) {
-          assert_return_HyperliquidTransfers__send_asset(parse_transfer_ack(x))
+          return(assert_return_HyperliquidTransfers__send_asset(parse_transfer_ack(x)))
         }
       ))
     },
@@ -235,7 +235,7 @@ HyperliquidTransfers <- R6::R6Class(
         usd = float_to_usd_int(usd)
       )
       return(private$.submit_l1(action, .parser = function(x) {
-        assert_return_HyperliquidTransfers__sub_account_transfer(parse_transfer_ack(x))
+        return(assert_return_HyperliquidTransfers__sub_account_transfer(parse_transfer_ack(x)))
       }))
     },
 
@@ -266,7 +266,7 @@ HyperliquidTransfers <- R6::R6Class(
         amount = as.character(amount)
       )
       return(private$.submit_l1(action, .parser = function(x) {
-        assert_return_HyperliquidTransfers__sub_account_spot_transfer(parse_transfer_ack(x))
+        return(assert_return_HyperliquidTransfers__sub_account_spot_transfer(parse_transfer_ack(x)))
       }))
     },
 
@@ -288,7 +288,7 @@ HyperliquidTransfers <- R6::R6Class(
         usd = float_to_usd_int(usd)
       )
       return(private$.submit_l1(action, .parser = function(x) {
-        assert_return_HyperliquidTransfers__vault_transfer(parse_transfer_ack(x))
+        return(assert_return_HyperliquidTransfers__vault_transfer(parse_transfer_ack(x)))
       }))
     }
   ),
@@ -299,9 +299,10 @@ HyperliquidTransfers <- R6::R6Class(
     .validate_token = function(token) {
       assert::assert_scalar_character(token)
       if (!nzchar(token)) {
-        rlang::abort(
-          "`token` must be a non-empty string in NAME:0x<tokenId> form, e.g. \"PURR:0xc1fb593aeffbeb02f85e0308e9956a90\"."
-        )
+        rlang::abort(paste0(
+          "`token` must be a non-empty string in NAME:0x<tokenId> form, ",
+          "e.g. \"PURR:0xc1fb593aeffbeb02f85e0308e9956a90\"."
+        ))
       }
       return(invisible(token))
     }

@@ -80,7 +80,7 @@ expect_has_signature <- function(posted) {
   expect_true(all(c("r", "s", "v") %in% names(posted$signature)))
   expect_true(nzchar(posted$signature$r))
   expect_true(nzchar(posted$signature$s))
-  expect_true(is.numeric(posted$signature$v))
+  return(expect_true(is.numeric(posted$signature$v)))
 }
 
 # ---- parsers -----------------------------------------------------------------
@@ -131,13 +131,13 @@ test_that("place_order posts an order action with the canonical wire and a signa
   client <- new_client()
   res <- mock_trade(
     function() {
-      client$place_order(
+      return(client$place_order(
         "BTC",
         is_buy = TRUE,
         sz = 0.001,
         limit_px = 50000,
         order_type = list(limit = list(tif = "Gtc"))
-      )
+      ))
     },
     fixture_order_resting()
   )
@@ -161,14 +161,14 @@ test_that("place_order appends the cloid wire key when supplied", {
   cloid <- "0x00000000000000000000000000000001"
   res <- mock_trade(
     function() {
-      client$place_order(
+      return(client$place_order(
         "BTC",
         is_buy = TRUE,
         sz = 0.5,
         limit_px = 50000,
         order_type = list(limit = list(tif = "Alo")),
         cloid = cloid
-      )
+      ))
     },
     fixture_order_resting()
   )
@@ -182,14 +182,14 @@ test_that("place_order encodes a trigger order type in isMarket/triggerPx/tpsl o
   client <- new_client()
   res <- mock_trade(
     function() {
-      client$place_order(
+      return(client$place_order(
         "BTC",
         is_buy = FALSE,
         sz = 0.01,
         limit_px = 48000,
         order_type = list(trigger = list(triggerPx = 49000, isMarket = TRUE, tpsl = "sl")),
         reduce_only = TRUE
-      )
+      ))
     },
     fixture_order_resting()
   )
@@ -216,10 +216,10 @@ test_that("bulk_orders attaches a lowercased builder and stacks filled statuses"
   )
   res <- mock_trade(
     function() {
-      client$bulk_orders(
+      return(client$bulk_orders(
         orders,
         builder = list(b = "0xABCDEF0123456789012345678901234567890123", f = 10)
-      )
+      ))
     },
     fixture_order_filled()
   )
@@ -237,14 +237,14 @@ test_that("modify_order posts a batchModify with the oid and a rebuilt wire", {
   client <- new_client()
   res <- mock_trade(
     function() {
-      client$modify_order(
+      return(client$modify_order(
         oid = 123,
         name = "BTC",
         is_buy = FALSE,
         sz = 0.002,
         limit_px = 51000,
         order_type = list(limit = list(tif = "Gtc"))
-      )
+      ))
     },
     fixture_order_resting()
   )

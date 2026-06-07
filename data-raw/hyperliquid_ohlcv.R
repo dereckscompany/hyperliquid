@@ -18,7 +18,7 @@ market <- HyperliquidMarketData$new(
 rows <- lapply(symbols, function(sym) {
   dt <- market$get_candles(sym, interval = "1d", start = from, end = to)
   dt[, symbol := sym]
-  dt[, list(symbol, datetime, open, high, low, close, volume, trades)]
+  return(dt[, list(symbol, datetime, open, high, low, close, volume, trades)])
 })
 
 hyperliquid_ohlcv <- data.table::rbindlist(rows)

@@ -25,7 +25,7 @@ norm_hex <- function(h) {
 expect_sig <- function(sig, exp_r, exp_s, exp_v) {
   expect_equal(norm_hex(sig$r), norm_hex(exp_r))
   expect_equal(norm_hex(sig$s), norm_hex(exp_s))
-  expect_equal(sig$v, exp_v)
+  return(expect_equal(sig$v, exp_v))
 }
 
 # ---- shared fixtures (constructed exactly as run_vectors.R does) --------------

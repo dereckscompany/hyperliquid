@@ -274,7 +274,7 @@ HyperliquidAccount <- R6::R6Class(
       return(private$.info(
         payload,
         .parser = function(x) {
-          assert_return_HyperliquidAccount__get_user_non_funding_ledger_updates(parse_non_funding_ledger(x))
+          return(assert_return_HyperliquidAccount__get_user_non_funding_ledger_updates(parse_non_funding_ledger(x)))
         }
       ))
     },

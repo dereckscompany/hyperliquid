@@ -17,7 +17,7 @@ make_recording_req_fn <- function(coin, interval) {
     env$calls[[length(env$calls) + 1L]] <- req
     ts <- seq(from = req$startTime, to = req$endTime, by = step_ms)
     raw <- lapply(ts, function(t) {
-      list(
+      return(list(
         t = t,
         T = t + step_ms - 1,
         s = coin,
@@ -28,7 +28,7 @@ make_recording_req_fn <- function(coin, interval) {
         l = "99",
         v = "10",
         n = 5L
-      )
+      ))
     })
     return(.parser(raw))
   }
@@ -158,7 +158,7 @@ test_that("async mode yields the same candles as sync mode", {
   to_ms <- anchor_ms + 10L * hour_ms
   # In async mode the impl chains promises, so the req_fn must return one.
   async_fn <- function(payload, .parser = identity) {
-    promises::promise_resolve(rec$fn(payload, .parser))
+    return(promises::promise_resolve(rec$fn(payload, .parser)))
   }
   p <- hyperliquid:::hyperliquid_fetch_klines(
     coin = "BTC",

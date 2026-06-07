@@ -125,7 +125,7 @@ HyperliquidMarketData <- R6::R6Class(
       return(private$.info(
         list(type = "spotMetaAndAssetCtxs"),
         .parser = function(x) {
-          assert_return_HyperliquidMarketData__get_spot_meta_and_asset_ctxs(parse_spot_meta_and_asset_ctxs(x))
+          return(assert_return_HyperliquidMarketData__get_spot_meta_and_asset_ctxs(parse_spot_meta_and_asset_ctxs(x)))
         }
       ))
     },

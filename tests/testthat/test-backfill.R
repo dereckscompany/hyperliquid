@@ -21,7 +21,7 @@ backfill_mock <- function(req) {
     step_ms <- hyperliquid:::hyperliquid_interval_to_seconds[[r$interval]] * 1000
     ts <- seq(from = r$startTime, to = r$endTime, by = step_ms)
     payload <- lapply(ts, function(t) {
-      list(
+      return(list(
         t = t,
         T = t + step_ms - 1,
         s = r$coin,
@@ -32,7 +32,7 @@ backfill_mock <- function(req) {
         l = "99",
         v = "10",
         n = 5L
-      )
+      ))
     })
   } else if (identical(body$type, "fundingHistory")) {
     ts <- seq(from = body$startTime, to = body$endTime, by = hour_ms)
@@ -40,7 +40,7 @@ backfill_mock <- function(req) {
       ts <- ts[seq_len(500L)]
     }
     payload <- lapply(ts, function(t) {
-      list(coin = body$coin, fundingRate = "0.0001", premium = "0.00005", time = t)
+      return(list(coin = body$coin, fundingRate = "0.0001", premium = "0.00005", time = t))
     })
   } else {
     stop(sprintf("Unmocked backfill type: %s", body$type))

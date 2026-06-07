@@ -73,7 +73,7 @@ HyperliquidStaking <- R6::R6Class(
       return(private$.info(
         list(type = "delegatorSummary", user = address),
         .parser = function(x) {
-          assert_return_HyperliquidStaking__get_staking_summary(parse_staking_summary(x))
+          return(assert_return_HyperliquidStaking__get_staking_summary(parse_staking_summary(x)))
         }
       ))
     },
@@ -89,7 +89,7 @@ HyperliquidStaking <- R6::R6Class(
       return(private$.info(
         list(type = "delegations", user = address),
         .parser = function(x) {
-          assert_return_HyperliquidStaking__get_staking_delegations(parse_staking_delegations(x))
+          return(assert_return_HyperliquidStaking__get_staking_delegations(parse_staking_delegations(x)))
         }
       ))
     },
@@ -105,7 +105,7 @@ HyperliquidStaking <- R6::R6Class(
       return(private$.info(
         list(type = "delegatorRewards", user = address),
         .parser = function(x) {
-          assert_return_HyperliquidStaking__get_staking_rewards(parse_staking_rewards(x))
+          return(assert_return_HyperliquidStaking__get_staking_rewards(parse_staking_rewards(x)))
         }
       ))
     },
@@ -125,7 +125,7 @@ HyperliquidStaking <- R6::R6Class(
       return(private$.info(
         list(type = "delegatorHistory", user = address),
         .parser = function(x) {
-          assert_return_HyperliquidStaking__get_delegator_history(parse_delegator_history(x))
+          return(assert_return_HyperliquidStaking__get_delegator_history(parse_delegator_history(x)))
         }
       ))
     },
@@ -162,7 +162,7 @@ HyperliquidStaking <- R6::R6Class(
         sign_types = TOKEN_DELEGATE_SIGN_TYPES,
         primary_type = "HyperliquidTransaction:TokenDelegate",
         .parser = function(x) {
-          assert_return_HyperliquidStaking__token_delegate(parse_token_delegate(x))
+          return(assert_return_HyperliquidStaking__token_delegate(parse_token_delegate(x)))
         }
       ))
     }

@@ -22,7 +22,7 @@ parse_meta <- function(data) {
     return(data.table::data.table()[])
   }
   rows <- lapply(universe, function(u) {
-    data.table::data.table(
+    return(data.table::data.table(
       name = chr_or_na(u$name),
       sz_decimals = num_or_na(u$szDecimals),
       max_leverage = num_or_na(u$maxLeverage),
@@ -30,7 +30,7 @@ parse_meta <- function(data) {
       only_isolated = lgl_or_na(u$onlyIsolated),
       is_delisted = as.logical(coalesce_null(u$isDelisted, FALSE)),
       margin_mode = chr_or_na(u$marginMode)
-    )
+    ))
   })
   return(data.table::rbindlist(rows)[])
 }
@@ -51,13 +51,13 @@ parse_spot_meta_universe <- function(data) {
     return(data.table::data.table()[])
   }
   rows <- lapply(universe, function(u) {
-    data.table::data.table(
+    return(data.table::data.table(
       name = chr_or_na(u$name),
       index = num_or_na(u$index),
       is_canonical = lgl_or_na(u$isCanonical),
       token_base = nth_num(u$tokens, 1L),
       token_quote = nth_num(u$tokens, 2L)
-    )
+    ))
   })
   return(data.table::rbindlist(rows)[])
 }
@@ -77,14 +77,14 @@ parse_spot_tokens <- function(data) {
     return(data.table::data.table()[])
   }
   rows <- lapply(tokens, function(t) {
-    data.table::data.table(
+    return(data.table::data.table(
       name = chr_or_na(t$name),
       index = num_or_na(t$index),
       sz_decimals = num_or_na(t$szDecimals),
       wei_decimals = num_or_na(t$weiDecimals),
       token_id = chr_or_na(t$tokenId),
       is_canonical = lgl_or_na(t$isCanonical)
-    )
+    ))
   })
   return(data.table::rbindlist(rows)[])
 }
@@ -113,7 +113,7 @@ parse_meta_and_asset_ctxs <- function(data) {
     if (length(ctxs) >= i && !is.null(ctxs[[i]])) {
       ctx <- ctxs[[i]]
     }
-    data.table::data.table(
+    return(data.table::data.table(
       name = chr_or_na(u$name),
       sz_decimals = num_or_na(u$szDecimals),
       max_leverage = num_or_na(u$maxLeverage),
@@ -127,7 +127,7 @@ parse_meta_and_asset_ctxs <- function(data) {
       prev_day_px = num_or_na(ctx$prevDayPx),
       impact_px_bid = nth_num(ctx$impactPxs, 1L),
       impact_px_ask = nth_num(ctx$impactPxs, 2L)
-    )
+    ))
   })
   return(data.table::rbindlist(rows)[])
 }
@@ -148,14 +148,14 @@ parse_spot_meta_and_asset_ctxs <- function(data) {
     return(data.table::data.table()[])
   }
   rows <- lapply(ctxs, function(ctx) {
-    data.table::data.table(
+    return(data.table::data.table(
       coin = chr_or_na(ctx$coin),
       day_ntl_vlm = num_or_na(ctx$dayNtlVlm),
       mark_px = num_or_na(ctx$markPx),
       mid_px = num_or_na(ctx$midPx),
       prev_day_px = num_or_na(ctx$prevDayPx),
       circulating_supply = num_or_na(ctx$circulatingSupply)
-    )
+    ))
   })
   return(data.table::rbindlist(rows)[])
 }
@@ -235,7 +235,7 @@ parse_candles <- function(data) {
     return(data.table::data.table()[])
   }
   rows <- lapply(data, function(c) {
-    data.table::data.table(
+    return(data.table::data.table(
       datetime = ms_to_datetime(num_or_na(c$t)),
       open = num_or_na(c$o),
       high = num_or_na(c$h),
@@ -246,7 +246,7 @@ parse_candles <- function(data) {
       close_time = ms_to_datetime(num_or_na(c$T)),
       interval = chr_or_na(c$i),
       coin = chr_or_na(c$s)
-    )
+    ))
   })
   dt <- data.table::rbindlist(rows)
   data.table::setorderv(dt, "datetime")
@@ -265,12 +265,12 @@ parse_funding_history <- function(data) {
     return(data.table::data.table()[])
   }
   rows <- lapply(data, function(f) {
-    data.table::data.table(
+    return(data.table::data.table(
       coin = chr_or_na(f$coin),
       funding_rate = num_or_na(f$fundingRate),
       premium = num_or_na(f$premium),
       time = ms_to_datetime(num_or_na(f$time))
-    )
+    ))
   })
   return(data.table::rbindlist(rows)[])
 }
@@ -360,7 +360,7 @@ parse_recent_trades <- function(data) {
     return(data.table::data.table()[])
   }
   rows <- lapply(data, function(tr) {
-    data.table::data.table(
+    return(data.table::data.table(
       coin = chr_or_na(tr$coin),
       side = unname(coalesce_null(ORDER_SIDE_FROM_WIRE[chr_or_na(tr$side)], NA_character_)),
       px = num_or_na(tr$px),
@@ -370,7 +370,7 @@ parse_recent_trades <- function(data) {
       tid = num_or_na(tr$tid),
       user_buyer = nth_chr(tr$users, 1L),
       user_seller = nth_chr(tr$users, 2L)
-    )
+    ))
   })
   return(data.table::rbindlist(rows)[])
 }

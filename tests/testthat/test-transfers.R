@@ -48,7 +48,7 @@ expect_has_signature <- function(posted) {
   expect_true(all(c("r", "s", "v") %in% names(posted$signature)))
   expect_true(nzchar(posted$signature$r))
   expect_true(nzchar(posted$signature$s))
-  expect_true(is.numeric(posted$signature$v))
+  return(expect_true(is.numeric(posted$signature$v)))
 }
 
 # ---- parser ------------------------------------------------------------------
@@ -119,11 +119,11 @@ test_that("spot_send posts spotSend carrying the token", {
   client <- new_client()
   res <- post_capture(
     function() {
-      client$spot_send(
+      return(client$spot_send(
         1.5,
         "0x5e9ee1089755c3435139848e47e6635505d5a13a",
         "PURR:0xc1fb593aeffbeb02f85e0308e9956a90"
-      )
+      ))
     },
     fixture_spot_send()
   )
@@ -149,13 +149,13 @@ test_that("send_asset posts sendAsset with dex routing and an empty fromSubAccou
   client <- new_client()
   res <- post_capture(
     function() {
-      client$send_asset(
+      return(client$send_asset(
         "0x5e9ee1089755c3435139848e47e6635505d5a13a",
         "",
         "spot",
         "USDC:0xeb62eee3685fc4c43992febcd9e75443",
         42
-      )
+      ))
     },
     fixture_send_asset()
   )
@@ -175,11 +175,11 @@ test_that("sub_account_transfer posts subAccountTransfer with a micro-USD intege
   client <- new_client()
   res <- post_capture(
     function() {
-      client$sub_account_transfer(
+      return(client$sub_account_transfer(
         "0x5e9ee1089755c3435139848e47e6635505d5a13a",
         is_deposit = TRUE,
         usd = 10
-      )
+      ))
     },
     fixture_sub_account_transfer()
   )
@@ -196,12 +196,12 @@ test_that("sub_account_spot_transfer posts subAccountSpotTransfer with a string 
   client <- new_client()
   res <- post_capture(
     function() {
-      client$sub_account_spot_transfer(
+      return(client$sub_account_spot_transfer(
         "0x5e9ee1089755c3435139848e47e6635505d5a13a",
         is_deposit = FALSE,
         token = "PURR:0xc1fb593aeffbeb02f85e0308e9956a90",
         amount = 5
-      )
+      ))
     },
     fixture_sub_account_spot_transfer()
   )
@@ -216,11 +216,11 @@ test_that("vault_transfer posts vaultTransfer with a micro-USD integer", {
   client <- new_client()
   res <- post_capture(
     function() {
-      client$vault_transfer(
+      return(client$vault_transfer(
         "0xdfc24b077bc1425ad1dea75bcb6f8158e10df303",
         is_deposit = TRUE,
         usd = 250
-      )
+      ))
     },
     fixture_vault_transfer()
   )

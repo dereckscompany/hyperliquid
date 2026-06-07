@@ -8,7 +8,7 @@
 # meta -> perp universe. Includes a delisted asset (MATIC) and an isolated-only
 # asset carrying marginMode (HOOD) to exercise the sparse logical/string columns.
 hl_md_meta <- function() {
-  list(
+  return(list(
     universe = list(
       list(szDecimals = 5L, name = "BTC", maxLeverage = 40L, marginTableId = 56L),
       list(szDecimals = 4L, name = "ETH", maxLeverage = 25L, marginTableId = 55L),
@@ -24,12 +24,12 @@ hl_md_meta <- function() {
     ),
     marginTables = list(),
     collateralToken = 0L
-  )
+  ))
 }
 
 # spotMeta -> the pair universe and the token table, consumed by two siblings.
 hl_md_spot_meta <- function() {
-  list(
+  return(list(
     universe = list(
       list(tokens = list(1L, 0L), name = "PURR/USDC", index = 0L, isCanonical = TRUE),
       list(tokens = list(2L, 0L), name = "@1", index = 1L, isCanonical = FALSE)
@@ -58,12 +58,12 @@ hl_md_spot_meta <- function() {
         deployerTradingFeeShare = "0.0"
       )
     )
-  )
+  ))
 }
 
 # metaAndAssetCtxs -> [meta, ctxs] positional pair, joined by index.
 hl_md_meta_and_asset_ctxs <- function() {
-  list(
+  return(list(
     list(
       universe = list(
         list(szDecimals = 5L, name = "BTC", maxLeverage = 40L, marginTableId = 56L),
@@ -96,12 +96,12 @@ hl_md_meta_and_asset_ctxs <- function() {
         dayBaseVlm = "441613.2052999999"
       )
     )
-  )
+  ))
 }
 
 # spotMetaAndAssetCtxs -> [spotMeta, ctxs]; each ctx carries its own coin.
 hl_md_spot_meta_and_asset_ctxs <- function() {
-  list(
+  return(list(
     list(universe = list(), tokens = list()),
     list(
       list(
@@ -125,21 +125,21 @@ hl_md_spot_meta_and_asset_ctxs <- function() {
         dayBaseVlm = "2957.81"
       )
     )
-  )
+  ))
 }
 
 # allMids -> a {coin: mid} dictionary.
 hl_md_all_mids <- function() {
-  list(
+  return(list(
     BTC = "61958.5",
     ETH = "1605.45",
     "@1" = "9.6738"
-  )
+  ))
 }
 
 # l2Book -> {coin, time, levels: [bids, asks]} with 2 levels per side.
 hl_md_l2_book <- function() {
-  list(
+  return(list(
     coin = "BTC",
     time = 1780809622422,
     levels = list(
@@ -152,13 +152,13 @@ hl_md_l2_book <- function() {
         list(px = "61947.0", sz = "0.06724", n = 6L)
       )
     )
-  )
+  ))
 }
 
 # candleSnapshot -> array of OHLCV objects. Returned here out of order to verify
 # the parser sorts ascending by open time.
 hl_md_candles <- function() {
-  list(
+  return(list(
     list(
       t = 1780790400000,
       T = 1780793999999,
@@ -183,21 +183,21 @@ hl_md_candles <- function() {
       v = "1167.72245",
       n = 15901L
     )
-  )
+  ))
 }
 
 # fundingHistory -> array of {coin, fundingRate, premium, time}.
 hl_md_funding_history <- function() {
-  list(
+  return(list(
     list(coin = "BTC", fundingRate = "0.0000034197", premium = "-0.0004726428", time = 1780552800007),
     list(coin = "BTC", fundingRate = "0.000010114", premium = "-0.0004190877", time = 1780556400059)
-  )
+  ))
 }
 
 # predictedFundings -> [coin, [[venue, {rate,...}]]]. The "AI" coin carries a
 # venue with a null body and a venue missing fundingIntervalHours.
 hl_md_predicted_fundings <- function() {
-  list(
+  return(list(
     list(
       "BTC",
       list(
@@ -212,12 +212,12 @@ hl_md_predicted_fundings <- function() {
         list("BybitPerp", NULL)
       )
     )
-  )
+  ))
 }
 
 # perpDexs -> [null core sentinel, then builder-deployed dexes].
 hl_md_perp_dexs <- function() {
-  list(
+  return(list(
     NULL,
     list(
       name = "xyz",
@@ -226,12 +226,12 @@ hl_md_perp_dexs <- function() {
       oracleUpdater = NULL,
       feeRecipient = "0x9cd0a696c7cbb9d44de99268194cb08e5684e5fe"
     )
-  )
+  ))
 }
 
 # recentTrades -> array of trades; users is [buyer, seller]; side is B/A.
 hl_md_recent_trades <- function() {
-  list(
+  return(list(
     list(
       coin = "BTC",
       side = "B",
@@ -252,10 +252,10 @@ hl_md_recent_trades <- function() {
       tid = 344331450499251,
       users = list("0xa62b923a112d50d03e1e096bbd53422490dac104", "0x60b9a6713427c83608d9daecfa06a6d2361f0614")
     )
-  )
+  ))
 }
 
 # exchangeStatus -> {specialStatuses, time}; specialStatuses is null in practice.
 hl_md_exchange_status <- function() {
-  list(specialStatuses = NULL, time = 1780809634220)
+  return(list(specialStatuses = NULL, time = 1780809634220))
 }

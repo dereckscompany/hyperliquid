@@ -70,7 +70,7 @@ parse_positions <- function(data) {
   }
   rows <- lapply(positions, function(ap) {
     p <- ap$position
-    data.table::data.table(
+    return(data.table::data.table(
       coin = chr_or_na(p$coin),
       szi = num_or_na(p$szi),
       entry_px = num_or_na(p$entryPx),
@@ -81,7 +81,7 @@ parse_positions <- function(data) {
       leverage_value = num_or_na(p$leverage$value),
       liquidation_px = num_or_na(p$liquidationPx),
       margin_used = num_or_na(p$marginUsed)
-    )
+    ))
   })
   return(data.table::rbindlist(rows, fill = TRUE)[])
 }
@@ -133,12 +133,12 @@ parse_spot_balances <- function(data) {
     return(data.table::data.table()[])
   }
   rows <- lapply(balances, function(b) {
-    data.table::data.table(
+    return(data.table::data.table(
       coin = chr_or_na(b$coin),
       total = num_or_na(b$total),
       hold = num_or_na(b$hold),
       entry_ntl = num_or_na(b$entryNtl)
-    )
+    ))
   })
   return(data.table::rbindlist(rows, fill = TRUE)[])
 }
@@ -158,14 +158,14 @@ parse_open_orders <- function(items) {
     return(data.table::data.table()[])
   }
   rows <- lapply(items, function(o) {
-    data.table::data.table(
+    return(data.table::data.table(
       coin = chr_or_na(o$coin),
       oid = num_or_na(o$oid),
       side = wire_side(o$side),
       limit_px = num_or_na(o$limitPx),
       sz = num_or_na(o$sz),
       timestamp = ms_to_datetime(num_or_na(o$timestamp))
-    )
+    ))
   })
   return(data.table::rbindlist(rows, fill = TRUE)[])
 }
@@ -227,7 +227,7 @@ parse_user_fills <- function(items) {
     return(data.table::data.table()[])
   }
   rows <- lapply(items, function(f) {
-    data.table::data.table(
+    return(data.table::data.table(
       coin = chr_or_na(f$coin),
       px = num_or_na(f$px),
       sz = num_or_na(f$sz),
@@ -242,7 +242,7 @@ parse_user_fills <- function(items) {
       fee = num_or_na(f$fee),
       fee_token = chr_or_na(f$feeToken),
       tid = num_or_na(f$tid)
-    )
+    ))
   })
   return(data.table::rbindlist(rows, fill = TRUE)[])
 }
@@ -272,7 +272,7 @@ parse_historical_orders <- function(items) {
       j = "status_timestamp",
       value = ms_to_datetime(num_or_na(it$statusTimestamp))
     )
-    core
+    return(core)
   })
   dt <- data.table::rbindlist(rows, fill = TRUE)
   data.table::setcolorder(
@@ -317,7 +317,7 @@ parse_user_funding <- function(items) {
   }
   rows <- lapply(items, function(it) {
     d <- it$delta
-    data.table::data.table(
+    return(data.table::data.table(
       time = ms_to_datetime(num_or_na(it$time)),
       hash = chr_or_na(it$hash),
       coin = chr_or_na(d$coin),
@@ -325,7 +325,7 @@ parse_user_funding <- function(items) {
       szi = num_or_na(d$szi),
       usdc = num_or_na(d$usdc),
       n_samples = num_or_na(d$nSamples)
-    )
+    ))
   })
   return(data.table::rbindlist(rows, fill = TRUE)[])
 }
@@ -422,10 +422,10 @@ parse_portfolio_volume <- function(data) {
     return(data.table::data.table()[])
   }
   rows <- lapply(data, function(entry) {
-    data.table::data.table(
+    return(data.table::data.table(
       period = chr_or_na(entry[[1]]),
       vlm = num_or_na(entry[[2]]$vlm)
-    )
+    ))
   })
   return(data.table::rbindlist(rows, fill = TRUE)[])
 }
@@ -466,12 +466,12 @@ parse_user_volume <- function(data) {
     return(data.table::data.table()[])
   }
   rows <- lapply(daily, function(d) {
-    data.table::data.table(
+    return(data.table::data.table(
       date = chr_or_na(d$date),
       exchange = num_or_na(d$exchange),
       user_add = num_or_na(d$userAdd),
       user_cross = num_or_na(d$userCross)
-    )
+    ))
   })
   return(data.table::rbindlist(rows, fill = TRUE)[])
 }
@@ -527,7 +527,7 @@ parse_sub_accounts <- function(items) {
   rows <- lapply(items, function(s) {
     ch <- s$clearinghouseState
     ms <- ch$marginSummary
-    data.table::data.table(
+    return(data.table::data.table(
       name = chr_or_na(s$name),
       sub_account_user = chr_or_na(s$subAccountUser),
       master = chr_or_na(s$master),
@@ -536,7 +536,7 @@ parse_sub_accounts <- function(items) {
       total_raw_usd = num_or_na(ms$totalRawUsd),
       total_margin_used = num_or_na(ms$totalMarginUsed),
       withdrawable = num_or_na(ch$withdrawable)
-    )
+    ))
   })
   return(data.table::rbindlist(rows, fill = TRUE)[])
 }
@@ -607,11 +607,11 @@ parse_user_vault_equities <- function(items) {
     return(data.table::data.table()[])
   }
   rows <- lapply(items, function(v) {
-    data.table::data.table(
+    return(data.table::data.table(
       vault_address = chr_or_na(v$vaultAddress),
       equity = num_or_na(v$equity),
       locked_until_timestamp = ms_to_datetime(num_or_na(v$lockedUntilTimestamp))
-    )
+    ))
   })
   return(data.table::rbindlist(rows, fill = TRUE)[])
 }
