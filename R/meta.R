@@ -1,0 +1,116 @@
+# File: R/meta.R
+# Lazy exchange-metadata helpers: build the coin/name/asset lookup tables from
+# the raw `meta` + `spotMeta` responses and resolve names to assets. The R6
+# wiring (.ensure_meta / refresh_meta / resolvers) lives on HyperliquidBase;
+# these are the pure functions it delegates to.
+
+#' Build the Coin / Name / Asset Lookup Tables
+#'
+#' Mirrors the Python SDK's `Info.__init__` index logic to assemble three maps
+#' from the parsed `meta` (perps) and `spotMeta` (spot) responses:
+#' - `coin_to_asset`: canonical coin symbol -> integer asset id.
+#' - `name_to_coin`: friendly name (and canonical name) -> canonical coin.
+#' - `asset_to_sz_decimals`: asset id (as a string key) -> size decimals.
+#'
+#' Perps take their `meta$universe` index as the asset id (BTC = 0 on mainnet).
+#' Spot assets start at `10000 + index`; the named base/quote pair (e.g.
+#' `"HYPE/USDC"`) is aliased to the canonical coin (`"@107"`) when not already
+#' present, and size decimals come from the base token. Builder-deployed (HIP-3)
+#' perp dexes are out of scope for this phase (the original `""` dex only).
+#'
+#' @param meta List; the parsed `{type:"meta"}` response (has `$universe`).
+#' @param spot_meta List; the parsed `{type:"spotMeta"}` response (has
+#'   `$universe` and `$tokens`).
+#' @return Named list with `coin_to_asset`, `name_to_coin`, and
+#'   `asset_to_sz_decimals` (all named lists keyed as described).
+#' @keywords internal
+#' @noRd
+build_asset_maps <- function(meta, spot_meta) {
+  coin_to_asset <- list()
+  name_to_coin <- list()
+  asset_to_sz_decimals <- list()
+
+  # Index spot tokens by their integer index for base/quote lookups.
+  token_by_index <- list()
+  for (token in spot_meta$tokens) {
+    token_by_index[[as.character(token$index)]] <- token
+  }
+
+  # Spot assets start at 10000 + index.
+  for (spot_info in spot_meta$universe) {
+    asset <- spot_info$index + 10000L
+    coin_to_asset[[spot_info$name]] <- asset
+    name_to_coin[[spot_info$name]] <- spot_info$name
+    base_info <- token_by_index[[as.character(spot_info$tokens[[1]])]]
+    quote_info <- token_by_index[[as.character(spot_info$tokens[[2]])]]
+    asset_to_sz_decimals[[as.character(asset)]] <- base_info$szDecimals
+    pair_name <- paste0(base_info$name, "/", quote_info$name)
+    if (is.null(name_to_coin[[pair_name]])) {
+      name_to_coin[[pair_name]] <- spot_info$name
+    }
+  }
+
+  # Perps: asset = index in meta$universe (original dex, offset 0).
+  asset <- 0L
+  for (asset_info in meta$universe) {
+    coin_to_asset[[asset_info$name]] <- asset
+    name_to_coin[[asset_info$name]] <- asset_info$name
+    asset_to_sz_decimals[[as.character(asset)]] <- asset_info$szDecimals
+    asset <- asset + 1L
+  }
+
+  return(list(
+    coin_to_asset = coin_to_asset,
+    name_to_coin = name_to_coin,
+    asset_to_sz_decimals = asset_to_sz_decimals
+  ))
+}
+
+#' Resolve a Friendly Name to its Canonical Coin
+#'
+#' @param maps List; the lookup tables from `build_asset_maps()`.
+#' @param name Character; a friendly name or canonical coin symbol.
+#' @return Character; the canonical coin symbol.
+#' @importFrom rlang abort
+#' @keywords internal
+#' @noRd
+meta_name_to_coin <- function(maps, name) {
+  assert::assert_scalar_character(name)
+  coin <- maps$name_to_coin[[name]]
+  if (is.null(coin)) {
+    rlang::abort(paste0(
+      "Unknown coin/name: '", name, "'. Call refresh_meta() if it was newly listed."
+    ))
+  }
+  return(coin)
+}
+
+#' Resolve a Friendly Name to its Integer Asset Id
+#'
+#' @param maps List; the lookup tables from `build_asset_maps()`.
+#' @param name Character; a friendly name or canonical coin symbol.
+#' @return Numeric; the integer asset id used in signed actions.
+#' @keywords internal
+#' @noRd
+meta_name_to_asset <- function(maps, name) {
+  coin <- meta_name_to_coin(maps, name)
+  return(maps$coin_to_asset[[coin]])
+}
+
+#' Resolve an Asset Id to its Size Decimals
+#'
+#' @param maps List; the lookup tables from `build_asset_maps()`.
+#' @param asset Numeric; an integer asset id.
+#' @return Numeric; the asset's size decimals.
+#' @importFrom rlang abort
+#' @keywords internal
+#' @noRd
+meta_sz_decimals <- function(maps, asset) {
+  sz <- maps$asset_to_sz_decimals[[as.character(asset)]]
+  if (is.null(sz)) {
+    rlang::abort(paste0(
+      "Unknown asset id: ", asset, ". Call refresh_meta() if it was newly listed."
+    ))
+  }
+  return(sz)
+}

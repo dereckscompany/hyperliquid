@@ -34,10 +34,8 @@ Suggests:
     pkgdown,
     promises,
     rmarkdown,
-    roxyassert,
     testthat (>= 3.0.0)
 Remotes:
-    dereckscompany/assert,
-    dereckscompany/roxyassert
+    dereckscompany/assert
 VignetteBuilder: knitr
 Config/testthat/edition: 3
