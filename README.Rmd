@@ -2,7 +2,7 @@
 output: github_document
 ---
 
-```{r, include=FALSE}
+```{r setup, include = FALSE}
 knitr::opts_chunk$set(
     warning = FALSE,
     message = FALSE,
@@ -11,111 +11,251 @@ knitr::opts_chunk$set(
     fig.width = 12,
     fig.height = 10,
     dpi = 150,
-    collapse = TRUE,
+    results = "hold",
     comment = "#>"
 )
+
+# Package symbols used throughout, plus the shared mock HTTP router.
+box::use(
+    hyperliquid[
+        HyperliquidMarketData,
+        HyperliquidAccount,
+        HyperliquidTrading,
+        HyperliquidTransfers,
+        HyperliquidStaking,
+        get_api_keys,
+        hyperliquid_backfill_klines,
+        hyperliquid_ohlcv
+    ],
+    coro,
+    later,
+    ./tests/testthat/mock_router[mock_router]
+)
+
+# httr2 exposes a native global mock hook: this intercepts every
+# req_perform / req_perform_promise call and answers from canned fixtures, so
+# the document renders against deterministic data with no network, no real
+# credentials, and no funds.
+options(httr2_mock = mock_router)
+
+# Signed /exchange actions sign the request body with the wallet key BEFORE the
+# request is performed, so a key must still be loadable. We use a THROWAWAY,
+# well-known test scalar here: it signs fine, the mock ignores the signature, it
+# controls no real funds, and it never touches the network.
+.sk_hex <- "0123456789012345678901234567890123456789012345678901234567890123"
+KEYS <- get_api_keys(private_key = paste0("0x", .sk_hex))
 ```
 
 # hyperliquid
 
-R API wrapper to the Hyperliquid decentralized exchange supporting both synchronous and asynchronous (promise based) operations. Provides R6 classes for market data, perpetual and spot trading, account management, transfers, and staking, with Ethereum-style wallet signing for the exchange endpoint.
+<!-- badges: start -->
+[![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](https://opensource.org/licenses/MIT)
+[![R-CMD-check](https://github.com/dereckscompany/hyperliquid/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/dereckscompany/hyperliquid/actions/workflows/R-CMD-check.yaml)
+<!-- badges: end -->
 
-## Features
+R API wrapper to the [Hyperliquid](https://hyperliquid.xyz) decentralized exchange supporting both synchronous and asynchronous (promise based) operations. Provides R6 classes for market data, perpetual and spot trading, account management, transfers, and staking. Every method returns a flat `data.table`. The `/exchange` endpoint is authenticated by an Ethereum wallet signature, computed in **pure R** (`openssl` + `gmp`, no compiled code) and verified byte-for-byte against the official Hyperliquid SDKs.
 
-| Feature | Description |
-|---------|-------------|
-| **Rcpp** | C++ integration with example function using loop unrolling |
-| **testthat** | Unit testing framework with separate test files |
-| **roxygen2** | Documentation generation from code comments |
-| **pkgdown** | Automatic documentation website |
-| **renv** | Reproducible dependency management |
-| **GitHub Actions** | CI/CD for R-CMD-check and pkgdown deployment |
-| **air** | Extremely fast R code formatter (Rust-based) |
+## Disclaimer
 
-## Project Structure
+This software is provided for educational and research purposes. Trading cryptocurrency carries substantial risk, and you are solely responsible for any orders, transfers, or withdrawals placed through this package. Test against testnet (`testnet = TRUE`) before signing anything on mainnet.
 
-```
-├── R/
-│   ├── add.R              # Pure R function example
-│   └── cpp.R              # Rcpp configuration
-├── src/
-│   └── sum_array.cpp      # C++ function with Rcpp
-├── tests/testthat/        # Unit tests
-├── vignettes/             # Package vignettes
-├── scripts/
-│   └── BUILD.sh           # Build automation script
-├── .github/workflows/     # CI/CD workflows
-└── _pkgdown.yml           # Documentation site config
-```
+## Design
 
-## Build Commands
-
-```bash
-# Full workflow: document → clean → build → check → install
-./scripts/BUILD.sh all
-
-# Quick development iteration (skip R CMD check)
-./scripts/BUILD.sh quick
-
-# Generate documentation only
-./scripts/BUILD.sh document
-
-# Format R code with air
-./scripts/FORMAT.sh
-
-# Check formatting (for CI)
-./scripts/FORMAT.sh check
-
-# Build pkgdown site
-./scripts/BUILD.sh pkgdown
-
-# Render README.Rmd to README.md
-./scripts/BUILD.sh readme
-
-# See all options
-./scripts/BUILD.sh help
-```
-
-## Usage
-
-```r
-library(hyperliquid)
-
-# Pure R function
-add(1, 2)
-#> [1] 3
-
-# Rcpp function (C++)
-sum_array_cpp(1:1000000)
-#> [1] 500000500000
-```
+- **One method, one `data.table`, no list columns.** Every method returns a flat `data.table`; nested API objects are flattened into scalar columns, and heterogeneous rows are stacked with a discriminator column (`side`, `delta_type`, `status`, ...).
+- **Sync and async.** Every method works in both modes. `async = TRUE` returns a [promise][promises::promise]; otherwise results are returned directly. There is a single sync/async branch point ([hyperliquid_build_request()]).
+- **snake_case columns.** API `camelCase` fields become `snake_case` columns; prices and sizes are returned as numerics.
+- **Pure-R Ethereum signing.** secp256k1 ECDSA, Keccak-256, EIP-712, and the msgpack action hash are implemented in pure R (`openssl` + `gmp`) with no compiled code, and verified byte-identical to the official Python and Rust SDK test vectors.
+- **One host, two paths.** The whole REST API lives behind one host: `/info` (public reads) and `/exchange` (signed writes). The network is chosen by an explicit `testnet` flag, never by URL sniffing, because the network changes the signature itself.
 
 ## Installation
 
-```r
-# From GitHub
+```{r install, eval = FALSE}
 # install.packages("remotes")
 remotes::install_github("dereckscompany/hyperliquid")
-
-# From CRAN (when available)
-install.packages("hyperliquid")
 ```
 
-### Requirements
+## Authentication
 
-- R >= 4.0
-- Rtools (Windows) or Xcode CLI (macOS) for C++ compilation
-- [air](https://posit-dev.github.io/air/) for code formatting (optional)
+Public market-data and account reads (the `/info` endpoint) need no credentials. Signed `/exchange` actions (trading, transfers, staking writes) are authenticated by an **Ethereum wallet signature**: Hyperliquid uses no API keys, only your wallet's secp256k1 private key.
 
-## CI/CD
+Store the key as an environment variable in `.Renviron`:
 
-GitHub Actions workflows included:
+```bash
+HYPERLIQUID_PRIVATE_KEY="0x<64-hex-character-secp256k1-key>"
+# Optional: the master account address when the key above is an AGENT (API)
+# wallet approved to act on its behalf.
+HYPERLIQUID_ACCOUNT_ADDRESS="0x<master-account-address>"
+```
 
-- **R-CMD-check**: Tests on macOS, Windows, Ubuntu with multiple R versions
-- **pkgdown**: Builds and deploys documentation to GitHub Pages
+`get_api_keys()` reads those variables (and derives the wallet address from the key):
 
-Both workflows use `concurrency` to cancel in-progress runs when new commits are pushed.
+```{r keys-example, eval = FALSE}
+box::use(hyperliquid[get_api_keys])
+
+keys <- get_api_keys()
+```
+
+The **same key serves both networks**. The network is selected by the explicit `testnet` flag at construction, not by the URL, because the network changes the signature itself (the phantom-agent source and the `hyperliquidChain` tag are part of what is signed):
+
+```{r testnet-example, eval = FALSE}
+# Sign and route against testnet
+trading <- HyperliquidTrading$new(testnet = TRUE)
+```
+
+## Market Data (no auth)
+
+`HyperliquidMarketData` covers every public `/info` read: perp and spot metadata, asset contexts, mids, the L2 book, candles, funding, and trades.
+
+```{r market}
+market <- HyperliquidMarketData$new()
+
+# Perpetual universe metadata
+market$get_meta()
+```
+
+```{r market-candles}
+# OHLCV candles over a time range (sorted ascending by open time)
+market$get_candles(
+  "BTC",
+  interval = "1h",
+  start = lubridate::now("UTC") - lubridate::days(1),
+  end = lubridate::now("UTC")
+)
+```
+
+```{r market-book}
+# L2 order book: both sides stacked long, with a `side` discriminator
+market$get_l2_book("BTC")
+```
+
+## Account (no auth)
+
+`HyperliquidAccount` reads the full state and history of any account from `/info` by its address. No key is required; pass the address you want to inspect (or let it default to your own wallet when a key is set).
+
+```{r account}
+account <- HyperliquidAccount$new()
+addr <- "0x010461c14e146ac35fe42271bdc1134ee31c703a"
+```
+
+```{r account-positions}
+# Open perpetual positions, one row per position
+account$get_positions(addr)
+```
+
+```{r account-fills}
+# Most recent fills
+account$get_user_fills(addr)[, .(coin, side, px, sz, dir, closed_pnl, fee)]
+```
+
+## Trading (signed)
+
+`HyperliquidTrading` places, modifies, and cancels orders. Every method signs an `/exchange` action with your wallet key. The calls below run against the mock; against the live API they would place and cancel real orders.
+
+```{r trading}
+trading <- HyperliquidTrading$new()
+```
+
+```{r trading-hidden, echo = FALSE}
+trading <- HyperliquidTrading$new(keys = KEYS)
+```
+
+```{r trading-place}
+# A good-til-cancelled limit bid. Returns one row per resulting status.
+order <- trading$place_order(
+  "BTC",
+  is_buy = TRUE,
+  sz = 0.001,
+  limit_px = 50000,
+  order_type = list(limit = list(tif = "Gtc"))
+)
+order[]
+```
+
+```{r trading-cancel}
+# Cancel a resting order by its order id
+trading$cancel_order("BTC", oid = 77738308)
+```
+
+## Transfers (signed)
+
+`HyperliquidTransfers` moves collateral between the spot and perp wallets, sends to other addresses, withdraws to the bridge, and moves funds to sub-accounts and vaults.
+
+```{r transfers}
+transfers <- HyperliquidTransfers$new()
+```
+
+```{r transfers-hidden, echo = FALSE}
+transfers <- HyperliquidTransfers$new(keys = KEYS)
+```
+
+```{r transfers-class}
+# Move $100 of USDC collateral from the spot wallet into the perp wallet
+transfers$usd_class_transfer(100, to_perp = TRUE)
+```
+
+## Staking (no auth to read)
+
+`HyperliquidStaking` reads a delegator's staking state and history, and (with a key) delegates or undelegates the native token.
+
+```{r staking}
+staking <- HyperliquidStaking$new()
+staking$get_staking_summary("0x5ac99df645f3414876c816caa18b2d234024b487")
+```
+
+## Bulk Backfill
+
+`hyperliquid_backfill_klines()` and `hyperliquid_backfill_funding()` download history for many coins/intervals, writing to a CSV incrementally so progress survives an interruption (re-running resumes each series from its last stored row).
+
+```{r backfill, eval = FALSE}
+hyperliquid_backfill_klines(
+  symbols = c("BTC", "ETH"),
+  intervals = c("1d", "1h"),
+  from = lubridate::as_datetime("2024-01-01", tz = "UTC"),
+  file = "klines.csv"
+)
+```
+
+A bundled sample dataset, `hyperliquid_ohlcv`, ships daily candles for `"BTC"`, `"ETH"`, and `"SOL"` for examples:
+
+```{r dataset}
+head(hyperliquid_ohlcv)
+```
+
+## Asynchronous Use
+
+The package is written around promises for non-blocking, event-loop use. Pass `async = TRUE` to any class and its methods return a [promise][promises::promise] instead of a `data.table`. Resolve it with `coro::async()` / `await()` for sequential-looking code, and drive the event loop with [later](https://r-lib.github.io/later/).
+
+```{r async}
+market_async <- HyperliquidMarketData$new(async = TRUE)
+
+main <- coro$async(function() {
+  mids <- await(market_async$get_all_mids())
+  book <- await(market_async$get_l2_book("BTC"))
+
+  print(mids)
+  print(book)
+  return(invisible(NULL))
+})
+
+main()
+
+# Drain the event loop until every promise has resolved.
+while (!later$loop_empty()) {
+  later$run_now()
+}
+```
+
+## Available Classes
+
+| Class | Purpose | Auth |
+|-------|---------|------|
+| `HyperliquidMarketData` | perp/spot meta, asset contexts, mids, L2 book, candles, funding, trades | No |
+| `HyperliquidAccount` | positions, margin, spot balances, orders, fills, ledgers, portfolio, fees | No |
+| `HyperliquidTrading` | place / modify / cancel orders, market open/close, leverage, margin, approvals | Yes |
+| `HyperliquidTransfers` | collateral class transfer, sends, withdrawals, sub-account and vault transfers | Yes |
+| `HyperliquidStaking` | delegator summary, delegations, rewards, history, delegate / undelegate | Mixed |
 
 ## License
 
-MIT
+MIT © Dereck Mezquita

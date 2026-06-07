@@ -12,3 +12,46 @@ navbar:
       icon: fa-github
       href: https://github.com/dereckscompany/hyperliquid
       aria-label: GitHub repository
+
+reference:
+  - title: API Client Classes
+    desc: R6 classes for interacting with the Hyperliquid API
+    contents:
+      - HyperliquidBase
+      - HyperliquidMarketData
+      - HyperliquidAccount
+      - HyperliquidTrading
+      - HyperliquidTransfers
+      - HyperliquidStaking
+
+  - title: Configuration
+    desc: Wallet credential, endpoint, and client-order-id helpers
+    contents:
+      - get_api_keys
+      - get_base_url
+      - new_cloid
+
+  - title: Low-Level Request
+    desc: The single funnel through which all Hyperliquid API calls flow
+    contents:
+      - hyperliquid_build_request
+
+  - title: Backfill and Data
+    desc: Bulk historical download and the included dataset
+    contents:
+      - hyperliquid_backfill_klines
+      - hyperliquid_backfill_funding
+      - hyperliquid_ohlcv
+
+  - title: Utilities
+    desc: Time conversion helpers and interval constants
+    contents:
+      - time_convert_from_hyperliquid
+      - time_convert_to_hyperliquid
+      - HYPERLIQUID_INTERVALS
+
+articles:
+  - title: Getting Started
+    navbar: ~
+    contents:
+      - getting-started

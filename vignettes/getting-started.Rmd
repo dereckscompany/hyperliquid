@@ -1,0 +1,330 @@
+---
+title: "Getting Started with hyperliquid"
+author: "Dereck Mezquita"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Getting Started with hyperliquid}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  results = "hold",
+  comment = "#>",
+  warning = FALSE,
+  message = FALSE
+)
+
+# This vignette renders against a global httr2 mock: every request is answered
+# from canned fixtures, so the examples execute and print realistic,
+# deterministic data with no network, no real credentials, and no funds.
+box::use(
+  hyperliquid[
+    HyperliquidMarketData, HyperliquidAccount, HyperliquidTrading,
+    HyperliquidStaking, get_api_keys, hyperliquid_backfill_klines,
+    hyperliquid_ohlcv
+  ],
+  coro,
+  later,
+  ../tests/testthat/mock_router[mock_router]
+)
+
+options(httr2_mock = mock_router)
+
+# Signed /exchange actions sign the request body with the wallet key BEFORE the
+# request is performed, so a loadable key must exist even though the mock ignores
+# the signature. We use a THROWAWAY, well-known test scalar: it signs fine,
+# controls no real funds, and never touches the network.
+.sk_hex <- "0123456789012345678901234567890123456789012345678901234567890123"
+KEYS <- get_api_keys(private_key = paste0("0x", .sk_hex))
+```
+
+This vignette walks through `hyperliquid` in **synchronous** mode: constructing a
+client, fetching public market data, reading account state, and safely signing a
+`/exchange` order against a mock so nothing leaves your machine.
+
+## Disclaimer
+
+This software is provided for educational and research purposes. Trading
+cryptocurrency carries substantial risk, and you are solely responsible for any
+orders, transfers, or withdrawals placed through this package. Every signed call
+in this vignette runs against a mock; against the live API it would move real
+funds. Test against testnet (`testnet = TRUE`) before signing anything on
+mainnet.
+
+## Installation
+
+```{r install, eval = FALSE}
+# install.packages("remotes")
+remotes::install_github("dereckscompany/hyperliquid")
+```
+
+## Authentication
+
+Public `/info` reads (market data, account state, staking reads) need no
+credentials. Signed `/exchange` actions (trading, transfers, staking writes) are
+authenticated by an **Ethereum wallet signature**: Hyperliquid uses no API keys,
+only your wallet's secp256k1 private key.
+
+Store the key as an environment variable in `.Renviron`:
+
+```bash
+HYPERLIQUID_PRIVATE_KEY="0x<64-hex-character-secp256k1-key>"
+# Optional: the master account address when the key above is an AGENT (API)
+# wallet approved to act on its behalf.
+HYPERLIQUID_ACCOUNT_ADDRESS="0x<master-account-address>"
+```
+
+`get_api_keys()` reads those variables (and derives the wallet address from the
+key), so in practice you simply call `HyperliquidTrading$new()` and the
+credentials are picked up automatically.
+
+```{r load, eval = FALSE}
+box::use(
+  hyperliquid[
+    HyperliquidMarketData, HyperliquidAccount, HyperliquidTrading, get_api_keys
+  ]
+)
+
+keys <- get_api_keys(
+  private_key = "0x<64-hex-character-secp256k1-key>"
+)
+```
+
+> **One key, one flag for the network.** The same key serves both mainnet and
+> testnet. The network is selected by the explicit `testnet` argument at
+> construction, never by the URL, because the network changes the signature
+> itself (the phantom-agent source and the `hyperliquidChain` tag are part of
+> what is signed). Pass `testnet = TRUE` to sign and route against testnet.
+
+---
+
+## Market Data
+
+`HyperliquidMarketData` covers every public (no auth) `/info` read. It needs no
+key.
+
+```{r market-init}
+market <- HyperliquidMarketData$new()
+```
+
+### Perpetual Metadata
+
+The perpetual universe: every listed coin with its size decimals and max
+leverage.
+
+```{r meta}
+meta <- market$get_meta()
+meta[]
+```
+
+### Mid Prices
+
+`get_all_mids()` returns the mid price for every actively traded coin, long: one
+row per coin.
+
+```{r mids}
+mids <- market$get_all_mids()
+mids[]
+```
+
+### OHLCV Candles
+
+`get_candles()` returns OHLCV bars for a coin over a time range, sorted ascending
+by open time. Valid intervals are in `HYPERLIQUID_INTERVALS` (`"1m"` ... `"1M"`).
+Time bounds accept a POSIXct or epoch-milliseconds.
+
+```{r candles}
+candles <- market$get_candles(
+  "BTC",
+  interval = "1h",
+  start = lubridate::now("UTC") - lubridate::days(1),
+  end = lubridate::now("UTC")
+)
+candles[]
+```
+
+### Order Book
+
+`get_l2_book()` returns both sides of the L2 book stacked into one long table
+with a `side` discriminator and a 1-indexed `level`.
+
+```{r book}
+book <- market$get_l2_book("BTC")
+book[]
+```
+
+### Recent Trades
+
+```{r trades}
+market$get_recent_trades("BTC")[, .(coin, side, px, sz, time)]
+```
+
+---
+
+## Account State
+
+`HyperliquidAccount` reads the full state and history of any account from `/info`
+by its address. The reads are unauthenticated, so pass the address you want to
+inspect (when a signing key is set, `address` defaults to your own wallet).
+
+```{r account-init}
+account <- HyperliquidAccount$new()
+addr <- "0x010461c14e146ac35fe42271bdc1134ee31c703a"
+```
+
+### Positions and Margin
+
+`get_positions()` returns one row per open perpetual position; the cross-margin
+summary is a sibling method (`get_margin_summary()`) reading the same payload.
+
+```{r positions}
+account$get_positions(addr)[, .(coin, szi, entry_px, unrealized_pnl, leverage_value)]
+```
+
+```{r margin}
+account$get_margin_summary(addr)[, .(account_value, total_ntl_pos, withdrawable)]
+```
+
+### Fills
+
+```{r fills}
+fills <- account$get_user_fills(addr)
+fills[, .(coin, side, px, sz, dir, closed_pnl, fee)]
+```
+
+---
+
+## Trading
+
+`HyperliquidTrading` places, modifies, and cancels orders. Every method signs an
+`/exchange` action with your wallet key. The calls below run against the mock;
+against the live API they would place and cancel real orders.
+
+```{r trading-init}
+trading <- HyperliquidTrading$new()
+```
+
+```{r trading-init-hidden, echo = FALSE}
+trading <- HyperliquidTrading$new(keys = KEYS)
+```
+
+### Place an Order
+
+An order's `order_type` is either a limit
+(`list(limit = list(tif = "Gtc"|"Ioc"|"Alo"))`) or a trigger order. The result
+is one row per resulting status (`resting`, `filled`, or `error`):
+
+```{r place}
+order <- trading$place_order(
+  "BTC",
+  is_buy = TRUE,
+  sz = 0.001,
+  limit_px = 50000,
+  order_type = list(limit = list(tif = "Gtc"))
+)
+order[]
+```
+
+### Cancel an Order
+
+`cancel_order()` cancels one resting order by its order id, returning one row per
+cancel:
+
+```{r cancel}
+trading$cancel_order("BTC", oid = order$oid[order$status == "resting"][1])
+```
+
+---
+
+## Staking
+
+`HyperliquidStaking` reads a delegator's staking state from `/info` (no key), and
+delegates / undelegates the native token with a key.
+
+```{r staking}
+staking <- HyperliquidStaking$new()
+staking$get_staking_summary("0x5ac99df645f3414876c816caa18b2d234024b487")
+```
+
+---
+
+## The Data-Shape Policy
+
+Every method returns a single flat `data.table` with **no list columns**:
+
+- Nested API objects are flattened into scalar `snake_case` columns (e.g. a
+  position's `leverage` becomes `leverage_type` and `leverage_value`).
+- Endpoints that bundle two things are split into sibling methods over the same
+  payload (`get_positions()` / `get_margin_summary()`).
+- Heterogeneous rows are stacked with a discriminator column: the L2 book's
+  `side`, an order action's `status`, a ledger's `delta_type`.
+- Prices, sizes, and amounts are parsed to numeric; timestamps are `POSIXct` in
+  UTC (via `lubridate`).
+
+This means the result of any call drops straight into `data.table` joins,
+`rbindlist()`, or a database write with no further unnesting.
+
+---
+
+## Bulk Backfill and Bundled Data
+
+For historical collection, `hyperliquid_backfill_klines()` downloads candles for
+many coins and intervals to a CSV, appending incrementally so progress survives
+an interruption (re-running resumes each series from its last stored row). It
+writes a file, so it is shown but not executed here:
+
+```{r backfill, eval = FALSE}
+hyperliquid_backfill_klines(
+  symbols = c("BTC", "ETH"),
+  intervals = c("1d", "1h"),
+  from = lubridate::as_datetime("2024-01-01", tz = "UTC"),
+  file = "klines.csv"
+)
+```
+
+A bundled sample dataset, `hyperliquid_ohlcv`, ships daily candles for `"BTC"`,
+`"ETH"`, and `"SOL"`:
+
+```{r dataset}
+head(hyperliquid_ohlcv)
+```
+
+---
+
+## Asynchronous Use
+
+Every class works in async mode. Pass `async = TRUE` and each method returns a
+[promise][promises::promise] instead of a `data.table`. The recommended idiom is
+`coro::async()` / `await()` for sequential-looking code, driving the event loop
+with [later](https://r-lib.github.io/later/):
+
+```{r async}
+market_async <- HyperliquidMarketData$new(async = TRUE)
+
+main <- coro$async(function() {
+  mids <- await(market_async$get_all_mids())
+  book <- await(market_async$get_l2_book("BTC"))
+
+  print(mids)
+  print(book)
+  return(invisible(NULL))
+})
+
+main()
+
+# Drain the event loop until every promise has resolved.
+while (!later$loop_empty()) {
+  later$run_now()
+}
+```
+
+---
+
+## Next Steps
+
+- Browse the [pkgdown site](https://dereckscompany.github.io/hyperliquid/) for
+  full method documentation.
+- For bulk historical data collection, see `?hyperliquid_backfill_klines` and
+  `?hyperliquid_backfill_funding`.
