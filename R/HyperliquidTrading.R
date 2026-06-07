@@ -68,7 +68,7 @@ HyperliquidTrading <- R6::R6Class(
   "HyperliquidTrading",
   inherit = HyperliquidBase,
   public = list(
-    #' @description Place a single order. A thin wrapper over [bulk_orders()].
+    #' @description Place a single order. A thin wrapper over [bulk_orders()][HyperliquidTrading].
     #'   Builder fees are never applied automatically: a `builder` is attached
     #'   only when you pass one explicitly.
     #' @param name Character; the coin or friendly name, e.g. `"BTC"`.
@@ -115,7 +115,7 @@ HyperliquidTrading <- R6::R6Class(
     #'   shape; the wires are assembled into one `order` action.
     #' @param orders Unnamed list of order specs; each a named list with `coin`,
     #'   `is_buy`, `sz`, `limit_px`, `order_type`, `reduce_only`, and optional
-    #'   `cloid` (same fields as [place_order()]).
+    #'   `cloid` (same fields as [place_order()][HyperliquidTrading]).
     #' @param builder Named list or `NULL`; an optional builder fee spec
     #'   `list(b = <address>, f = <tenths-of-bps>)`. The address is lowercased.
     #'   Default `NULL`.
@@ -208,13 +208,13 @@ HyperliquidTrading <- R6::R6Class(
     },
 
     #' @description Modify a single resting order in place. A thin wrapper over
-    #'   [bulk_modify()].
+    #'   [bulk_modify()][HyperliquidTrading].
     #' @param oid Numeric; the resting order's id (oid).
     #' @param name Character; the coin or friendly name.
     #' @param is_buy Logical; the (possibly new) side.
     #' @param sz scalar<numeric in ]0, Inf[>; the (possibly new) size.
     #' @param limit_px scalar<numeric in ]0, Inf[>; the (possibly new) price.
-    #' @param order_type Named list; the order type (see [place_order()]).
+    #' @param order_type Named list; the order type (see [place_order()][HyperliquidTrading]).
     #' @param reduce_only Logical; default `FALSE`.
     #' @param cloid Character or `NULL`; an optional client order id. Default
     #'   `NULL`.
@@ -247,7 +247,7 @@ HyperliquidTrading <- R6::R6Class(
     #' @description Modify a batch of resting orders in one signed `batchModify`
     #'   action.
     #' @param modifies Unnamed list of modify specs; each a named list with `oid`
-    #'   (numeric) and `order` (an order spec, see [place_order()]).
+    #'   (numeric) and `order` (an order spec, see [place_order()][HyperliquidTrading]).
     #' @return A [data.table::data.table], one row per status, or a promise
     #'   thereof.
     bulk_modify = function(modifies) {
@@ -259,7 +259,7 @@ HyperliquidTrading <- R6::R6Class(
     },
 
     #' @description Cancel a single order by its order id. A thin wrapper over
-    #'   [bulk_cancel()].
+    #'   [bulk_cancel()][HyperliquidTrading].
     #' @param name Character; the coin or friendly name.
     #' @param oid Numeric; the order id to cancel.
     #' @return A [data.table::data.table], one row per cancel, or a promise
@@ -269,7 +269,7 @@ HyperliquidTrading <- R6::R6Class(
     },
 
     #' @description Cancel a single order by its client order id. A thin wrapper
-    #'   over [bulk_cancel_by_cloid()].
+    #'   over [bulk_cancel_by_cloid()][HyperliquidTrading].
     #' @param name Character; the coin or friendly name.
     #' @param cloid Character; the client order id (`0x`-prefixed 32 hex chars).
     #' @return A [data.table::data.table], one row per cancel, or a promise
@@ -355,14 +355,23 @@ HyperliquidTrading <- R6::R6Class(
     },
 
     #' @description Add or remove isolated margin for a coin. The USD amount is
-    #'   scaled to a micro-USD integer (x1e6) before signing.
+    #'   scaled to a micro-USD integer (x1e6) before signing. A positive `amount`
+    #'   adds margin; a negative `amount` removes it (SDK parity).
     #' @param name Character; the coin or friendly name.
-    #' @param amount scalar<numeric in ]0, Inf[>; the USD amount of margin to add.
+    #' @param amount Numeric; the USD amount of margin to move -- a finite,
+    #'   non-zero scalar. Positive adds margin, negative removes it.
     #' @return A single-row [data.table::data.table] with `status` and
     #'   `response_type`, or a promise thereof.
+    #' @importFrom rlang abort
     update_isolated_margin = function(name, amount) {
       validate_coin(name)
-      assert_finite_positive(amount, "amount")
+      assert::assert_scalar_numeric(amount)
+      if (!is.finite(amount) || amount == 0) {
+        rlang::abort(sprintf(
+          "`amount` must be a single finite, non-zero number (negative removes margin), got: %s",
+          format(amount)
+        ))
+      }
       action <- list(
         type = "updateIsolatedMargin",
         asset = self$name_to_asset(name),

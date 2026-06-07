@@ -81,7 +81,7 @@ HyperliquidAccount <- R6::R6Class(
     },
 
     #' @description Retrieve the account's cross-margin summary. Sibling of
-    #'   [get_positions()], which parses the positions from the same payload.
+    #'   [get_positions()][HyperliquidAccount], which parses the positions from the same payload.
     #' @param address Character; the account's `0x`-prefixed address. Defaults to
     #'   the instance's acting address.
     #' @return A single-row [data.table::data.table] with `account_value`,
@@ -125,7 +125,7 @@ HyperliquidAccount <- R6::R6Class(
 
     #' @description Retrieve the account's resting orders with the frontend's
     #'   richer detail (order type, trigger fields, reduce-only, tif). Sibling of
-    #'   [get_open_orders()] with more columns.
+    #'   [get_open_orders()][HyperliquidAccount] with more columns.
     #' @param address Character; the account's `0x`-prefixed address. Defaults to
     #'   the instance's acting address.
     #' @return A [data.table::data.table] with `coin`, `oid`, `side`, `limit_px`,
@@ -156,7 +156,7 @@ HyperliquidAccount <- R6::R6Class(
     },
 
     #' @description Retrieve the account's fills within a time range (up to 2,000
-    #'   per call), same shape as [get_user_fills()].
+    #'   per call), same shape as [get_user_fills()][HyperliquidAccount].
     #' @param address Character; the account's `0x`-prefixed address. Defaults to
     #'   the instance's acting address.
     #' @param start POSIXct or numeric epoch-milliseconds; range start.
@@ -165,7 +165,7 @@ HyperliquidAccount <- R6::R6Class(
     #' @param aggregate_by_time Logical; if `TRUE`, partial fills of one order at
     #'   the same time are aggregated. Default `FALSE`.
     #' @return A [data.table::data.table] with the same columns as
-    #'   [get_user_fills()], or a promise thereof.
+    #'   [get_user_fills()][HyperliquidAccount], or a promise thereof.
     get_user_fills_by_time = function(
       address = private$.acting_address(),
       start,
@@ -266,7 +266,7 @@ HyperliquidAccount <- R6::R6Class(
     },
 
     #' @description Retrieve the account's per-period traded volume. Sibling of
-    #'   [get_portfolio()] over the same payload.
+    #'   [get_portfolio()][HyperliquidAccount] over the same payload.
     #' @param address Character; the account's `0x`-prefixed address. Defaults to
     #'   the instance's acting address.
     #' @return A [data.table::data.table] with `period`, `vlm`, or a promise
@@ -293,7 +293,7 @@ HyperliquidAccount <- R6::R6Class(
     },
 
     #' @description Retrieve the account's daily traded volume. Sibling of
-    #'   [get_user_fees()] over the same payload.
+    #'   [get_user_fees()][HyperliquidAccount] over the same payload.
     #' @param address Character; the account's `0x`-prefixed address. Defaults to
     #'   the instance's acting address.
     #' @return A [data.table::data.table] with `date`, `exchange`, `user_add`,

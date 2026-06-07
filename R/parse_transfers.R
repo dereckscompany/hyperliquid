@@ -10,7 +10,7 @@
 #' `usdSend`, `spotSend`, `withdraw3`, `sendAsset`, `subAccountTransfer`,
 #' `subAccountSpotTransfer`, `vaultTransfer`) all return the same envelope:
 #' `{status:"ok", response:{type:"default"}}`. Failures are already aborted
-#' upstream by [parse_hyperliquid_response()], so a success body always carries a
+#' upstream by `parse_hyperliquid_response()`, so a success body always carries a
 #' `status` and a nested `response` object. This flattens it to a single-row
 #' [data.table::data.table] with `status` and `response_type`.
 #'

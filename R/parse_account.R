@@ -9,7 +9,7 @@
 #' Map a Hyperliquid Wire Side Code to the Friendly Label
 #'
 #' Hyperliquid encodes the order/fill side as `"B"` (bid / buy) or `"A"` (ask /
-#' sell). This inverts that via [ORDER_SIDE_FROM_WIRE], returning `NA` for an
+#' sell). This inverts that via `ORDER_SIDE_FROM_WIRE`, returning `NA` for an
 #' unknown code, and is shared by every order/fill parser below.
 #'
 #' @param x A scalar wire-side code, or NULL.
@@ -302,7 +302,7 @@ parse_user_funding <- function(items) {
 #' Parse a `userNonFundingLedgerUpdates` Response
 #'
 #' Stacks the heterogeneous `{time, hash, delta}` ledger via
-#' [parse_delta_ledger()], renaming the delta's `type` discriminator to
+#' `parse_delta_ledger()`, renaming the delta's `type` discriminator to
 #' `delta_type` and leading with the common columns. Each variant's extra fields
 #' (`fee`, `nonce`, `to_perp`, `token`, `amount`, ...) coexist via `fill = TRUE`;
 #' nested structures (e.g. `liquidatedPositions`) collapse to a JSON string so no
@@ -371,7 +371,7 @@ parse_portfolio <- function(data) {
 
 #' Parse a `portfolio` Response: Per-Period Volume
 #'
-#' Sibling of [parse_portfolio()] over the same payload: one row per period
+#' Sibling of `parse_portfolio()` over the same payload: one row per period
 #' carrying the period's `vlm`.
 #'
 #' @param data List; the parsed `{type:"portfolio"}` response.
@@ -413,7 +413,7 @@ parse_user_fees <- function(data) {
 
 #' Parse a `userFees` Response: Daily Volume
 #'
-#' Sibling of [parse_user_fees()] over the same payload: one row per day in
+#' Sibling of `parse_user_fees()` over the same payload: one row per day in
 #' `dailyUserVlm`.
 #'
 #' @param data List; the parsed `{type:"userFees"}` response.

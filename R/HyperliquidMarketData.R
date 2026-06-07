@@ -78,7 +78,7 @@ HyperliquidMarketData <- R6::R6Class(
     },
 
     #' @description Retrieve spot exchange metadata: the spot pair universe.
-    #'   Sibling of [get_spot_tokens()], which parses the token table from the
+    #'   Sibling of [get_spot_tokens()][HyperliquidMarketData], which parses the token table from the
     #'   same payload.
     #' @return A [data.table::data.table] with columns `name`, `index`,
     #'   `is_canonical`, `token_base`, `token_quote`, or a promise thereof.
@@ -90,7 +90,7 @@ HyperliquidMarketData <- R6::R6Class(
     },
 
     #' @description Retrieve spot exchange metadata: the token table. Sibling of
-    #'   [get_spot_meta()], which parses the pair universe from the same payload.
+    #'   [get_spot_meta()][HyperliquidMarketData], which parses the pair universe from the same payload.
     #' @return A [data.table::data.table] with columns `name`, `index`,
     #'   `sz_decimals`, `wei_decimals`, `token_id`, `is_canonical`, or a promise
     #'   thereof.

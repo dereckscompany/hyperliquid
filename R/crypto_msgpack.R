@@ -74,7 +74,7 @@ mp_u64_be <- function(v) {
 #'
 #' Mirrors msgpack-python's minimal-width choice for Python ints. Values whose
 #' magnitude reaches 2^53 cannot be represented exactly by a double and abort
-#' (the bigz path in [mp_encode_bigz()] handles those instead).
+#' (the bigz path in `mp_encode_bigz()` handles those instead).
 #'
 #' @param x A whole double (or integer).
 #' @return A raw vector holding the msgpack integer encoding.
@@ -155,7 +155,7 @@ mp_encode_str <- function(x) {
 #'
 #' Exact-integer path for values whose magnitude reaches 2^53 (beyond what a
 #' double represents exactly). Values that fit a double are routed back through
-#' [mp_encode_int()].
+#' `mp_encode_int()`.
 #'
 #' @param x A scalar `gmp::bigz`.
 #' @return A raw vector holding the msgpack integer encoding.
@@ -190,7 +190,7 @@ mp_encode_bigz <- function(x) {
 #' Maps named lists to maps (insertion order preserved), unnamed lists to
 #' arrays, and scalars to their msgpack counterparts. Non-whole numerics abort
 #' because every numeric in a Hyperliquid action must already be an integer
-#' (prices and sizes arrive as strings from [float_to_wire()]).
+#' (prices and sizes arrive as strings from `float_to_wire()`).
 #'
 #' @param x A nestable R value: `NULL`, scalar, named/unnamed list, or `bigz`.
 #' @return A raw vector holding the msgpack encoding.

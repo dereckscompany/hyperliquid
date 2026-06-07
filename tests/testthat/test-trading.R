@@ -330,6 +330,17 @@ test_that("update_isolated_margin scales the amount to a micro-USD integer", {
   expect_has_signature(res$posted)
 })
 
+test_that("update_isolated_margin allows a negative amount to remove margin", {
+  client <- new_client()
+  res <- mock_trade(
+    function() client$update_isolated_margin("BTC", amount = -12.5),
+    fixture_action_default()
+  )
+  expect_equal(res$posted$action$type, "updateIsolatedMargin")
+  expect_equal(res$posted$action$ntli, -12500000)
+  expect_has_signature(res$posted)
+})
+
 # ---- market_open / market_close (read-then-write chains) ---------------------
 
 test_that("market_open reads all_mids and posts an aggressive IoC order", {

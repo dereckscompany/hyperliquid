@@ -85,7 +85,7 @@ parse_staking_rewards <- function(items) {
 
 #' Parse a `delegatorHistory` Response
 #'
-#' Adapts [parse_delta_ledger()] to the staking-history `delta` shape. Unlike
+#' Adapts `parse_delta_ledger()` to the staking-history `delta` shape. Unlike
 #' the `{type, ...}`-keyed ledgers, each history record's `delta` is a one-key
 #' object whose **key** is the discriminator (e.g. `{delegate: {...}}`,
 #' `{cDeposit: {...}}`); the inner object holds the variant's fields. This lifts
@@ -132,7 +132,7 @@ parse_delegator_history <- function(items) {
 #'
 #' Flattens the `/exchange` success envelope (`{status, response:{type}}`) into a
 #' one-row acknowledgement. Failures are already aborted upstream by
-#' [parse_hyperliquid_response()] before this parser runs.
+#' `parse_hyperliquid_response()` before this parser runs.
 #'
 #' @param data The parsed `/exchange` response, or NULL.
 #' @return A single-row [data.table::data.table] with `status` and

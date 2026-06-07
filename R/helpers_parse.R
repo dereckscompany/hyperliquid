@@ -225,7 +225,7 @@ as_dt_list <- function(items) {
 #' Coerce a Set of Known Columns to Numeric In Place
 #'
 #' Many Hyperliquid numeric fields arrive as strings. After flattening with
-#' [as_dt_row()] / [as_dt_list()], this coerces the named columns (those that
+#' `as_dt_row()` / `as_dt_list()`, this coerces the named columns (those that
 #' are present) to numeric **by reference** with [data.table::set], leaving
 #' columns the response did not include untouched.
 #'

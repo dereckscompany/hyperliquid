@@ -204,7 +204,7 @@ rfc6979_k <- function(digest32, priv32, use_bits2octets = FALSE) {
 #'
 #' @param digest32 `raw(32)`; the message digest to sign.
 #' @param priv32 `raw(32)`; the private scalar, big-endian.
-#' @param use_bits2octets Logical; passed to [rfc6979_k()].
+#' @param use_bits2octets Logical; passed to `rfc6979_k()`.
 #' @return `list(r = bigz, s = bigz, v = integer)`.
 #' @importFrom gmp mod.bigz inv.bigz divq.bigz
 #' @importFrom rlang abort

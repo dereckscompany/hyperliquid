@@ -128,8 +128,8 @@ eip712_domain_separator <- function(name, version, chain_id, verifying_contract)
 #'
 #' `keccak(0x19 0x01 || domainSeparator || hashStruct(message))`.
 #'
-#' @param domain_separator `raw(32)`; from [eip712_domain_separator()].
-#' @param struct_hash `raw(32)`; from [eip712_hash_struct()].
+#' @param domain_separator `raw(32)`; from `eip712_domain_separator()`.
+#' @param struct_hash `raw(32)`; from `eip712_hash_struct()`.
 #' @return `raw(32)`; the digest to sign.
 #' @keywords internal
 #' @noRd

@@ -54,7 +54,7 @@ hyperliquid_interval_to_seconds <- c(
 #'
 #' Hyperliquid encodes the order side as `"B"` (bid / buy) and `"A"` (ask /
 #' sell). This maps the friendly lowercase side to its wire code; invert with
-#' [ORDER_SIDE_FROM_WIRE] when parsing responses.
+#' `ORDER_SIDE_FROM_WIRE` when parsing responses.
 #'
 #' @format A named character vector `c(buy = "B", sell = "A")`.
 #'
@@ -64,7 +64,7 @@ ORDER_SIDE <- c(buy = "B", sell = "A")
 
 #' Order-Side Wire Map (Hyperliquid wire -> friendly)
 #'
-#' The inverse of [ORDER_SIDE]: maps Hyperliquid's `"B"`/`"A"` wire codes back
+#' The inverse of `ORDER_SIDE`: maps Hyperliquid's `"B"`/`"A"` wire codes back
 #' to the friendly `"buy"`/`"sell"` labels used in returned tables.
 #'
 #' @format A named character vector `c(B = "buy", A = "sell")`.
