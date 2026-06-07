@@ -18,14 +18,15 @@
 #' present, and size decimals come from the base token. Builder-deployed (HIP-3)
 #' perp dexes are out of scope for this phase (the original `""` dex only).
 #'
-#' @param meta List; the parsed `{type:"meta"}` response (has `$universe`).
-#' @param spot_meta List; the parsed `{type:"spotMeta"}` response (has
+#' @param meta (list) the parsed `{type:"meta"}` response (has `$universe`).
+#' @param spot_meta (list) the parsed `{type:"spotMeta"}` response (has
 #'   `$universe` and `$tokens`).
-#' @return Named list with `coin_to_asset`, `name_to_coin`, and
+#' @return (list) named list with `coin_to_asset`, `name_to_coin`, and
 #'   `asset_to_sz_decimals` (all named lists keyed as described).
 #' @keywords internal
 #' @noRd
 build_asset_maps <- function(meta, spot_meta) {
+  assert_args_build_asset_maps(meta, spot_meta)
   coin_to_asset <- list()
   name_to_coin <- list()
   asset_to_sz_decimals <- list()
@@ -59,53 +60,61 @@ build_asset_maps <- function(meta, spot_meta) {
     asset <- asset + 1L
   }
 
-  return(list(
+  return(assert_return_build_asset_maps(list(
     coin_to_asset = coin_to_asset,
     name_to_coin = name_to_coin,
     asset_to_sz_decimals = asset_to_sz_decimals
-  ))
+  )))
 }
 
 #' Resolve a Friendly Name to its Canonical Coin
 #'
-#' @param maps List; the lookup tables from `build_asset_maps()`.
-#' @param name Character; a friendly name or canonical coin symbol.
-#' @return Character; the canonical coin symbol.
+#' @param maps (list) the lookup tables from `build_asset_maps()`.
+#' @param name (scalar<character>) a friendly name or canonical coin symbol.
+#' @return (scalar<character>) the canonical coin symbol.
 #' @importFrom rlang abort
 #' @keywords internal
 #' @noRd
 meta_name_to_coin <- function(maps, name) {
-  assert::assert_scalar_character(name)
+  assert_args_meta_name_to_coin(maps, name)
   coin <- maps$name_to_coin[[name]]
   if (is.null(coin)) {
     rlang::abort(paste0(
       "Unknown coin/name: '", name, "'. Call refresh_meta() if it was newly listed."
     ))
   }
-  return(coin)
+  return(assert_return_meta_name_to_coin(coin))
 }
 
 #' Resolve a Friendly Name to its Integer Asset Id
 #'
-#' @param maps List; the lookup tables from `build_asset_maps()`.
-#' @param name Character; a friendly name or canonical coin symbol.
-#' @return Numeric; the integer asset id used in signed actions.
+#' @param maps (list) the lookup tables from `build_asset_maps()`.
+#' @param name (scalar<character>) a friendly name or canonical coin symbol.
+#' @return (scalar<count>) the integer asset id used in signed actions (an R
+#'   integer for perps, a double for spot).
 #' @keywords internal
 #' @noRd
 meta_name_to_asset <- function(maps, name) {
+  assert_args_meta_name_to_asset(maps, name)
   coin <- meta_name_to_coin(maps, name)
+  # Return not wired: the stale assert_scalar_double contract rejects integer
+  # perp ids (see name_to_asset()). Corrected @return is `scalar<count>`.
   return(maps$coin_to_asset[[coin]])
 }
 
 #' Resolve an Asset Id to its Size Decimals
 #'
-#' @param maps List; the lookup tables from `build_asset_maps()`.
-#' @param asset Numeric; an integer asset id.
-#' @return Numeric; the asset's size decimals.
+#' @param maps (list) the lookup tables from `build_asset_maps()`.
+#' @param asset (scalar<count>) an integer asset id (integer for perps, double
+#'   for spot).
+#' @return (scalar<count>) the asset's size decimals.
 #' @importFrom rlang abort
 #' @keywords internal
 #' @noRd
 meta_sz_decimals <- function(maps, asset) {
+  # Neither contract is wired: the stale assert_scalar_double pair rejects the
+  # integer `asset` id from name_to_asset() and the integer szDecimals that
+  # arrives over live JSON. Corrected tags are `scalar<count>`.
   sz <- maps$asset_to_sz_decimals[[as.character(asset)]]
   if (is.null(sz)) {
     rlang::abort(paste0(

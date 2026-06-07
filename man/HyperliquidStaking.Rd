@@ -104,15 +104,15 @@ withdrawals.
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{address}}{Character; the delegator's \verb{0x}-prefixed address. Defaults
-to the instance's acting address.}
+\item{\code{address}}{(scalar<character>) the delegator's \verb{0x}-prefixed address.
+Defaults to the instance's acting address.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-A single-row \link[data.table:data.table]{data.table::data.table} with \code{delegated},
-\code{undelegated}, \code{total_pending_withdrawal}, \code{n_pending_withdrawals}, or a
-promise thereof.
+(promise<StakingSummary>) a single-row \link[data.table:data.table]{data.table::data.table}
+with \code{delegated}, \code{undelegated}, \code{total_pending_withdrawal},
+\code{n_pending_withdrawals}, or a promise thereof.
 }
 }
 \if{html}{\out{<hr>}}
@@ -127,14 +127,14 @@ Retrieve a delegator's active per-validator delegations.
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{address}}{Character; the delegator's \verb{0x}-prefixed address. Defaults
-to the instance's acting address.}
+\item{\code{address}}{(scalar<character>) the delegator's \verb{0x}-prefixed address.
+Defaults to the instance's acting address.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-A \link[data.table:data.table]{data.table::data.table} with \code{validator}, \code{amount},
-\code{locked_until_timestamp}, or a promise thereof.
+(promise<data.table>) a \link[data.table:data.table]{data.table::data.table} with \code{validator},
+\code{amount}, \code{locked_until_timestamp}, or a promise thereof.
 }
 }
 \if{html}{\out{<hr>}}
@@ -149,14 +149,14 @@ Retrieve a delegator's historic staking rewards.
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{address}}{Character; the delegator's \verb{0x}-prefixed address. Defaults
-to the instance's acting address.}
+\item{\code{address}}{(scalar<character>) the delegator's \verb{0x}-prefixed address.
+Defaults to the instance's acting address.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-A \link[data.table:data.table]{data.table::data.table} with \code{time}, \code{source}, \code{total_amount},
-or a promise thereof.
+(promise<data.table>) a \link[data.table:data.table]{data.table::data.table} with \code{time},
+\code{source}, \code{total_amount}, or a promise thereof.
 }
 }
 \if{html}{\out{<hr>}}
@@ -173,15 +173,16 @@ are stacked with a \code{delta_type} discriminator.
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{address}}{Character; the delegator's \verb{0x}-prefixed address. Defaults
-to the instance's acting address.}
+\item{\code{address}}{(scalar<character>) the delegator's \verb{0x}-prefixed address.
+Defaults to the instance's acting address.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-A \link[data.table:data.table]{data.table::data.table} with \code{time}, \code{hash}, \code{delta_type}, and
-the union of the variants' fields (\code{validator}, \code{amount},
-\code{is_undelegate} where present), or a promise thereof.
+(promise<data.table>) a \link[data.table:data.table]{data.table::data.table} with \code{time},
+\code{hash}, \code{delta_type}, and the union of the variants' fields
+(\code{validator}, \code{amount}, \code{is_undelegate} where present), or a promise
+thereof.
 }
 }
 \if{html}{\out{<hr>}}
@@ -198,19 +199,20 @@ instantly. Requires a signing key.
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{validator}}{Character; the validator's \verb{0x}-prefixed address.}
+\item{\code{validator}}{(scalar<character>) the validator's \verb{0x}-prefixed
+address.}
 
-\item{\code{wei}}{Numeric; the amount in wei -- a finite, strictly-positive whole
-number.}
+\item{\code{wei}}{(scalar<numeric in ]0, Inf[>) the amount in wei -- a finite,
+strictly-positive whole number.}
 
-\item{\code{is_undelegate}}{Logical; \code{TRUE} to undelegate (withdraw stake),
-\code{FALSE} to delegate. Default \code{FALSE}.}
+\item{\code{is_undelegate}}{(scalar<logical>) \code{TRUE} to undelegate (withdraw
+stake), \code{FALSE} to delegate. Default \code{FALSE}.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-A single-row \link[data.table:data.table]{data.table::data.table} with \code{status} and
-\code{response_type}, or a promise thereof.
+(promise<TransferAck>) a single-row \link[data.table:data.table]{data.table::data.table} with
+\code{status} and \code{response_type}, or a promise thereof.
 }
 }
 \if{html}{\out{<hr>}}

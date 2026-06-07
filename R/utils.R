@@ -10,9 +10,9 @@
 #' network changes the *signature itself* (phantom-agent source and
 #' `hyperliquidChain` tag), so URL sniffing is never safe.
 #'
-#' @param testnet Logical; if `TRUE` return the testnet host, otherwise the
-#'   mainnet host. Default `FALSE`.
-#' @return Character string; the REST base URL.
+#' @param testnet (scalar<logical>) if `TRUE` return the testnet host, otherwise
+#'   the mainnet host. Default `FALSE`.
+#' @return (scalar<character>) the REST base URL.
 #'
 #' @examples
 #' get_base_url()
@@ -20,11 +20,11 @@
 #'
 #' @export
 get_base_url <- function(testnet = FALSE) {
-  assert::assert_scalar_logical(testnet)
+  assert_args_get_base_url(testnet)
   if (isTRUE(testnet)) {
-    return("https://api.hyperliquid-testnet.xyz")
+    return(assert_return_get_base_url("https://api.hyperliquid-testnet.xyz"))
   }
-  return("https://api.hyperliquid.xyz")
+  return(assert_return_get_base_url("https://api.hyperliquid.xyz"))
 }
 
 #' Generate a Client Order Id (cloid)
@@ -33,7 +33,7 @@ get_base_url <- function(testnet = FALSE) {
 #' `0x`-prefixed string of 32 lowercase hex characters. Bytes come from a CSPRNG
 #' ([openssl::rand_bytes()]), not base R's seedable `sample()`.
 #'
-#' @return Character; a cloid, e.g. `"0x1234...cdef"` (32 hex chars).
+#' @return (scalar<character>) a cloid, e.g. `"0x1234...cdef"` (32 hex chars).
 #'
 #' @examples
 #' new_cloid()
@@ -42,7 +42,7 @@ get_base_url <- function(testnet = FALSE) {
 #' @export
 new_cloid <- function() {
   hex <- sprintf("%02x", as.integer(openssl::rand_bytes(16L)))
-  return(paste0("0x", paste(hex, collapse = "")))
+  return(assert_return_new_cloid(paste0("0x", paste(hex, collapse = ""))))
 }
 
 #' Normalise a Hyperliquid Private Key to 32 Raw Bytes
@@ -50,21 +50,22 @@ new_cloid <- function() {
 #' Accepts a `0x`-prefixed (or bare) 64-hex-character secp256k1 private key
 #' string and returns it as a `raw(32)`.
 #'
-#' @param private_key Character; a 64-hex-character key, optional `0x` prefix.
-#' @return `raw(32)`; the private scalar, big-endian.
+#' @param private_key (scalar<character>) a 64-hex-character key, optional `0x`
+#'   prefix.
+#' @return (vector<raw, 32>) the private scalar, big-endian.
 #'
 #' @importFrom rlang abort
 #' @keywords internal
 #' @noRd
 normalise_private_key <- function(private_key) {
-  assert::assert_scalar_character(private_key)
+  assert_args_normalise_private_key(private_key)
   hex <- sub("^0[xX]", "", private_key)
   if (!grepl("^[0-9a-fA-F]{64}$", hex)) {
     rlang::abort(
       "`private_key` must be a 64-character hex string (optionally 0x-prefixed)."
     )
   }
-  return(hex2raw(hex))
+  return(assert_return_normalise_private_key(hex2raw(hex)))
 }
 
 #' Retrieve Hyperliquid Wallet Credentials
@@ -81,15 +82,16 @@ normalise_private_key <- function(private_key) {
 #' When no key is present this **warns** (it does not abort): public `/info`
 #' market data works without credentials, so a key-less client is still useful.
 #'
-#' @param private_key Character; the signing key. Defaults to
+#' @param private_key (scalar<character>) the signing key. Defaults to
 #'   `Sys.getenv("HYPERLIQUID_PRIVATE_KEY")`.
-#' @param account_address Character; the optional master account address for an
-#'   agent wallet. Defaults to `Sys.getenv("HYPERLIQUID_ACCOUNT_ADDRESS")`.
-#' @return Named list with:
-#'   - `private_key`: `raw(32)` signing scalar, or `NULL` when absent.
-#'   - `account_address`: Character master address, or `NULL`.
-#'   - `wallet_address`: Character `0x`-prefixed address derived from the key,
-#'     or `NULL` when absent.
+#' @param account_address (scalar<character>) the optional master account
+#'   address for an agent wallet. Defaults to
+#'   `Sys.getenv("HYPERLIQUID_ACCOUNT_ADDRESS")`.
+#' @return (list) named list with:
+#' - private_key (vector<raw, 32> | NULL) signing scalar, or `NULL` when absent.
+#' - account_address (scalar<character> | NULL) master address, or `NULL`.
+#' - wallet_address (scalar<character> | NULL) `0x`-prefixed address derived from
+#'   the key, or `NULL` when absent.
 #'
 #' @examples
 #' \dontrun{
@@ -102,6 +104,7 @@ get_api_keys <- function(
   private_key = Sys.getenv("HYPERLIQUID_PRIVATE_KEY"),
   account_address = Sys.getenv("HYPERLIQUID_ACCOUNT_ADDRESS")
 ) {
+  assert_args_get_api_keys(private_key, account_address)
   if (!nzchar(private_key)) {
     rlang::warn(paste0(
       "Hyperliquid private key is not set; only public /info endpoints will ",
@@ -109,11 +112,11 @@ get_api_keys <- function(
       "HYPERLIQUID_ACCOUNT_ADDRESS) or pass them explicitly to sign /exchange ",
       "actions."
     ))
-    return(list(
+    return(assert_return_get_api_keys(list(
       private_key = NULL,
       account_address = NULL,
       wallet_address = NULL
-    ))
+    )))
   }
 
   priv_raw <- normalise_private_key(private_key)
@@ -121,9 +124,9 @@ get_api_keys <- function(
   if (nzchar(account_address)) {
     account <- account_address
   }
-  return(list(
+  return(assert_return_get_api_keys(list(
     private_key = priv_raw,
     account_address = account,
     wallet_address = eth_address(priv_raw)
-  ))
+  )))
 }

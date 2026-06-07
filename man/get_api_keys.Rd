@@ -10,19 +10,20 @@ get_api_keys(
 )
 }
 \arguments{
-\item{private_key}{Character; the signing key. Defaults to
+\item{private_key}{(scalar<character>) the signing key. Defaults to
 \code{Sys.getenv("HYPERLIQUID_PRIVATE_KEY")}.}
 
-\item{account_address}{Character; the optional master account address for an
-agent wallet. Defaults to \code{Sys.getenv("HYPERLIQUID_ACCOUNT_ADDRESS")}.}
+\item{account_address}{(scalar<character>) the optional master account
+address for an agent wallet. Defaults to
+\code{Sys.getenv("HYPERLIQUID_ACCOUNT_ADDRESS")}.}
 }
 \value{
-Named list with:
+(list) named list with:
 \itemize{
-\item \code{private_key}: \code{raw(32)} signing scalar, or \code{NULL} when absent.
-\item \code{account_address}: Character master address, or \code{NULL}.
-\item \code{wallet_address}: Character \verb{0x}-prefixed address derived from the key,
-or \code{NULL} when absent.
+\item private_key (vector<raw, 32> | NULL) signing scalar, or \code{NULL} when absent.
+\item account_address (scalar<character> | NULL) master address, or \code{NULL}.
+\item wallet_address (scalar<character> | NULL) \verb{0x}-prefixed address derived from
+the key, or \code{NULL} when absent.
 }
 }
 \description{

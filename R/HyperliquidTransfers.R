@@ -58,13 +58,13 @@ HyperliquidTransfers <- R6::R6Class(
     #'   client was constructed with a `vault_address`, the amount string carries
     #'   a `subaccount:<vault>` suffix so the move applies to that sub-account
     #'   (mirrors the reference SDK).
-    #' @param amount scalar<numeric in ]0, Inf[>; the USDC amount to move.
-    #' @param to_perp Logical; `TRUE` moves spot -> perp, `FALSE` perp -> spot.
-    #' @return A single-row [data.table::data.table] with `status` and
-    #'   `response_type`, or a promise thereof.
+    #' @param amount (scalar<numeric in ]0, Inf[>) the USDC amount to move.
+    #' @param to_perp (scalar<logical>) `TRUE` moves spot -> perp, `FALSE` perp ->
+    #'   spot.
+    #' @return (promise<TransferAck>) a single-row [data.table::data.table] with
+    #'   `status` and `response_type`, or a promise thereof.
     usd_class_transfer = function(amount, to_perp) {
-      assert_finite_positive(amount, "amount")
-      assert::assert_scalar_logical(to_perp)
+      assert_args_HyperliquidTransfers__usd_class_transfer(amount, to_perp)
       nonce <- next_nonce()
       str_amount <- as.character(amount)
       if (!is.null(private$.vault_address)) {
@@ -80,18 +80,20 @@ HyperliquidTransfers <- R6::R6Class(
         action,
         sign_types = USD_CLASS_TRANSFER_SIGN_TYPES,
         primary_type = "HyperliquidTransaction:UsdClassTransfer",
-        .parser = parse_transfer_ack
+        .parser = function(x) {
+          assert_return_HyperliquidTransfers__usd_class_transfer(parse_transfer_ack(x))
+        }
       ))
     },
 
     #' @description Send USDC to another address on Hyperliquid (an internal
     #'   transfer, not a bridge withdrawal).
-    #' @param amount scalar<numeric in ]0, Inf[>; the USDC amount to send.
-    #' @param destination Character; the recipient's 0x-prefixed address.
-    #' @return A single-row [data.table::data.table] with `status` and
-    #'   `response_type`, or a promise thereof.
+    #' @param amount (scalar<numeric in ]0, Inf[>) the USDC amount to send.
+    #' @param destination (scalar<character>) the recipient's 0x-prefixed address.
+    #' @return (promise<TransferAck>) a single-row [data.table::data.table] with
+    #'   `status` and `response_type`, or a promise thereof.
     usd_send = function(amount, destination) {
-      assert_finite_positive(amount, "amount")
+      assert_args_HyperliquidTransfers__usd_send(amount, destination)
       destination <- validate_address(destination)
       time <- next_nonce()
       action <- list(
@@ -104,19 +106,21 @@ HyperliquidTransfers <- R6::R6Class(
         action,
         sign_types = USD_SEND_SIGN_TYPES,
         primary_type = "HyperliquidTransaction:UsdSend",
-        .parser = parse_transfer_ack
+        .parser = function(x) {
+          assert_return_HyperliquidTransfers__usd_send(parse_transfer_ack(x))
+        }
       ))
     },
 
     #' @description Send a spot token to another address on Hyperliquid.
-    #' @param amount scalar<numeric in ]0, Inf[>; the token amount to send.
-    #' @param destination Character; the recipient's 0x-prefixed address.
-    #' @param token Character; the token in `NAME:0x<tokenId>` form, e.g.
+    #' @param amount (scalar<numeric in ]0, Inf[>) the token amount to send.
+    #' @param destination (scalar<character>) the recipient's 0x-prefixed address.
+    #' @param token (scalar<character>) the token in `NAME:0x<tokenId>` form, e.g.
     #'   `"PURR:0xc1fb593aeffbeb02f85e0308e9956a90"`.
-    #' @return A single-row [data.table::data.table] with `status` and
-    #'   `response_type`, or a promise thereof.
+    #' @return (promise<TransferAck>) a single-row [data.table::data.table] with
+    #'   `status` and `response_type`, or a promise thereof.
     spot_send = function(amount, destination, token) {
-      assert_finite_positive(amount, "amount")
+      assert_args_HyperliquidTransfers__spot_send(amount, destination, token)
       destination <- validate_address(destination)
       private$.validate_token(token)
       time <- next_nonce()
@@ -131,18 +135,20 @@ HyperliquidTransfers <- R6::R6Class(
         action,
         sign_types = SPOT_TRANSFER_SIGN_TYPES,
         primary_type = "HyperliquidTransaction:SpotSend",
-        .parser = parse_transfer_ack
+        .parser = function(x) {
+          assert_return_HyperliquidTransfers__spot_send(parse_transfer_ack(x))
+        }
       ))
     },
 
     #' @description Withdraw USDC from Hyperliquid out to the bridge (an on-chain
     #'   withdrawal to the destination address; a fee applies).
-    #' @param amount scalar<numeric in ]0, Inf[>; the USDC amount to withdraw.
-    #' @param destination Character; the recipient's 0x-prefixed address.
-    #' @return A single-row [data.table::data.table] with `status` and
-    #'   `response_type`, or a promise thereof.
+    #' @param amount (scalar<numeric in ]0, Inf[>) the USDC amount to withdraw.
+    #' @param destination (scalar<character>) the recipient's 0x-prefixed address.
+    #' @return (promise<TransferAck>) a single-row [data.table::data.table] with
+    #'   `status` and `response_type`, or a promise thereof.
     withdraw = function(amount, destination) {
-      assert_finite_positive(amount, "amount")
+      assert_args_HyperliquidTransfers__withdraw(amount, destination)
       destination <- validate_address(destination)
       time <- next_nonce()
       action <- list(
@@ -155,7 +161,9 @@ HyperliquidTransfers <- R6::R6Class(
         action,
         sign_types = WITHDRAW_SIGN_TYPES,
         primary_type = "HyperliquidTransaction:Withdraw",
-        .parser = parse_transfer_ack
+        .parser = function(x) {
+          assert_return_HyperliquidTransfers__withdraw(parse_transfer_ack(x))
+        }
       ))
     },
 
@@ -164,20 +172,20 @@ HyperliquidTransfers <- R6::R6Class(
     #'   token must match the collateral token when transferring to or from a perp
     #'   dex. When the client carries a `vault_address` it is sent as the
     #'   `fromSubAccount`.
-    #' @param destination Character; the recipient's 0x-prefixed address.
-    #' @param source_dex Character; the source dex name (`""` for the default
-    #'   perp dex, `"spot"` for spot).
-    #' @param destination_dex Character; the destination dex name.
-    #' @param token Character; the token in `NAME:0x<tokenId>` form.
-    #' @param amount scalar<numeric in ]0, Inf[>; the amount to send.
-    #' @return A single-row [data.table::data.table] with `status` and
-    #'   `response_type`, or a promise thereof.
+    #' @param destination (scalar<character>) the recipient's 0x-prefixed address.
+    #' @param source_dex (scalar<character>) the source dex name (`""` for the
+    #'   default perp dex, `"spot"` for spot).
+    #' @param destination_dex (scalar<character>) the destination dex name.
+    #' @param token (scalar<character>) the token in `NAME:0x<tokenId>` form.
+    #' @param amount (scalar<numeric in ]0, Inf[>) the amount to send.
+    #' @return (promise<TransferAck>) a single-row [data.table::data.table] with
+    #'   `status` and `response_type`, or a promise thereof.
     send_asset = function(destination, source_dex, destination_dex, token, amount) {
+      assert_args_HyperliquidTransfers__send_asset(
+        destination, source_dex, destination_dex, token, amount
+      )
       destination <- validate_address(destination)
-      assert::assert_scalar_character(source_dex)
-      assert::assert_scalar_character(destination_dex)
       private$.validate_token(token)
-      assert_finite_positive(amount, "amount")
       nonce <- next_nonce()
       action <- list(
         type = "sendAsset",
@@ -193,46 +201,54 @@ HyperliquidTransfers <- R6::R6Class(
         action,
         sign_types = SEND_ASSET_SIGN_TYPES,
         primary_type = "HyperliquidTransaction:SendAsset",
-        .parser = parse_transfer_ack
+        .parser = function(x) {
+          assert_return_HyperliquidTransfers__send_asset(parse_transfer_ack(x))
+        }
       ))
     },
 
     #' @description Transfer USDC perp collateral between the acting account and
     #'   one of its sub-accounts (an L1 action). The amount is scaled to a
     #'   micro-USD integer before signing.
-    #' @param sub_account_user Character; the sub-account's 0x-prefixed address.
-    #' @param is_deposit Logical; `TRUE` deposits into the sub-account, `FALSE`
-    #'   withdraws from it.
-    #' @param usd scalar<numeric in ]0, Inf[>; the USD amount.
-    #' @return A single-row [data.table::data.table] with `status` and
-    #'   `response_type`, or a promise thereof.
+    #' @param sub_account_user (scalar<character>) the sub-account's 0x-prefixed
+    #'   address.
+    #' @param is_deposit (scalar<logical>) `TRUE` deposits into the sub-account,
+    #'   `FALSE` withdraws from it.
+    #' @param usd (scalar<numeric in ]0, Inf[>) the USD amount.
+    #' @return (promise<TransferAck>) a single-row [data.table::data.table] with
+    #'   `status` and `response_type`, or a promise thereof.
     sub_account_transfer = function(sub_account_user, is_deposit, usd) {
+      assert_args_HyperliquidTransfers__sub_account_transfer(
+        sub_account_user, is_deposit, usd
+      )
       sub_account_user <- validate_address(sub_account_user)
-      assert::assert_scalar_logical(is_deposit)
-      assert_finite_positive(usd, "usd")
       action <- list(
         type = "subAccountTransfer",
         subAccountUser = sub_account_user,
         isDeposit = is_deposit,
         usd = float_to_usd_int(usd)
       )
-      return(private$.submit_l1(action, .parser = parse_transfer_ack))
+      return(private$.submit_l1(action, .parser = function(x) {
+        assert_return_HyperliquidTransfers__sub_account_transfer(parse_transfer_ack(x))
+      }))
     },
 
     #' @description Transfer a spot token between the acting account and one of
     #'   its sub-accounts (an L1 action).
-    #' @param sub_account_user Character; the sub-account's 0x-prefixed address.
-    #' @param is_deposit Logical; `TRUE` deposits into the sub-account, `FALSE`
-    #'   withdraws from it.
-    #' @param token Character; the token in `NAME:0x<tokenId>` form.
-    #' @param amount scalar<numeric in ]0, Inf[>; the token amount.
-    #' @return A single-row [data.table::data.table] with `status` and
-    #'   `response_type`, or a promise thereof.
+    #' @param sub_account_user (scalar<character>) the sub-account's 0x-prefixed
+    #'   address.
+    #' @param is_deposit (scalar<logical>) `TRUE` deposits into the sub-account,
+    #'   `FALSE` withdraws from it.
+    #' @param token (scalar<character>) the token in `NAME:0x<tokenId>` form.
+    #' @param amount (scalar<numeric in ]0, Inf[>) the token amount.
+    #' @return (promise<TransferAck>) a single-row [data.table::data.table] with
+    #'   `status` and `response_type`, or a promise thereof.
     sub_account_spot_transfer = function(sub_account_user, is_deposit, token, amount) {
+      assert_args_HyperliquidTransfers__sub_account_spot_transfer(
+        sub_account_user, is_deposit, token, amount
+      )
       sub_account_user <- validate_address(sub_account_user)
-      assert::assert_scalar_logical(is_deposit)
       private$.validate_token(token)
-      assert_finite_positive(amount, "amount")
       action <- list(
         type = "subAccountSpotTransfer",
         subAccountUser = sub_account_user,
@@ -240,28 +256,31 @@ HyperliquidTransfers <- R6::R6Class(
         token = token,
         amount = as.character(amount)
       )
-      return(private$.submit_l1(action, .parser = parse_transfer_ack))
+      return(private$.submit_l1(action, .parser = function(x) {
+        assert_return_HyperliquidTransfers__sub_account_spot_transfer(parse_transfer_ack(x))
+      }))
     },
 
     #' @description Deposit into or withdraw from a vault (an L1 action). The
     #'   amount is scaled to a micro-USD integer before signing.
-    #' @param vault_address Character; the vault's 0x-prefixed address.
-    #' @param is_deposit Logical; `TRUE` deposits into the vault, `FALSE`
-    #'   withdraws from it.
-    #' @param usd scalar<numeric in ]0, Inf[>; the USD amount.
-    #' @return A single-row [data.table::data.table] with `status` and
-    #'   `response_type`, or a promise thereof.
+    #' @param vault_address (scalar<character>) the vault's 0x-prefixed address.
+    #' @param is_deposit (scalar<logical>) `TRUE` deposits into the vault,
+    #'   `FALSE` withdraws from it.
+    #' @param usd (scalar<numeric in ]0, Inf[>) the USD amount.
+    #' @return (promise<TransferAck>) a single-row [data.table::data.table] with
+    #'   `status` and `response_type`, or a promise thereof.
     vault_transfer = function(vault_address, is_deposit, usd) {
+      assert_args_HyperliquidTransfers__vault_transfer(vault_address, is_deposit, usd)
       vault_address <- validate_address(vault_address)
-      assert::assert_scalar_logical(is_deposit)
-      assert_finite_positive(usd, "usd")
       action <- list(
         type = "vaultTransfer",
         vaultAddress = vault_address,
         isDeposit = is_deposit,
         usd = float_to_usd_int(usd)
       )
-      return(private$.submit_l1(action, .parser = parse_transfer_ack))
+      return(private$.submit_l1(action, .parser = function(x) {
+        assert_return_HyperliquidTransfers__vault_transfer(parse_transfer_ack(x))
+      }))
     }
   ),
   private = list(

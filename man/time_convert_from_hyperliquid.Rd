@@ -7,10 +7,10 @@
 time_convert_from_hyperliquid(time_value)
 }
 \arguments{
-\item{time_value}{Numeric; epoch milliseconds.}
+\item{time_value}{(numeric) epoch milliseconds.}
 }
 \value{
-POSIXct vector in UTC.
+(POSIXct) a vector in UTC.
 }
 \description{
 Hyperliquid returns every timestamp as epoch milliseconds. This converts that

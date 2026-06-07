@@ -13,7 +13,7 @@ Authors@R:
 Description: R API wrapper to the Hyperliquid decentralized exchange supporting both synchronous and asynchronous (promise based) operations. Provides R6 classes for market data, perpetual and spot trading, account management, transfers, and staking, with Ethereum-style wallet signing for the exchange endpoint.
 License: MIT
 Encoding: UTF-8
-Roxygen: list(markdown = TRUE)
+Roxygen: list(markdown = TRUE, roclets = c("namespace", "rd", "roxyassert::contract_roclet"))
 RoxygenNote: 7.3.3
 Imports:
     assert,
@@ -33,9 +33,11 @@ Suggests:
     pkgdown,
     promises,
     rmarkdown,
+    roxyassert,
     testthat (>= 3.0.0)
 Remotes:
-    dereckscompany/assert
+    dereckscompany/assert,
+    dereckscompany/roxyassert
 VignetteBuilder: knitr
 Config/testthat/edition: 3
 Depends: 

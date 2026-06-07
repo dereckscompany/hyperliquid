@@ -115,9 +115,9 @@ Retrieve perpetual exchange metadata: the perp universe.
 }
 
 \subsection{Returns}{
-A \link[data.table:data.table]{data.table::data.table} with columns \code{name}, \code{sz_decimals},
-\code{max_leverage}, \code{margin_table_id}, \code{only_isolated}, \code{is_delisted},
-\code{margin_mode}, or a promise thereof.
+(promise<PerpMeta>) a \link[data.table:data.table]{data.table::data.table} with columns
+\code{name}, \code{sz_decimals}, \code{max_leverage}, \code{margin_table_id},
+\code{only_isolated}, \code{is_delisted}, \code{margin_mode}, or a promise thereof.
 }
 }
 \if{html}{\out{<hr>}}
@@ -132,8 +132,9 @@ same payload.
 }
 
 \subsection{Returns}{
-A \link[data.table:data.table]{data.table::data.table} with columns \code{name}, \code{index},
-\code{is_canonical}, \code{token_base}, \code{token_quote}, or a promise thereof.
+(promise<data.table>) a \link[data.table:data.table]{data.table::data.table} with columns
+\code{name}, \code{index}, \code{is_canonical}, \code{token_base}, \code{token_quote}, or a
+promise thereof.
 }
 }
 \if{html}{\out{<hr>}}
@@ -147,9 +148,9 @@ Retrieve spot exchange metadata: the token table. Sibling of
 }
 
 \subsection{Returns}{
-A \link[data.table:data.table]{data.table::data.table} with columns \code{name}, \code{index},
-\code{sz_decimals}, \code{wei_decimals}, \code{token_id}, \code{is_canonical}, or a promise
-thereof.
+(promise<data.table>) a \link[data.table:data.table]{data.table::data.table} with columns
+\code{name}, \code{index}, \code{sz_decimals}, \code{wei_decimals}, \code{token_id},
+\code{is_canonical}, or a promise thereof.
 }
 }
 \if{html}{\out{<hr>}}
@@ -164,10 +165,10 @@ one row per perp coin.
 }
 
 \subsection{Returns}{
-A \link[data.table:data.table]{data.table::data.table} with columns \code{name}, \code{sz_decimals},
-\code{max_leverage}, \code{day_ntl_vlm}, \code{funding}, \code{mark_px}, \code{mid_px},
-\code{oracle_px}, \code{open_interest}, \code{premium}, \code{prev_day_px}, \code{impact_px_bid},
-\code{impact_px_ask}, or a promise thereof.
+(promise<data.table>) a \link[data.table:data.table]{data.table::data.table} with columns
+\code{name}, \code{sz_decimals}, \code{max_leverage}, \code{day_ntl_vlm}, \code{funding},
+\code{mark_px}, \code{mid_px}, \code{oracle_px}, \code{open_interest}, \code{premium},
+\code{prev_day_px}, \code{impact_px_bid}, \code{impact_px_ask}, or a promise thereof.
 }
 }
 \if{html}{\out{<hr>}}
@@ -181,9 +182,9 @@ spot coin.
 }
 
 \subsection{Returns}{
-A \link[data.table:data.table]{data.table::data.table} with columns \code{coin}, \code{day_ntl_vlm},
-\code{mark_px}, \code{mid_px}, \code{prev_day_px}, \code{circulating_supply}, or a promise
-thereof.
+(promise<data.table>) a \link[data.table:data.table]{data.table::data.table} with columns
+\code{coin}, \code{day_ntl_vlm}, \code{mark_px}, \code{mid_px}, \code{prev_day_px},
+\code{circulating_supply}, or a promise thereof.
 }
 }
 \if{html}{\out{<hr>}}
@@ -197,8 +198,8 @@ row per coin.
 }
 
 \subsection{Returns}{
-A \link[data.table:data.table]{data.table::data.table} with columns \code{coin}, \code{mid}, or a
-promise thereof.
+(promise<data.table>) a \link[data.table:data.table]{data.table::data.table} with columns
+\code{coin}, \code{mid}, or a promise thereof.
 }
 }
 \if{html}{\out{<hr>}}
@@ -214,19 +215,19 @@ stacked with a \code{side} discriminator and a 1-indexed \code{level}.
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{coin}}{Character; the canonical coin symbol, e.g. \code{"BTC"}.}
+\item{\code{coin}}{(scalar<character>) the canonical coin symbol, e.g. \code{"BTC"}.}
 
-\item{\code{n_sig_figs}}{Integer or \code{NULL}; aggregate levels to this many
+\item{\code{n_sig_figs}}{(scalar<numeric> | NULL) aggregate levels to this many
 significant figures (2-5). \code{NULL} (default) returns full precision.}
 
-\item{\code{mantissa}}{Integer or \code{NULL}; mantissa for aggregation, paired with
-\code{n_sig_figs = 5}. Default \code{NULL}.}
+\item{\code{mantissa}}{(scalar<numeric> | NULL) mantissa for aggregation, paired
+with \code{n_sig_figs = 5}. Default \code{NULL}.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-A \link[data.table:data.table]{data.table::data.table} with columns \code{side}, \code{level}, \code{px},
-\code{sz}, \code{n}, or a promise thereof.
+(promise<L2Level>) a \link[data.table:data.table]{data.table::data.table} with columns \code{side},
+\code{level}, \code{px}, \code{sz}, \code{n}, or a promise thereof.
 }
 }
 \if{html}{\out{<hr>}}
@@ -243,20 +244,23 @@ call.
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{coin}}{Character; the canonical coin symbol, e.g. \code{"BTC"}.}
+\item{\code{coin}}{(scalar<character>) the canonical coin symbol, e.g. \code{"BTC"}.}
 
-\item{\code{interval}}{Character; one of \link{HYPERLIQUID_INTERVALS}.}
+\item{\code{interval}}{(scalar\if{html}{\out{<character in HYPERLIQUID_INTERVALS>}}) one of
+\link{HYPERLIQUID_INTERVALS}.}
 
-\item{\code{start}}{POSIXct or numeric epoch-milliseconds; range start.}
+\item{\code{start}}{(POSIXct | numeric) range start (POSIXct or numeric
+epoch-milliseconds).}
 
-\item{\code{end}}{POSIXct or numeric epoch-milliseconds; range end.}
+\item{\code{end}}{(POSIXct | numeric) range end (POSIXct or numeric
+epoch-milliseconds).}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-A \link[data.table:data.table]{data.table::data.table} with columns \code{datetime}, \code{open},
-\code{high}, \code{low}, \code{close}, \code{volume}, \code{trades}, \code{close_time}, \code{interval},
-\code{coin}, or a promise thereof.
+(promise<Candles>) a \link[data.table:data.table]{data.table::data.table} with columns
+\code{datetime}, \code{open}, \code{high}, \code{low}, \code{close}, \code{volume}, \code{trades},
+\code{close_time}, \code{interval}, \code{coin}, or a promise thereof.
 }
 }
 \if{html}{\out{<hr>}}
@@ -272,18 +276,19 @@ and free on Hyperliquid; 500 records are returned per call.
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{coin}}{Character; the canonical coin symbol, e.g. \code{"BTC"}.}
+\item{\code{coin}}{(scalar<character>) the canonical coin symbol, e.g. \code{"BTC"}.}
 
-\item{\code{start}}{POSIXct or numeric epoch-milliseconds; range start.}
+\item{\code{start}}{(POSIXct | numeric) range start (POSIXct or numeric
+epoch-milliseconds).}
 
-\item{\code{end}}{POSIXct, numeric epoch-milliseconds, or \code{NULL}; range end.
-Default \code{NULL} (up to now).}
+\item{\code{end}}{(POSIXct | numeric | NULL) range end (POSIXct, numeric
+epoch-milliseconds, or \code{NULL}). Default \code{NULL} (up to now).}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-A \link[data.table:data.table]{data.table::data.table} with columns \code{coin}, \code{funding_rate},
-\code{premium}, \code{time}, or a promise thereof.
+(promise<FundingHistory>) a \link[data.table:data.table]{data.table::data.table} with columns
+\code{coin}, \code{funding_rate}, \code{premium}, \code{time}, or a promise thereof.
 }
 }
 \if{html}{\out{<hr>}}
@@ -297,9 +302,9 @@ one row per (coin, venue).
 }
 
 \subsection{Returns}{
-A \link[data.table:data.table]{data.table::data.table} with columns \code{coin}, \code{venue},
-\code{funding_rate}, \code{next_funding_time}, \code{funding_interval_hours}, or a
-promise thereof.
+(promise<data.table>) a \link[data.table:data.table]{data.table::data.table} with columns
+\code{coin}, \code{venue}, \code{funding_rate}, \code{next_funding_time},
+\code{funding_interval_hours}, or a promise thereof.
 }
 }
 \if{html}{\out{<hr>}}
@@ -313,8 +318,9 @@ core-dex sentinel is omitted.
 }
 
 \subsection{Returns}{
-A \link[data.table:data.table]{data.table::data.table} with columns \code{name}, \code{full_name},
-\code{deployer}, \code{oracle_updater}, \code{fee_recipient}, or a promise thereof.
+(promise<data.table>) a \link[data.table:data.table]{data.table::data.table} with columns
+\code{name}, \code{full_name}, \code{deployer}, \code{oracle_updater}, \code{fee_recipient}, or a
+promise thereof.
 }
 }
 \if{html}{\out{<hr>}}
@@ -330,14 +336,14 @@ both counterparty addresses included).
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{coin}}{Character; the canonical coin symbol, e.g. \code{"BTC"}.}
+\item{\code{coin}}{(scalar<character>) the canonical coin symbol, e.g. \code{"BTC"}.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-A \link[data.table:data.table]{data.table::data.table} with columns \code{coin}, \code{side}, \code{px},
-\code{sz}, \code{time}, \code{hash}, \code{tid}, \code{user_buyer}, \code{user_seller}, or a promise
-thereof.
+(promise<data.table>) a \link[data.table:data.table]{data.table::data.table} with columns
+\code{coin}, \code{side}, \code{px}, \code{sz}, \code{time}, \code{hash}, \code{tid}, \code{user_buyer},
+\code{user_seller}, or a promise thereof.
 }
 }
 \if{html}{\out{<hr>}}
@@ -350,8 +356,8 @@ Retrieve the current exchange status.
 }
 
 \subsection{Returns}{
-A single-row \link[data.table:data.table]{data.table::data.table} with columns \code{time},
-\code{special_statuses}, or a promise thereof.
+(promise<data.table>) a single-row \link[data.table:data.table]{data.table::data.table} with
+columns \code{time}, \code{special_statuses}, or a promise thereof.
 }
 }
 \if{html}{\out{<hr>}}

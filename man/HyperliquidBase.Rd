@@ -100,22 +100,23 @@ Initialise a HyperliquidBase object.
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{keys}}{List; wallet credentials from \code{\link[=get_api_keys]{get_api_keys()}}. Defaults to
+\item{\code{keys}}{(list) wallet credentials from \code{\link[=get_api_keys]{get_api_keys()}}. Defaults to
 \code{get_api_keys()}.}
 
-\item{\code{testnet}}{Logical; target testnet instead of mainnet. Default
+\item{\code{testnet}}{(scalar<logical>) target testnet instead of mainnet.
+Default \code{FALSE}.}
+
+\item{\code{async}}{(scalar<logical>) if \code{TRUE}, methods return promises. Default
 \code{FALSE}.}
 
-\item{\code{async}}{Logical; if \code{TRUE}, methods return promises. Default \code{FALSE}.}
-
-\item{\code{vault_address}}{Character or \code{NULL}; a vault or sub-account address
-to act on behalf of (threaded into the action hash and payload of
-signed actions). Default \code{NULL}.}
+\item{\code{vault_address}}{(scalar<character> | NULL) a vault or sub-account
+address to act on behalf of (threaded into the action hash and payload
+of signed actions). Default \code{NULL}.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-Invisible self.
+(class<HyperliquidBase>) invisible self.
 }
 }
 \if{html}{\out{<hr>}}
@@ -130,7 +131,7 @@ after a new asset is listed.
 }
 
 \subsection{Returns}{
-Invisible self.
+(class<HyperliquidBase>) invisible self.
 }
 }
 \if{html}{\out{<hr>}}
@@ -146,12 +147,15 @@ id, fetching and caching metadata on first need.
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{name}}{Character; a friendly name or canonical coin symbol.}
+\item{\code{name}}{(scalar<character>) a friendly name or canonical coin symbol.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-Numeric; the integer asset id used in signed actions.
+(scalar<count>) the integer asset id used in signed actions. Perp
+ids are an R integer (\code{0L}, \code{1L}, ...) while spot ids are a double
+(\code{10000}, ...), so the honest type is \code{count} (a non-negative whole
+number, integer or double), not \code{numeric}/double.
 }
 }
 \if{html}{\out{<hr>}}
@@ -167,12 +171,12 @@ caching metadata on first need.
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{name}}{Character; a friendly name or canonical coin symbol.}
+\item{\code{name}}{(scalar<character>) a friendly name or canonical coin symbol.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-Character; the canonical coin symbol.
+(scalar<character>) the canonical coin symbol.
 }
 }
 \if{html}{\out{<hr>}}
@@ -188,12 +192,13 @@ on first need.
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{asset}}{Numeric; an integer asset id.}
+\item{\code{asset}}{(scalar<count>) an integer asset id (as returned by
+\code{name_to_asset()}: an R integer for perps, a double for spot).}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-Numeric; the asset's size decimals.
+(scalar<count>) the asset's size decimals.
 }
 }
 \if{html}{\out{<hr>}}

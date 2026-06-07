@@ -133,32 +133,32 @@ only when you pass one explicitly.
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{name}}{Character; the coin or friendly name, e.g. \code{"BTC"}.}
+\item{\code{name}}{(scalar<character>) the coin or friendly name, e.g. \code{"BTC"}.}
 
-\item{\code{is_buy}}{Logical; \code{TRUE} for a bid, \code{FALSE} for an ask.}
+\item{\code{is_buy}}{(scalar<logical>) \code{TRUE} for a bid, \code{FALSE} for an ask.}
 
-\item{\code{sz}}{scalar<numeric in ]0, Inf[>; the order size in coin units.}
+\item{\code{sz}}{(scalar<numeric in ]0, Inf[>) the order size in coin units.}
 
-\item{\code{limit_px}}{scalar<numeric in ]0, Inf[>; the limit price.}
+\item{\code{limit_px}}{(scalar<numeric in ]0, Inf[>) the limit price.}
 
-\item{\code{order_type}}{Named list; either
+\item{\code{order_type}}{(list) either
 \code{list(limit = list(tif = "Gtc"|"Ioc"|"Alo"))} or
 \code{list(trigger = list(triggerPx = , isMarket = , tpsl = "tp"|"sl"))}.}
 
-\item{\code{reduce_only}}{Logical; \code{TRUE} to only reduce an existing position.
-Default \code{FALSE}.}
+\item{\code{reduce_only}}{(scalar<logical>) \code{TRUE} to only reduce an existing
+position. Default \code{FALSE}.}
 
-\item{\code{cloid}}{Character or \code{NULL}; an optional client order id from
+\item{\code{cloid}}{(scalar<character> | NULL) an optional client order id from
 \code{\link[=new_cloid]{new_cloid()}}. Default \code{NULL}.}
 
-\item{\code{builder}}{Named list or \code{NULL}; an optional builder fee spec
+\item{\code{builder}}{(list?) an optional builder fee spec
 \verb{list(b = <address>, f = <tenths-of-bps>)}. Default \code{NULL}.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-A \link[data.table:data.table]{data.table::data.table}, one row per status, or a promise
-thereof.
+(promise<OrderResult>) a \link[data.table:data.table]{data.table::data.table}, one row per
+status, or a promise thereof.
 }
 }
 \if{html}{\out{<hr>}}
@@ -175,22 +175,22 @@ shape; the wires are assembled into one \code{order} action.
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{orders}}{Unnamed list of order specs; each a named list with \code{coin},
-\code{is_buy}, \code{sz}, \code{limit_px}, \code{order_type}, \code{reduce_only}, and optional
-\code{cloid} (same fields as \link[=HyperliquidTrading]{place_order()}).}
+\item{\code{orders}}{(list) unnamed list of order specs; each a named list with
+\code{coin}, \code{is_buy}, \code{sz}, \code{limit_px}, \code{order_type}, \code{reduce_only}, and
+optional \code{cloid} (same fields as \link[=HyperliquidTrading]{place_order()}).}
 
-\item{\code{builder}}{Named list or \code{NULL}; an optional builder fee spec
+\item{\code{builder}}{(list?) an optional builder fee spec
 \verb{list(b = <address>, f = <tenths-of-bps>)}. The address is lowercased.
 Default \code{NULL}.}
 
-\item{\code{grouping}}{Character; one of \code{"na"}, \code{"normalTpsl"}, \code{"positionTpsl"}.
-Default \code{"na"}.}
+\item{\code{grouping}}{(scalar<character>) one of \code{"na"}, \code{"normalTpsl"},
+\code{"positionTpsl"}. Default \code{"na"}.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-A \link[data.table:data.table]{data.table::data.table}, one row per status, or a promise
-thereof.
+(promise<OrderResult>) a \link[data.table:data.table]{data.table::data.table}, one row per
+status, or a promise thereof.
 }
 }
 \if{html}{\out{<hr>}}
@@ -214,25 +214,26 @@ submit it. Sync-preferred: it chains a mid-price read before the write.
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{name}}{Character; the coin or friendly name, e.g. \code{"BTC"}.}
+\item{\code{name}}{(scalar<character>) the coin or friendly name, e.g. \code{"BTC"}.}
 
-\item{\code{is_buy}}{Logical; \code{TRUE} to open long, \code{FALSE} to open short.}
+\item{\code{is_buy}}{(scalar<logical>) \code{TRUE} to open long, \code{FALSE} to open
+short.}
 
-\item{\code{sz}}{scalar<numeric in ]0, Inf[>; the order size in coin units.}
+\item{\code{sz}}{(scalar<numeric in ]0, Inf[>) the order size in coin units.}
 
-\item{\code{slippage}}{scalar<numeric in ]0, Inf[>; the price tolerance fraction.
-Default \code{0.05} (5\%).}
+\item{\code{slippage}}{(scalar<numeric in ]0, Inf[>) the price tolerance
+fraction. Default \code{0.05} (5\%).}
 
-\item{\code{cloid}}{Character or \code{NULL}; an optional client order id. Default
-\code{NULL}.}
+\item{\code{cloid}}{(scalar<character> | NULL) an optional client order id.
+Default \code{NULL}.}
 
-\item{\code{builder}}{Named list or \code{NULL}; an optional builder fee spec. Default
-\code{NULL}.}
+\item{\code{builder}}{(list?) an optional builder fee spec. Default \code{NULL}.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-A \link[data.table:data.table]{data.table::data.table}, one row per status.
+(promise<OrderResult>) a \link[data.table:data.table]{data.table::data.table}, one row per
+status.
 }
 }
 \if{html}{\out{<hr>}}
@@ -250,21 +251,22 @@ a mid-price read before the write.
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{name}}{Character; the coin or friendly name, e.g. \code{"BTC"}.}
+\item{\code{name}}{(scalar<character>) the coin or friendly name, e.g. \code{"BTC"}.}
 
-\item{\code{sz}}{scalar<numeric in ]0, Inf[> or \code{NULL}; the size to close.
-\code{NULL} (default) closes the whole position (\code{abs(szi)}).}
+\item{\code{sz}}{(scalar<numeric in ]0, Inf[> | NULL) the size to close. \code{NULL}
+(default) closes the whole position (\code{abs(szi)}).}
 
-\item{\code{slippage}}{scalar<numeric in ]0, Inf[>; the price tolerance fraction.
-Default \code{0.05} (5\%).}
+\item{\code{slippage}}{(scalar<numeric in ]0, Inf[>) the price tolerance
+fraction. Default \code{0.05} (5\%).}
 
-\item{\code{cloid}}{Character or \code{NULL}; an optional client order id. Default
-\code{NULL}.}
+\item{\code{cloid}}{(scalar<character> | NULL) an optional client order id.
+Default \code{NULL}.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-A \link[data.table:data.table]{data.table::data.table}, one row per status.
+(promise<OrderResult>) a \link[data.table:data.table]{data.table::data.table}, one row per
+status.
 }
 }
 \if{html}{\out{<hr>}}
@@ -289,28 +291,29 @@ Modify a single resting order in place. A thin wrapper over
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{oid}}{Numeric; the resting order's id (oid).}
+\item{\code{oid}}{(scalar<numeric>) the resting order's id (oid).}
 
-\item{\code{name}}{Character; the coin or friendly name.}
+\item{\code{name}}{(scalar<character>) the coin or friendly name.}
 
-\item{\code{is_buy}}{Logical; the (possibly new) side.}
+\item{\code{is_buy}}{(scalar<logical>) the (possibly new) side.}
 
-\item{\code{sz}}{scalar<numeric in ]0, Inf[>; the (possibly new) size.}
+\item{\code{sz}}{(scalar<numeric in ]0, Inf[>) the (possibly new) size.}
 
-\item{\code{limit_px}}{scalar<numeric in ]0, Inf[>; the (possibly new) price.}
+\item{\code{limit_px}}{(scalar<numeric in ]0, Inf[>) the (possibly new) price.}
 
-\item{\code{order_type}}{Named list; the order type (see \link[=HyperliquidTrading]{place_order()}).}
+\item{\code{order_type}}{(list) the order type (see
+\link[=HyperliquidTrading]{place_order()}).}
 
-\item{\code{reduce_only}}{Logical; default \code{FALSE}.}
+\item{\code{reduce_only}}{(scalar<logical>) default \code{FALSE}.}
 
-\item{\code{cloid}}{Character or \code{NULL}; an optional client order id. Default
-\code{NULL}.}
+\item{\code{cloid}}{(scalar<character> | NULL) an optional client order id.
+Default \code{NULL}.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-A \link[data.table:data.table]{data.table::data.table}, one row per status, or a promise
-thereof.
+(promise<OrderResult>) a \link[data.table:data.table]{data.table::data.table}, one row per
+status, or a promise thereof.
 }
 }
 \if{html}{\out{<hr>}}
@@ -326,14 +329,15 @@ action.
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{modifies}}{Unnamed list of modify specs; each a named list with \code{oid}
-(numeric) and \code{order} (an order spec, see \link[=HyperliquidTrading]{place_order()}).}
+\item{\code{modifies}}{(list) unnamed list of modify specs; each a named list
+with \code{oid} (numeric) and \code{order} (an order spec, see
+\link[=HyperliquidTrading]{place_order()}).}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-A \link[data.table:data.table]{data.table::data.table}, one row per status, or a promise
-thereof.
+(promise<OrderResult>) a \link[data.table:data.table]{data.table::data.table}, one row per
+status, or a promise thereof.
 }
 }
 \if{html}{\out{<hr>}}
@@ -349,15 +353,15 @@ Cancel a single order by its order id. A thin wrapper over
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{name}}{Character; the coin or friendly name.}
+\item{\code{name}}{(scalar<character>) the coin or friendly name.}
 
-\item{\code{oid}}{Numeric; the order id to cancel.}
+\item{\code{oid}}{(scalar<numeric>) the order id to cancel.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-A \link[data.table:data.table]{data.table::data.table}, one row per cancel, or a promise
-thereof.
+(promise<data.table>) a \link[data.table:data.table]{data.table::data.table}, one row per
+cancel, or a promise thereof.
 }
 }
 \if{html}{\out{<hr>}}
@@ -373,15 +377,16 @@ over \link[=HyperliquidTrading]{bulk_cancel_by_cloid()}.
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{name}}{Character; the coin or friendly name.}
+\item{\code{name}}{(scalar<character>) the coin or friendly name.}
 
-\item{\code{cloid}}{Character; the client order id (\verb{0x}-prefixed 32 hex chars).}
+\item{\code{cloid}}{(scalar<character>) the client order id (\verb{0x}-prefixed 32 hex
+chars).}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-A \link[data.table:data.table]{data.table::data.table}, one row per cancel, or a promise
-thereof.
+(promise<data.table>) a \link[data.table:data.table]{data.table::data.table}, one row per
+cancel, or a promise thereof.
 }
 }
 \if{html}{\out{<hr>}}
@@ -398,14 +403,14 @@ carries the oid (the wire \code{o}).
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{cancels}}{Unnamed list of cancel specs; each a named list with \code{coin}
-and \code{oid}.}
+\item{\code{cancels}}{(list) unnamed list of cancel specs; each a named list with
+\code{coin} and \code{oid}.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-A \link[data.table:data.table]{data.table::data.table}, one row per cancel, or a promise
-thereof.
+(promise<data.table>) a \link[data.table:data.table]{data.table::data.table}, one row per
+cancel, or a promise thereof.
 }
 }
 \if{html}{\out{<hr>}}
@@ -422,14 +427,14 @@ Cancel a batch of orders by client order id in one signed
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{cancels}}{Unnamed list of cancel specs; each a named list with \code{coin}
-and \code{cloid}.}
+\item{\code{cancels}}{(list) unnamed list of cancel specs; each a named list with
+\code{coin} and \code{cloid}.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-A \link[data.table:data.table]{data.table::data.table}, one row per cancel, or a promise
-thereof.
+(promise<data.table>) a \link[data.table:data.table]{data.table::data.table}, one row per
+cancel, or a promise thereof.
 }
 }
 \if{html}{\out{<hr>}}
@@ -447,14 +452,15 @@ day.
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{time}}{POSIXct, numeric epoch-milliseconds, or \code{NULL}; when to cancel
-all orders. \code{NULL} (default) clears any pending schedule.}
+\item{\code{time}}{(POSIXct | numeric | NULL) when to cancel all orders (POSIXct,
+numeric epoch-milliseconds, or \code{NULL}). \code{NULL} (default) clears any
+pending schedule.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-A single-row \link[data.table:data.table]{data.table::data.table} with \code{status} and
-\code{response_type}, or a promise thereof.
+(promise<TransferAck>) a single-row \link[data.table:data.table]{data.table::data.table} with
+\code{status} and \code{response_type}, or a promise thereof.
 }
 }
 \if{html}{\out{<hr>}}
@@ -469,18 +475,19 @@ Set the leverage for a coin, cross or isolated.
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{name}}{Character; the coin or friendly name.}
+\item{\code{name}}{(scalar<character>) the coin or friendly name.}
 
-\item{\code{leverage}}{Numeric; a finite, strictly-positive whole number.}
+\item{\code{leverage}}{(scalar<count in [1, Inf[>) a finite, strictly-positive
+whole number (accepts an integer or a whole-valued double).}
 
-\item{\code{is_cross}}{Logical; \code{TRUE} for cross margin, \code{FALSE} for isolated.
-Default \code{TRUE}.}
+\item{\code{is_cross}}{(scalar<logical>) \code{TRUE} for cross margin, \code{FALSE} for
+isolated. Default \code{TRUE}.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-A single-row \link[data.table:data.table]{data.table::data.table} with \code{status} and
-\code{response_type}, or a promise thereof.
+(promise<TransferAck>) a single-row \link[data.table:data.table]{data.table::data.table} with
+\code{status} and \code{response_type}, or a promise thereof.
 }
 }
 \if{html}{\out{<hr>}}
@@ -497,16 +504,16 @@ adds margin; a negative \code{amount} removes it (SDK parity).
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{name}}{Character; the coin or friendly name.}
+\item{\code{name}}{(scalar<character>) the coin or friendly name.}
 
-\item{\code{amount}}{Numeric; the USD amount of margin to move -- a finite,
-non-zero scalar. Positive adds margin, negative removes it.}
+\item{\code{amount}}{(scalar<numeric>) the USD amount of margin to move -- a
+finite, non-zero scalar. Positive adds margin, negative removes it.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-A single-row \link[data.table:data.table]{data.table::data.table} with \code{status} and
-\code{response_type}, or a promise thereof.
+(promise<TransferAck>) a single-row \link[data.table:data.table]{data.table::data.table} with
+\code{status} and \code{response_type}, or a promise thereof.
 }
 }
 \if{html}{\out{<hr>}}
@@ -531,14 +538,15 @@ the empty string -- the EIP-712 digest is identical either way.)
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{name}}{Character or \code{NULL}; an optional human-readable agent name.
-Default \code{NULL}.}
+\item{\code{name}}{(scalar<character> | NULL) an optional human-readable agent
+name. Default \code{NULL}.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-A single-row \link[data.table:data.table]{data.table::data.table} with \code{agent_address},
-\code{agent_key} (the new hex secret), and \code{status}, or a promise thereof.
+(promise<data.table>) a single-row \link[data.table:data.table]{data.table::data.table} with
+\code{agent_address}, \code{agent_key} (the new hex secret), and \code{status}, or a
+promise thereof.
 }
 }
 \if{html}{\out{<hr>}}
@@ -554,16 +562,16 @@ that builder to attach a fee (up to \code{max_fee_rate}) to your orders.
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{builder}}{Character; the builder's \verb{0x}-prefixed address.}
+\item{\code{builder}}{(scalar<character>) the builder's \verb{0x}-prefixed address.}
 
-\item{\code{max_fee_rate}}{Character; the max fee as a percent string, e.g.
-\code{"0.001\%"}.}
+\item{\code{max_fee_rate}}{(scalar<character>) the max fee as a percent string,
+e.g. \code{"0.001\%"}.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-A single-row \link[data.table:data.table]{data.table::data.table} with \code{status} and
-\code{response_type}, or a promise thereof.
+(promise<TransferAck>) a single-row \link[data.table:data.table]{data.table::data.table} with
+\code{status} and \code{response_type}, or a promise thereof.
 }
 }
 \if{html}{\out{<hr>}}

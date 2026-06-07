@@ -16,21 +16,27 @@
 #' intervals (`"1d"`, `"1h"`) reach back furthest. Within that cap
 #' `hyperliquid_fetch_klines()` segments the range automatically.
 #'
-#' @param symbols Character vector of canonical coin symbols (e.g.
-#'   `c("BTC", "ETH")`). Must not be NULL or empty.
-#' @param intervals Character vector of candle intervals (e.g. `c("1d", "1h")`).
-#'   Each must be one of [HYPERLIQUID_INTERVALS]. Default `"1d"`.
-#' @param from POSIXct or numeric; start of the backfill window. Defaults to one
+#' @param symbols (character) canonical coin symbols (e.g. `c("BTC", "ETH")`).
+#'   Must not be NULL or empty.
+#' @param intervals (character in HYPERLIQUID_INTERVALS) candle intervals (e.g.
+#'   `c("1d", "1h")`). Each must be one of [HYPERLIQUID_INTERVALS]. Default
+#'   `"1d"`.
+#' @param from (POSIXct | numeric) start of the backfill window. Defaults to one
 #'   year ago.
-#' @param to POSIXct or numeric; end of the window. Defaults to the current time.
-#' @param file Character; path to the output CSV. Data is appended incrementally.
-#' @param testnet Logical; target testnet instead of mainnet. Default `FALSE`.
-#' @param sleep Numeric; seconds to sleep between each `(symbol, interval)`
-#'   combination to respect rate limits. Default `0.3`.
-#' @param verbose Logical; if `TRUE`, prints progress via [rlang::inform()].
+#' @param to (POSIXct | numeric) end of the window. Defaults to the current
+#'   time.
+#' @param file (scalar<character>) path to the output CSV. Data is appended
+#'   incrementally.
+#' @param testnet (scalar<logical>) target testnet instead of mainnet. Default
+#'   `FALSE`.
+#' @param sleep (scalar<numeric in [0, Inf[>) seconds to sleep between each
+#'   `(symbol, interval)` combination to respect rate limits. Default `0.3`.
+#' @param verbose (scalar<logical>) if `TRUE`, prints progress via
+#'   [rlang::inform()].
 #'
-#' @return The file path (invisibly). Output columns: `symbol`, `interval`,
-#'   `datetime`, `open`, `high`, `low`, `close`, `volume`, `trades`.
+#' @return (scalar<character>) the file path (invisibly). Output columns:
+#'   `symbol`, `interval`, `datetime`, `open`, `high`, `low`, `close`, `volume`,
+#'   `trades`.
 #'
 #'   Per-combo failures are surfaced as warnings during the run (one
 #'   [rlang::warn()] per failed `(symbol, interval)` pair), followed by a final
@@ -67,6 +73,9 @@ hyperliquid_backfill_klines <- function(
   for (intv in intervals) {
     validate_interval(intv)
   }
+  assert_args_hyperliquid_backfill_klines(
+    symbols, intervals, from, to, file, testnet, sleep, verbose
+  )
   from <- lubridate::as_datetime(from, tz = "UTC")
   to <- lubridate::as_datetime(to, tz = "UTC")
 
@@ -183,7 +192,7 @@ hyperliquid_backfill_klines <- function(
     ))
   }
 
-  return(invisible(file))
+  return(invisible(assert_return_hyperliquid_backfill_klines(file)))
 }
 
 #' Walk `fundingHistory` Forward over a Time Range
@@ -194,20 +203,25 @@ hyperliquid_backfill_klines <- function(
 #' page signals the end of available data or the cursor reaches `to`, then
 #' deduplicates on `time` and sorts ascending.
 #'
-#' @param coin Character; the canonical coin symbol, e.g. `"BTC"`.
-#' @param from POSIXct or numeric epoch-milliseconds; range start.
-#' @param to POSIXct or numeric epoch-milliseconds; range end.
-#' @param .req_fn Function `(payload, .parser)` performing one `/info` request.
-#' @param page_limit Integer; records per page (the endpoint cap). Default
-#'   `500L`.
-#' @param sleep Numeric; seconds to sleep between pages. Default `0`.
-#' @return A [data.table::data.table] with columns `coin`, `funding_rate`,
-#'   `premium`, `time`, ascending by `time`.
+#' @param coin (scalar<character>) the canonical coin symbol, e.g. `"BTC"`.
+#' @param from (POSIXct | numeric) range start (POSIXct or numeric
+#'   epoch-milliseconds).
+#' @param to (POSIXct | numeric) range end (POSIXct or numeric
+#'   epoch-milliseconds).
+#' @param .req_fn (function) `(payload, .parser)` performing one `/info`
+#'   request.
+#' @param page_limit (scalar<integer in [1, Inf[>) records per page (the
+#'   endpoint cap). Default `500L`.
+#' @param sleep (scalar<numeric in [0, Inf[>) seconds to sleep between pages.
+#'   Default `0`.
+#' @return (FundingHistory) a [data.table::data.table] with columns `coin`,
+#'   `funding_rate`, `premium`, `time`, ascending by `time`.
 #'
 #' @keywords internal
 #' @noRd
 hyperliquid_fetch_funding <- function(coin, from, to, .req_fn, page_limit = 500L, sleep = 0) {
   validate_coin(coin)
+  assert_args_hyperliquid_fetch_funding(coin, from, to, .req_fn, page_limit, sleep)
   from_ms <- if (is.numeric(from)) floor(from) else datetime_to_ms(from)
   to_ms <- if (is.numeric(to)) floor(to) else datetime_to_ms(to)
 
@@ -249,19 +263,23 @@ hyperliquid_fetch_funding <- function(coin, from, to, .req_fn, page_limit = 500L
 #' steps. Supports resuming by reading the existing file and continuing each coin
 #' from its last stored funding record.
 #'
-#' @param symbols Character vector of canonical coin symbols (e.g.
-#'   `c("BTC", "ETH")`). Must not be NULL or empty.
-#' @param from POSIXct or numeric; start of the backfill window. Defaults to one
+#' @param symbols (character) canonical coin symbols (e.g. `c("BTC", "ETH")`).
+#'   Must not be NULL or empty.
+#' @param from (POSIXct | numeric) start of the backfill window. Defaults to one
 #'   year ago.
-#' @param to POSIXct or numeric; end of the window. Defaults to the current time.
-#' @param file Character; path to the output CSV. Data is appended incrementally.
-#' @param testnet Logical; target testnet instead of mainnet. Default `FALSE`.
-#' @param sleep Numeric; seconds to sleep between pages and between coins to
-#'   respect rate limits. Default `0.3`.
-#' @param verbose Logical; if `TRUE`, prints progress via [rlang::inform()].
+#' @param to (POSIXct | numeric) end of the window. Defaults to the current
+#'   time.
+#' @param file (scalar<character>) path to the output CSV. Data is appended
+#'   incrementally.
+#' @param testnet (scalar<logical>) target testnet instead of mainnet. Default
+#'   `FALSE`.
+#' @param sleep (scalar<numeric in [0, Inf[>) seconds to sleep between pages and
+#'   between coins to respect rate limits. Default `0.3`.
+#' @param verbose (scalar<logical>) if `TRUE`, prints progress via
+#'   [rlang::inform()].
 #'
-#' @return The file path (invisibly). Output columns: `coin`, `funding_rate`,
-#'   `premium`, `time`.
+#' @return (scalar<character>) the file path (invisibly). Output columns:
+#'   `coin`, `funding_rate`, `premium`, `time`.
 #'
 #'   Per-coin failures are surfaced as warnings during the run, followed by a
 #'   final summary warning if any failed. No failure data is hidden on the
@@ -295,6 +313,9 @@ hyperliquid_backfill_funding <- function(
   for (s in symbols) {
     validate_coin(s)
   }
+  assert_args_hyperliquid_backfill_funding(
+    symbols, from, to, file, testnet, sleep, verbose
+  )
   from <- lubridate::as_datetime(from, tz = "UTC")
   to <- lubridate::as_datetime(to, tz = "UTC")
 
@@ -398,5 +419,5 @@ hyperliquid_backfill_funding <- function(
     ))
   }
 
-  return(invisible(file))
+  return(invisible(assert_return_hyperliquid_backfill_funding(file)))
 }

@@ -7,11 +7,11 @@
 get_base_url(testnet = FALSE)
 }
 \arguments{
-\item{testnet}{Logical; if \code{TRUE} return the testnet host, otherwise the
-mainnet host. Default \code{FALSE}.}
+\item{testnet}{(scalar<logical>) if \code{TRUE} return the testnet host, otherwise
+the mainnet host. Default \code{FALSE}.}
 }
 \value{
-Character string; the REST base URL.
+(scalar<character>) the REST base URL.
 }
 \description{
 Returns the REST base URL for the selected network. Hyperliquid exposes the

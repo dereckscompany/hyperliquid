@@ -15,24 +15,28 @@ hyperliquid_build_request(
 )
 }
 \arguments{
-\item{base_url}{Character; the REST base URL (scheme + host).}
+\item{base_url}{(scalar<character>) the REST base URL (scheme + host).}
 
-\item{path}{Character; the endpoint path, \code{"/info"} or \code{"/exchange"}.}
+\item{path}{(scalar<character>) the endpoint path, \code{"/info"} or
+\code{"/exchange"}.}
 
-\item{body}{Named list; the request body, serialised with \code{auto_unbox}.}
+\item{body}{(list) the request body, serialised with \code{auto_unbox}.}
 
-\item{.perform}{Function; the httr2 perform function. Default
+\item{.perform}{(function) the httr2 perform function. Default
 \code{httr2::req_perform}.}
 
-\item{.parser}{Function; post-processing applied to the parsed response body.
-Default \code{identity}.}
+\item{.parser}{(function) post-processing applied to the parsed response
+body. Default \code{identity}.}
 
-\item{is_async}{Logical; whether \code{.perform} returns promises. Default \code{FALSE}.}
+\item{is_async}{(scalar<logical>) whether \code{.perform} returns promises.
+Default \code{FALSE}.}
 
-\item{timeout}{Numeric; request timeout in seconds. Default \code{30}.}
+\item{timeout}{(scalar<numeric in ]0, Inf[>) request timeout in seconds.
+Default \code{30}.}
 }
 \value{
-Parsed and post-processed API response data, or a promise thereof.
+(any) parsed and post-processed API response data, or a promise
+thereof.
 }
 \description{
 Constructs an \link[httr2:request]{httr2::request} for one of Hyperliquid's two POST endpoints

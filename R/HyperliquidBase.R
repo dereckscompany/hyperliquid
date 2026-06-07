@@ -53,24 +53,23 @@ HyperliquidBase <- R6::R6Class(
     #' @description
     #' Initialise a HyperliquidBase object.
     #'
-    #' @param keys List; wallet credentials from [get_api_keys()]. Defaults to
+    #' @param keys (list) wallet credentials from [get_api_keys()]. Defaults to
     #'   `get_api_keys()`.
-    #' @param testnet Logical; target testnet instead of mainnet. Default
+    #' @param testnet (scalar<logical>) target testnet instead of mainnet.
+    #'   Default `FALSE`.
+    #' @param async (scalar<logical>) if `TRUE`, methods return promises. Default
     #'   `FALSE`.
-    #' @param async Logical; if `TRUE`, methods return promises. Default `FALSE`.
-    #' @param vault_address Character or `NULL`; a vault or sub-account address
-    #'   to act on behalf of (threaded into the action hash and payload of
-    #'   signed actions). Default `NULL`.
-    #' @return Invisible self.
+    #' @param vault_address (scalar<character> | NULL) a vault or sub-account
+    #'   address to act on behalf of (threaded into the action hash and payload
+    #'   of signed actions). Default `NULL`.
+    #' @return (class<HyperliquidBase>) invisible self.
     initialize = function(
       keys = get_api_keys(),
       testnet = FALSE,
       async = FALSE,
       vault_address = NULL
     ) {
-      assert::assert_scalar_logical(testnet)
-      assert::assert_scalar_logical(async)
-      assert::assert_scalar_character(vault_address, null_ok = TRUE)
+      assert_args_HyperliquidBase__initialize(keys, testnet, async, vault_address)
 
       private$.keys <- keys
       private$.testnet <- isTRUE(testnet)
@@ -88,43 +87,61 @@ HyperliquidBase <- R6::R6Class(
         private$.perform <- httr2::req_perform
       }
 
-      return(invisible(self))
+      return(invisible(assert_return_HyperliquidBase__initialize(self)))
     },
 
     #' @description
     #' Force a refetch of exchange metadata, replacing the cached asset-lookup
     #' tables. Metadata is otherwise fetched lazily on first need; call this
     #' after a new asset is listed.
-    #' @return Invisible self.
+    #' @return (class<HyperliquidBase>) invisible self.
     refresh_meta = function() {
       private$.meta_cache <- private$.fetch_meta_maps()
-      return(invisible(self))
+      return(invisible(assert_return_HyperliquidBase__refresh_meta(self)))
     },
 
     #' @description
     #' Resolve a friendly name (or canonical coin symbol) to its integer asset
     #' id, fetching and caching metadata on first need.
-    #' @param name Character; a friendly name or canonical coin symbol.
-    #' @return Numeric; the integer asset id used in signed actions.
+    #' @param name (scalar<character>) a friendly name or canonical coin symbol.
+    #' @return (scalar<count>) the integer asset id used in signed actions. Perp
+    #'   ids are an R integer (`0L`, `1L`, ...) while spot ids are a double
+    #'   (`10000`, ...), so the honest type is `count` (a non-negative whole
+    #'   number, integer or double), not `numeric`/double.
     name_to_asset = function(name) {
+      assert_args_HyperliquidBase__name_to_asset(name)
+      # Return is deliberately NOT wired: the generated assert_scalar_double
+      # contract is stale (lowered from the old `scalar<numeric>`) and rejects
+      # the integer perp ids that build_asset_maps() produces. The corrected
+      # `scalar<count>` @return regenerates to assert_scalar_count on the next
+      # document().
       return(meta_name_to_asset(private$.ensure_meta(), name))
     },
 
     #' @description
     #' Resolve a friendly name to its canonical coin symbol, fetching and
     #' caching metadata on first need.
-    #' @param name Character; a friendly name or canonical coin symbol.
-    #' @return Character; the canonical coin symbol.
+    #' @param name (scalar<character>) a friendly name or canonical coin symbol.
+    #' @return (scalar<character>) the canonical coin symbol.
     name_to_coin = function(name) {
-      return(meta_name_to_coin(private$.ensure_meta(), name))
+      assert_args_HyperliquidBase__name_to_coin(name)
+      return(assert_return_HyperliquidBase__name_to_coin(
+        meta_name_to_coin(private$.ensure_meta(), name)
+      ))
     },
 
     #' @description
     #' Resolve an asset id to its size decimals, fetching and caching metadata
     #' on first need.
-    #' @param asset Numeric; an integer asset id.
-    #' @return Numeric; the asset's size decimals.
+    #' @param asset (scalar<count>) an integer asset id (as returned by
+    #'   `name_to_asset()`: an R integer for perps, a double for spot).
+    #' @return (scalar<count>) the asset's size decimals.
     sz_decimals = function(asset) {
+      # Neither contract is wired: the generated assert_scalar_double pair is
+      # stale (lowered from `scalar<numeric>`). The `asset` arg is the integer
+      # id from name_to_asset() and szDecimals arrives as an R integer over live
+      # JSON, both of which assert_scalar_double rejects. The corrected
+      # `scalar<count>` tags regenerate to assert_scalar_count next document().
       return(meta_sz_decimals(private$.ensure_meta(), asset))
     }
   ),

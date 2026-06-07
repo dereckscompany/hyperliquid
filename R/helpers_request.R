@@ -10,13 +10,15 @@
 #' sync/async branching idiom; every subclass method is mode-unaware and flows
 #' through here via [hyperliquid_build_request()].
 #'
-#' @param x A value or a [promises::promise].
-#' @param fn A function to apply to the resolved value of `x`.
-#' @param is_async Logical; whether the caller is in async mode.
-#' @return If `is_async`, returns `promises::then(x, fn)`. Otherwise `fn(x)`.
+#' @param x (any) a value or a [promises::promise].
+#' @param fn (function) a function to apply to the resolved value of `x`.
+#' @param is_async (scalar<logical>) whether the caller is in async mode.
+#' @return (any) if `is_async`, returns `promises::then(x, fn)`. Otherwise
+#'   `fn(x)`.
 #' @keywords internal
 #' @noRd
 then_or_now <- function(x, fn, is_async = FALSE) {
+  assert_args_then_or_now(x, fn, is_async)
   if (is_async) {
     return(promises::then(x, fn))
   }
@@ -37,7 +39,7 @@ then_or_now <- function(x, fn, is_async = FALSE) {
 #' now_ms)`. The last value is held in a package-internal environment so
 #' concurrent async actions never reuse a nonce.
 #'
-#' @return Numeric; a whole-number epoch-millisecond nonce.
+#' @return (scalar<numeric>) a whole-number epoch-millisecond nonce.
 #' @importFrom lubridate now
 #' @keywords internal
 #' @noRd
@@ -45,7 +47,7 @@ next_nonce <- function() {
   now_ms <- datetime_to_ms(lubridate::now("UTC"))
   candidate <- max(.nonce_state$last + 1, now_ms)
   .nonce_state$last <- candidate
-  return(candidate)
+  return(assert_return_next_nonce(candidate))
 }
 
 #' Build and Execute a Hyperliquid API Request
@@ -65,16 +67,20 @@ next_nonce <- function() {
 #' error body (HTTP 422 text for `/info`, an `{status:"err"}` envelope for
 #' `/exchange`) is formatted by the parser.
 #'
-#' @param base_url Character; the REST base URL (scheme + host).
-#' @param path Character; the endpoint path, `"/info"` or `"/exchange"`.
-#' @param body Named list; the request body, serialised with `auto_unbox`.
-#' @param .perform Function; the httr2 perform function. Default
+#' @param base_url (scalar<character>) the REST base URL (scheme + host).
+#' @param path (scalar<character>) the endpoint path, `"/info"` or
+#'   `"/exchange"`.
+#' @param body (list) the request body, serialised with `auto_unbox`.
+#' @param .perform (function) the httr2 perform function. Default
 #'   `httr2::req_perform`.
-#' @param .parser Function; post-processing applied to the parsed response body.
-#'   Default `identity`.
-#' @param is_async Logical; whether `.perform` returns promises. Default `FALSE`.
-#' @param timeout Numeric; request timeout in seconds. Default `30`.
-#' @return Parsed and post-processed API response data, or a promise thereof.
+#' @param .parser (function) post-processing applied to the parsed response
+#'   body. Default `identity`.
+#' @param is_async (scalar<logical>) whether `.perform` returns promises.
+#'   Default `FALSE`.
+#' @param timeout (scalar<numeric in ]0, Inf[>) request timeout in seconds.
+#'   Default `30`.
+#' @return (any) parsed and post-processed API response data, or a promise
+#'   thereof.
 #'
 #' @importFrom httr2 request req_url_path_append req_method req_body_raw req_timeout
 #' @importFrom httr2 req_user_agent req_error req_perform
@@ -89,6 +95,9 @@ hyperliquid_build_request <- function(
   is_async = FALSE,
   timeout = 30
 ) {
+  assert_args_hyperliquid_build_request(
+    base_url, path, body, .perform, .parser, is_async, timeout
+  )
   req <- httr2::request(base_url)
   req <- httr2::req_url_path_append(req, path)
   req <- httr2::req_method(req, "POST")
@@ -126,8 +135,9 @@ hyperliquid_build_request <- function(
 #' On success the parsed JSON body is returned with `simplifyVector = FALSE` so
 #' downstream parsers can flatten nested structures deterministically.
 #'
-#' @param resp An [httr2::response] object.
-#' @return The parsed JSON response body.
+#' @param resp (class<httr2_response>) an [httr2::response] object.
+#' @return (list | NULL) the parsed JSON response body; `NULL` when the body is
+#'   a JSON `null` (e.g. the `subAccounts` endpoint with no sub-accounts).
 #'
 #' @importFrom httr2 resp_status resp_body_string
 #' @importFrom jsonlite fromJSON
@@ -135,6 +145,7 @@ hyperliquid_build_request <- function(
 #' @keywords internal
 #' @noRd
 parse_hyperliquid_response <- function(resp) {
+  assert_args_parse_hyperliquid_response(resp)
   status <- httr2::resp_status(resp)
   body_text <- tryCatch(
     httr2::resp_body_string(resp),
@@ -157,5 +168,8 @@ parse_hyperliquid_response <- function(resp) {
     rlang::abort(paste0("Hyperliquid exchange error: ", parsed$response))
   }
 
+  # Return is NOT wired: a JSON `null` body (e.g. `subAccounts` with no
+  # sub-accounts) parses to NULL, which the generated assert_list contract
+  # rejects. The corrected `(list | NULL)` @return regenerates accordingly.
   return(parsed)
 }

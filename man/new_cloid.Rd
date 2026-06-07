@@ -7,7 +7,7 @@
 new_cloid()
 }
 \value{
-Character; a cloid, e.g. \code{"0x1234...cdef"} (32 hex chars).
+(scalar<character>) a cloid, e.g. \code{"0x1234...cdef"} (32 hex chars).
 }
 \description{
 Produces a 16-byte random client order id in Hyperliquid's wire form: a

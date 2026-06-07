@@ -16,29 +16,35 @@ hyperliquid_backfill_klines(
 )
 }
 \arguments{
-\item{symbols}{Character vector of canonical coin symbols (e.g.
-\code{c("BTC", "ETH")}). Must not be NULL or empty.}
+\item{symbols}{(character) canonical coin symbols (e.g. \code{c("BTC", "ETH")}).
+Must not be NULL or empty.}
 
-\item{intervals}{Character vector of candle intervals (e.g. \code{c("1d", "1h")}).
-Each must be one of \link{HYPERLIQUID_INTERVALS}. Default \code{"1d"}.}
+\item{intervals}{(character in HYPERLIQUID_INTERVALS) candle intervals (e.g.
+\code{c("1d", "1h")}). Each must be one of \link{HYPERLIQUID_INTERVALS}. Default
+\code{"1d"}.}
 
-\item{from}{POSIXct or numeric; start of the backfill window. Defaults to one
+\item{from}{(POSIXct | numeric) start of the backfill window. Defaults to one
 year ago.}
 
-\item{to}{POSIXct or numeric; end of the window. Defaults to the current time.}
+\item{to}{(POSIXct | numeric) end of the window. Defaults to the current
+time.}
 
-\item{file}{Character; path to the output CSV. Data is appended incrementally.}
+\item{file}{(scalar<character>) path to the output CSV. Data is appended
+incrementally.}
 
-\item{testnet}{Logical; target testnet instead of mainnet. Default \code{FALSE}.}
+\item{testnet}{(scalar<logical>) target testnet instead of mainnet. Default
+\code{FALSE}.}
 
-\item{sleep}{Numeric; seconds to sleep between each \verb{(symbol, interval)}
-combination to respect rate limits. Default \code{0.3}.}
+\item{sleep}{(scalar<numeric in [0, Inf[>) seconds to sleep between each
+\verb{(symbol, interval)} combination to respect rate limits. Default \code{0.3}.}
 
-\item{verbose}{Logical; if \code{TRUE}, prints progress via \code{\link[rlang:abort]{rlang::inform()}}.}
+\item{verbose}{(scalar<logical>) if \code{TRUE}, prints progress via
+\code{\link[rlang:abort]{rlang::inform()}}.}
 }
 \value{
-The file path (invisibly). Output columns: \code{symbol}, \code{interval},
-\code{datetime}, \code{open}, \code{high}, \code{low}, \code{close}, \code{volume}, \code{trades}.
+(scalar<character>) the file path (invisibly). Output columns:
+\code{symbol}, \code{interval}, \code{datetime}, \code{open}, \code{high}, \code{low}, \code{close}, \code{volume},
+\code{trades}.
 
 Per-combo failures are surfaced as warnings during the run (one
 \code{\link[rlang:abort]{rlang::warn()}} per failed \verb{(symbol, interval)} pair), followed by a final

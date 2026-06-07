@@ -1,5 +1,7 @@
 # File: R/imports.R
-# Single package-wide data.table import (the only place @import is used).
+# Package-wide imports: data.table (NSE) and assert (the generated
+# R/contracts-generated.R helpers call assert::* by bare name).
 
 #' @import data.table
+#' @import assert
 NULL

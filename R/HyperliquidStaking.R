@@ -62,75 +62,88 @@ HyperliquidStaking <- R6::R6Class(
     #' @description Retrieve a delegator's staking summary: the staked and free
     #'   balances, the total pending withdrawal, and the number of pending
     #'   withdrawals.
-    #' @param address Character; the delegator's `0x`-prefixed address. Defaults
-    #'   to the instance's acting address.
-    #' @return A single-row [data.table::data.table] with `delegated`,
-    #'   `undelegated`, `total_pending_withdrawal`, `n_pending_withdrawals`, or a
-    #'   promise thereof.
+    #' @param address (scalar<character>) the delegator's `0x`-prefixed address.
+    #'   Defaults to the instance's acting address.
+    #' @return (promise<StakingSummary>) a single-row [data.table::data.table]
+    #'   with `delegated`, `undelegated`, `total_pending_withdrawal`,
+    #'   `n_pending_withdrawals`, or a promise thereof.
     get_staking_summary = function(address = private$.acting_address()) {
+      assert_args_HyperliquidStaking__get_staking_summary(address)
       address <- validate_address(address)
       return(private$.info(
         list(type = "delegatorSummary", user = address),
-        .parser = parse_staking_summary
+        .parser = function(x) {
+          assert_return_HyperliquidStaking__get_staking_summary(parse_staking_summary(x))
+        }
       ))
     },
 
     #' @description Retrieve a delegator's active per-validator delegations.
-    #' @param address Character; the delegator's `0x`-prefixed address. Defaults
-    #'   to the instance's acting address.
-    #' @return A [data.table::data.table] with `validator`, `amount`,
-    #'   `locked_until_timestamp`, or a promise thereof.
+    #' @param address (scalar<character>) the delegator's `0x`-prefixed address.
+    #'   Defaults to the instance's acting address.
+    #' @return (promise<data.table>) a [data.table::data.table] with `validator`,
+    #'   `amount`, `locked_until_timestamp`, or a promise thereof.
     get_staking_delegations = function(address = private$.acting_address()) {
+      assert_args_HyperliquidStaking__get_staking_delegations(address)
       address <- validate_address(address)
       return(private$.info(
         list(type = "delegations", user = address),
-        .parser = parse_staking_delegations
+        .parser = function(x) {
+          assert_return_HyperliquidStaking__get_staking_delegations(parse_staking_delegations(x))
+        }
       ))
     },
 
     #' @description Retrieve a delegator's historic staking rewards.
-    #' @param address Character; the delegator's `0x`-prefixed address. Defaults
-    #'   to the instance's acting address.
-    #' @return A [data.table::data.table] with `time`, `source`, `total_amount`,
-    #'   or a promise thereof.
+    #' @param address (scalar<character>) the delegator's `0x`-prefixed address.
+    #'   Defaults to the instance's acting address.
+    #' @return (promise<data.table>) a [data.table::data.table] with `time`,
+    #'   `source`, `total_amount`, or a promise thereof.
     get_staking_rewards = function(address = private$.acting_address()) {
+      assert_args_HyperliquidStaking__get_staking_rewards(address)
       address <- validate_address(address)
       return(private$.info(
         list(type = "delegatorRewards", user = address),
-        .parser = parse_staking_rewards
+        .parser = function(x) {
+          assert_return_HyperliquidStaking__get_staking_rewards(parse_staking_rewards(x))
+        }
       ))
     },
 
     #' @description Retrieve a delegator's comprehensive staking history: the
     #'   delegate / undelegate / deposit / withdraw events. Heterogeneous events
     #'   are stacked with a `delta_type` discriminator.
-    #' @param address Character; the delegator's `0x`-prefixed address. Defaults
-    #'   to the instance's acting address.
-    #' @return A [data.table::data.table] with `time`, `hash`, `delta_type`, and
-    #'   the union of the variants' fields (`validator`, `amount`,
-    #'   `is_undelegate` where present), or a promise thereof.
+    #' @param address (scalar<character>) the delegator's `0x`-prefixed address.
+    #'   Defaults to the instance's acting address.
+    #' @return (promise<data.table>) a [data.table::data.table] with `time`,
+    #'   `hash`, `delta_type`, and the union of the variants' fields
+    #'   (`validator`, `amount`, `is_undelegate` where present), or a promise
+    #'   thereof.
     get_delegator_history = function(address = private$.acting_address()) {
+      assert_args_HyperliquidStaking__get_delegator_history(address)
       address <- validate_address(address)
       return(private$.info(
         list(type = "delegatorHistory", user = address),
-        .parser = parse_delegator_history
+        .parser = function(x) {
+          assert_return_HyperliquidStaking__get_delegator_history(parse_delegator_history(x))
+        }
       ))
     },
 
     #' @description Delegate or undelegate native token to or from a validator.
     #'   Delegations carry a one-day lockup; undelegated balances reflect
     #'   instantly. Requires a signing key.
-    #' @param validator Character; the validator's `0x`-prefixed address.
-    #' @param wei Numeric; the amount in wei -- a finite, strictly-positive whole
-    #'   number.
-    #' @param is_undelegate Logical; `TRUE` to undelegate (withdraw stake),
-    #'   `FALSE` to delegate. Default `FALSE`.
-    #' @return A single-row [data.table::data.table] with `status` and
-    #'   `response_type`, or a promise thereof.
+    #' @param validator (scalar<character>) the validator's `0x`-prefixed
+    #'   address.
+    #' @param wei (scalar<numeric in ]0, Inf[>) the amount in wei -- a finite,
+    #'   strictly-positive whole number.
+    #' @param is_undelegate (scalar<logical>) `TRUE` to undelegate (withdraw
+    #'   stake), `FALSE` to delegate. Default `FALSE`.
+    #' @return (promise<TransferAck>) a single-row [data.table::data.table] with
+    #'   `status` and `response_type`, or a promise thereof.
     token_delegate = function(validator, wei, is_undelegate = FALSE) {
+      assert_args_HyperliquidStaking__token_delegate(validator, wei, is_undelegate)
       validator <- validate_address(validator)
-      assert::assert_scalar_logical(is_undelegate)
-      assert_finite_positive(wei, "wei")
       if (wei != trunc(wei)) {
         rlang::abort(sprintf(
           "`wei` must be a whole number of wei (no fractional part), got: %s",
@@ -148,7 +161,9 @@ HyperliquidStaking <- R6::R6Class(
         action,
         sign_types = TOKEN_DELEGATE_SIGN_TYPES,
         primary_type = "HyperliquidTransaction:TokenDelegate",
-        .parser = parse_token_delegate
+        .parser = function(x) {
+          assert_return_HyperliquidStaking__token_delegate(parse_token_delegate(x))
+        }
       ))
     }
   )

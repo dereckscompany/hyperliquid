@@ -105,15 +105,16 @@ a \verb{subaccount:<vault>} suffix so the move applies to that sub-account
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{amount}}{scalar<numeric in ]0, Inf[>; the USDC amount to move.}
+\item{\code{amount}}{(scalar<numeric in ]0, Inf[>) the USDC amount to move.}
 
-\item{\code{to_perp}}{Logical; \code{TRUE} moves spot -> perp, \code{FALSE} perp -> spot.}
+\item{\code{to_perp}}{(scalar<logical>) \code{TRUE} moves spot -> perp, \code{FALSE} perp ->
+spot.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-A single-row \link[data.table:data.table]{data.table::data.table} with \code{status} and
-\code{response_type}, or a promise thereof.
+(promise<TransferAck>) a single-row \link[data.table:data.table]{data.table::data.table} with
+\code{status} and \code{response_type}, or a promise thereof.
 }
 }
 \if{html}{\out{<hr>}}
@@ -129,15 +130,15 @@ transfer, not a bridge withdrawal).
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{amount}}{scalar<numeric in ]0, Inf[>; the USDC amount to send.}
+\item{\code{amount}}{(scalar<numeric in ]0, Inf[>) the USDC amount to send.}
 
-\item{\code{destination}}{Character; the recipient's 0x-prefixed address.}
+\item{\code{destination}}{(scalar<character>) the recipient's 0x-prefixed address.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-A single-row \link[data.table:data.table]{data.table::data.table} with \code{status} and
-\code{response_type}, or a promise thereof.
+(promise<TransferAck>) a single-row \link[data.table:data.table]{data.table::data.table} with
+\code{status} and \code{response_type}, or a promise thereof.
 }
 }
 \if{html}{\out{<hr>}}
@@ -152,18 +153,18 @@ Send a spot token to another address on Hyperliquid.
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{amount}}{scalar<numeric in ]0, Inf[>; the token amount to send.}
+\item{\code{amount}}{(scalar<numeric in ]0, Inf[>) the token amount to send.}
 
-\item{\code{destination}}{Character; the recipient's 0x-prefixed address.}
+\item{\code{destination}}{(scalar<character>) the recipient's 0x-prefixed address.}
 
-\item{\code{token}}{Character; the token in \verb{NAME:0x<tokenId>} form, e.g.
+\item{\code{token}}{(scalar<character>) the token in \verb{NAME:0x<tokenId>} form, e.g.
 \code{"PURR:0xc1fb593aeffbeb02f85e0308e9956a90"}.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-A single-row \link[data.table:data.table]{data.table::data.table} with \code{status} and
-\code{response_type}, or a promise thereof.
+(promise<TransferAck>) a single-row \link[data.table:data.table]{data.table::data.table} with
+\code{status} and \code{response_type}, or a promise thereof.
 }
 }
 \if{html}{\out{<hr>}}
@@ -179,15 +180,15 @@ withdrawal to the destination address; a fee applies).
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{amount}}{scalar<numeric in ]0, Inf[>; the USDC amount to withdraw.}
+\item{\code{amount}}{(scalar<numeric in ]0, Inf[>) the USDC amount to withdraw.}
 
-\item{\code{destination}}{Character; the recipient's 0x-prefixed address.}
+\item{\code{destination}}{(scalar<character>) the recipient's 0x-prefixed address.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-A single-row \link[data.table:data.table]{data.table::data.table} with \code{status} and
-\code{response_type}, or a promise thereof.
+(promise<TransferAck>) a single-row \link[data.table:data.table]{data.table::data.table} with
+\code{status} and \code{response_type}, or a promise thereof.
 }
 }
 \if{html}{\out{<hr>}}
@@ -212,22 +213,22 @@ dex. When the client carries a \code{vault_address} it is sent as the
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{destination}}{Character; the recipient's 0x-prefixed address.}
+\item{\code{destination}}{(scalar<character>) the recipient's 0x-prefixed address.}
 
-\item{\code{source_dex}}{Character; the source dex name (\code{""} for the default
-perp dex, \code{"spot"} for spot).}
+\item{\code{source_dex}}{(scalar<character>) the source dex name (\code{""} for the
+default perp dex, \code{"spot"} for spot).}
 
-\item{\code{destination_dex}}{Character; the destination dex name.}
+\item{\code{destination_dex}}{(scalar<character>) the destination dex name.}
 
-\item{\code{token}}{Character; the token in \verb{NAME:0x<tokenId>} form.}
+\item{\code{token}}{(scalar<character>) the token in \verb{NAME:0x<tokenId>} form.}
 
-\item{\code{amount}}{scalar<numeric in ]0, Inf[>; the amount to send.}
+\item{\code{amount}}{(scalar<numeric in ]0, Inf[>) the amount to send.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-A single-row \link[data.table:data.table]{data.table::data.table} with \code{status} and
-\code{response_type}, or a promise thereof.
+(promise<TransferAck>) a single-row \link[data.table:data.table]{data.table::data.table} with
+\code{status} and \code{response_type}, or a promise thereof.
 }
 }
 \if{html}{\out{<hr>}}
@@ -244,18 +245,19 @@ micro-USD integer before signing.
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{sub_account_user}}{Character; the sub-account's 0x-prefixed address.}
+\item{\code{sub_account_user}}{(scalar<character>) the sub-account's 0x-prefixed
+address.}
 
-\item{\code{is_deposit}}{Logical; \code{TRUE} deposits into the sub-account, \code{FALSE}
-withdraws from it.}
+\item{\code{is_deposit}}{(scalar<logical>) \code{TRUE} deposits into the sub-account,
+\code{FALSE} withdraws from it.}
 
-\item{\code{usd}}{scalar<numeric in ]0, Inf[>; the USD amount.}
+\item{\code{usd}}{(scalar<numeric in ]0, Inf[>) the USD amount.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-A single-row \link[data.table:data.table]{data.table::data.table} with \code{status} and
-\code{response_type}, or a promise thereof.
+(promise<TransferAck>) a single-row \link[data.table:data.table]{data.table::data.table} with
+\code{status} and \code{response_type}, or a promise thereof.
 }
 }
 \if{html}{\out{<hr>}}
@@ -276,20 +278,21 @@ its sub-accounts (an L1 action).
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{sub_account_user}}{Character; the sub-account's 0x-prefixed address.}
+\item{\code{sub_account_user}}{(scalar<character>) the sub-account's 0x-prefixed
+address.}
 
-\item{\code{is_deposit}}{Logical; \code{TRUE} deposits into the sub-account, \code{FALSE}
-withdraws from it.}
+\item{\code{is_deposit}}{(scalar<logical>) \code{TRUE} deposits into the sub-account,
+\code{FALSE} withdraws from it.}
 
-\item{\code{token}}{Character; the token in \verb{NAME:0x<tokenId>} form.}
+\item{\code{token}}{(scalar<character>) the token in \verb{NAME:0x<tokenId>} form.}
 
-\item{\code{amount}}{scalar<numeric in ]0, Inf[>; the token amount.}
+\item{\code{amount}}{(scalar<numeric in ]0, Inf[>) the token amount.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-A single-row \link[data.table:data.table]{data.table::data.table} with \code{status} and
-\code{response_type}, or a promise thereof.
+(promise<TransferAck>) a single-row \link[data.table:data.table]{data.table::data.table} with
+\code{status} and \code{response_type}, or a promise thereof.
 }
 }
 \if{html}{\out{<hr>}}
@@ -305,18 +308,18 @@ amount is scaled to a micro-USD integer before signing.
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{vault_address}}{Character; the vault's 0x-prefixed address.}
+\item{\code{vault_address}}{(scalar<character>) the vault's 0x-prefixed address.}
 
-\item{\code{is_deposit}}{Logical; \code{TRUE} deposits into the vault, \code{FALSE}
-withdraws from it.}
+\item{\code{is_deposit}}{(scalar<logical>) \code{TRUE} deposits into the vault,
+\code{FALSE} withdraws from it.}
 
-\item{\code{usd}}{scalar<numeric in ]0, Inf[>; the USD amount.}
+\item{\code{usd}}{(scalar<numeric in ]0, Inf[>) the USD amount.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-A single-row \link[data.table:data.table]{data.table::data.table} with \code{status} and
-\code{response_type}, or a promise thereof.
+(promise<TransferAck>) a single-row \link[data.table:data.table]{data.table::data.table} with
+\code{status} and \code{response_type}, or a promise thereof.
 }
 }
 \if{html}{\out{<hr>}}

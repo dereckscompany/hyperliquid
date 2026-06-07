@@ -7,10 +7,10 @@
 time_convert_to_hyperliquid(datetime)
 }
 \arguments{
-\item{datetime}{POSIXct object(s) to convert.}
+\item{datetime}{(POSIXct) object(s) to convert.}
 }
 \value{
-Numeric; whole-number epoch milliseconds.
+(numeric) whole-number epoch milliseconds.
 }
 \description{
 Formats a POSIXct as the timestamp form Hyperliquid expects: whole-number

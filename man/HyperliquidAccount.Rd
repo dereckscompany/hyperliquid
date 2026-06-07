@@ -123,15 +123,16 @@ position.
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{address}}{Character; the account's \verb{0x}-prefixed address. Defaults to
-the instance's acting address.}
+\item{\code{address}}{(scalar<character>) the account's \verb{0x}-prefixed address.
+Defaults to the instance's acting address.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-A \link[data.table:data.table]{data.table::data.table} with \code{coin}, \code{szi}, \code{entry_px},
-\code{position_value}, \code{unrealized_pnl}, \code{return_on_equity}, \code{leverage_type},
-\code{leverage_value}, \code{liquidation_px}, \code{margin_used}, or a promise thereof.
+(promise<Position>) a \link[data.table:data.table]{data.table::data.table} with \code{coin}, \code{szi},
+\code{entry_px}, \code{position_value}, \code{unrealized_pnl}, \code{return_on_equity},
+\code{leverage_type}, \code{leverage_value}, \code{liquidation_px}, \code{margin_used}, or a
+promise thereof.
 }
 }
 \if{html}{\out{<hr>}}
@@ -147,16 +148,17 @@ Retrieve the account's cross-margin summary. Sibling of
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{address}}{Character; the account's \verb{0x}-prefixed address. Defaults to
-the instance's acting address.}
+\item{\code{address}}{(scalar<character>) the account's \verb{0x}-prefixed address.
+Defaults to the instance's acting address.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-A single-row \link[data.table:data.table]{data.table::data.table} with \code{account_value},
-\code{total_ntl_pos}, \code{total_raw_usd}, \code{total_margin_used}, \code{withdrawable},
-\code{cross_account_value}, \code{cross_total_ntl_pos}, \code{cross_total_raw_usd},
-\code{cross_total_margin_used}, or a promise thereof.
+(promise<MarginSummary>) a single-row \link[data.table:data.table]{data.table::data.table}
+with \code{account_value}, \code{total_ntl_pos}, \code{total_raw_usd},
+\code{total_margin_used}, \code{withdrawable}, \code{cross_account_value},
+\code{cross_total_ntl_pos}, \code{cross_total_raw_usd}, \code{cross_total_margin_used},
+or a promise thereof.
 }
 }
 \if{html}{\out{<hr>}}
@@ -172,14 +174,14 @@ balance.
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{address}}{Character; the account's \verb{0x}-prefixed address. Defaults to
-the instance's acting address.}
+\item{\code{address}}{(scalar<character>) the account's \verb{0x}-prefixed address.
+Defaults to the instance's acting address.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-A \link[data.table:data.table]{data.table::data.table} with \code{coin}, \code{total}, \code{hold},
-\code{entry_ntl}, or a promise thereof.
+(promise<data.table>) a \link[data.table:data.table]{data.table::data.table} with \code{coin},
+\code{total}, \code{hold}, \code{entry_ntl}, or a promise thereof.
 }
 }
 \if{html}{\out{<hr>}}
@@ -194,14 +196,14 @@ Retrieve the account's resting orders, one row per order.
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{address}}{Character; the account's \verb{0x}-prefixed address. Defaults to
-the instance's acting address.}
+\item{\code{address}}{(scalar<character>) the account's \verb{0x}-prefixed address.
+Defaults to the instance's acting address.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-A \link[data.table:data.table]{data.table::data.table} with \code{coin}, \code{oid}, \code{side}, \code{limit_px},
-\code{sz}, \code{timestamp}, or a promise thereof.
+(promise<data.table>) a \link[data.table:data.table]{data.table::data.table} with \code{coin},
+\code{oid}, \code{side}, \code{limit_px}, \code{sz}, \code{timestamp}, or a promise thereof.
 }
 }
 \if{html}{\out{<hr>}}
@@ -220,16 +222,16 @@ richer detail (order type, trigger fields, reduce-only, tif). Sibling of
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{address}}{Character; the account's \verb{0x}-prefixed address. Defaults to
-the instance's acting address.}
+\item{\code{address}}{(scalar<character>) the account's \verb{0x}-prefixed address.
+Defaults to the instance's acting address.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-A \link[data.table:data.table]{data.table::data.table} with \code{coin}, \code{oid}, \code{side}, \code{limit_px},
-\code{sz}, \code{timestamp}, \code{order_type}, \code{is_trigger}, \code{trigger_px},
-\code{trigger_condition}, \code{reduce_only}, \code{tif}, \code{orig_sz}, \code{is_position_tpsl},
-or a promise thereof.
+(promise<data.table>) a \link[data.table:data.table]{data.table::data.table} with \code{coin},
+\code{oid}, \code{side}, \code{limit_px}, \code{sz}, \code{timestamp}, \code{order_type},
+\code{is_trigger}, \code{trigger_px}, \code{trigger_condition}, \code{reduce_only}, \code{tif},
+\code{orig_sz}, \code{is_position_tpsl}, or a promise thereof.
 }
 }
 \if{html}{\out{<hr>}}
@@ -245,15 +247,15 @@ Retrieve the account's most recent fills (retention is the
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{address}}{Character; the account's \verb{0x}-prefixed address. Defaults to
-the instance's acting address.}
+\item{\code{address}}{(scalar<character>) the account's \verb{0x}-prefixed address.
+Defaults to the instance's acting address.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-A \link[data.table:data.table]{data.table::data.table} with \code{coin}, \code{px}, \code{sz}, \code{side},
-\code{time}, \code{start_position}, \code{dir}, \code{closed_pnl}, \code{hash}, \code{oid}, \code{crossed},
-\code{fee}, \code{fee_token}, \code{tid}, or a promise thereof.
+(promise<Fill>) a \link[data.table:data.table]{data.table::data.table} with \code{coin}, \code{px},
+\code{sz}, \code{side}, \code{time}, \code{start_position}, \code{dir}, \code{closed_pnl}, \code{hash},
+\code{oid}, \code{crossed}, \code{fee}, \code{fee_token}, \code{tid}, or a promise thereof.
 }
 }
 \if{html}{\out{<hr>}}
@@ -274,21 +276,22 @@ per call), same shape as \link[=HyperliquidAccount]{get_user_fills()}.
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{address}}{Character; the account's \verb{0x}-prefixed address. Defaults to
-the instance's acting address.}
+\item{\code{address}}{(scalar<character>) the account's \verb{0x}-prefixed address.
+Defaults to the instance's acting address.}
 
-\item{\code{start}}{POSIXct or numeric epoch-milliseconds; range start.}
+\item{\code{start}}{(POSIXct | numeric) range start (POSIXct or numeric
+epoch-milliseconds).}
 
-\item{\code{end}}{POSIXct, numeric epoch-milliseconds, or \code{NULL}; range end.
-Default \code{NULL} (up to now).}
+\item{\code{end}}{(POSIXct | numeric | NULL) range end (POSIXct, numeric
+epoch-milliseconds, or \code{NULL}). Default \code{NULL} (up to now).}
 
-\item{\code{aggregate_by_time}}{Logical; if \code{TRUE}, partial fills of one order at
-the same time are aggregated. Default \code{FALSE}.}
+\item{\code{aggregate_by_time}}{(scalar<logical>) if \code{TRUE}, partial fills of one
+order at the same time are aggregated. Default \code{FALSE}.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-A \link[data.table:data.table]{data.table::data.table} with the same columns as
+(promise<Fill>) a \link[data.table:data.table]{data.table::data.table} with the same columns as
 \link[=HyperliquidAccount]{get_user_fills()}, or a promise thereof.
 }
 }
@@ -305,16 +308,17 @@ transition (the same \code{oid} recurs across its lifecycle; not deduplicated).
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{address}}{Character; the account's \verb{0x}-prefixed address. Defaults to
-the instance's acting address.}
+\item{\code{address}}{(scalar<character>) the account's \verb{0x}-prefixed address.
+Defaults to the instance's acting address.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-A \link[data.table:data.table]{data.table::data.table} with \code{oid}, \code{coin}, \code{side}, \code{limit_px},
-\code{sz}, \code{orig_sz}, \code{order_type}, \code{tif}, \code{reduce_only}, \code{trigger_px},
-\code{trigger_condition}, \code{is_trigger}, \code{is_position_tpsl}, \code{cloid},
-\code{timestamp}, \code{status}, \code{status_timestamp}, or a promise thereof.
+(promise<data.table>) a \link[data.table:data.table]{data.table::data.table} with \code{oid},
+\code{coin}, \code{side}, \code{limit_px}, \code{sz}, \code{orig_sz}, \code{order_type}, \code{tif},
+\code{reduce_only}, \code{trigger_px}, \code{trigger_condition}, \code{is_trigger},
+\code{is_position_tpsl}, \code{cloid}, \code{timestamp}, \code{status}, \code{status_timestamp},
+or a promise thereof.
 }
 }
 \if{html}{\out{<hr>}}
@@ -334,19 +338,21 @@ range, one row per payment.
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{address}}{Character; the account's \verb{0x}-prefixed address. Defaults to
-the instance's acting address.}
+\item{\code{address}}{(scalar<character>) the account's \verb{0x}-prefixed address.
+Defaults to the instance's acting address.}
 
-\item{\code{start}}{POSIXct or numeric epoch-milliseconds; range start.}
+\item{\code{start}}{(POSIXct | numeric) range start (POSIXct or numeric
+epoch-milliseconds).}
 
-\item{\code{end}}{POSIXct, numeric epoch-milliseconds, or \code{NULL}; range end.
-Default \code{NULL} (up to now).}
+\item{\code{end}}{(POSIXct | numeric | NULL) range end (POSIXct, numeric
+epoch-milliseconds, or \code{NULL}). Default \code{NULL} (up to now).}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-A \link[data.table:data.table]{data.table::data.table} with \code{time}, \code{hash}, \code{coin},
-\code{funding_rate}, \code{szi}, \code{usdc}, \code{n_samples}, or a promise thereof.
+(promise<data.table>) a \link[data.table:data.table]{data.table::data.table} with \code{time},
+\code{hash}, \code{coin}, \code{funding_rate}, \code{szi}, \code{usdc}, \code{n_samples}, or a promise
+thereof.
 }
 }
 \if{html}{\out{<hr>}}
@@ -367,19 +373,21 @@ Heterogeneous events stack with a \code{delta_type} discriminator.
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{address}}{Character; the account's \verb{0x}-prefixed address. Defaults to
-the instance's acting address.}
+\item{\code{address}}{(scalar<character>) the account's \verb{0x}-prefixed address.
+Defaults to the instance's acting address.}
 
-\item{\code{start}}{POSIXct or numeric epoch-milliseconds; range start.}
+\item{\code{start}}{(POSIXct | numeric) range start (POSIXct or numeric
+epoch-milliseconds).}
 
-\item{\code{end}}{POSIXct, numeric epoch-milliseconds, or \code{NULL}; range end.
-Default \code{NULL} (up to now).}
+\item{\code{end}}{(POSIXct | numeric | NULL) range end (POSIXct, numeric
+epoch-milliseconds, or \code{NULL}). Default \code{NULL} (up to now).}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-A \link[data.table:data.table]{data.table::data.table} led by \code{time}, \code{hash}, \code{delta_type},
-\code{usdc}, then the union of the variants' fields, or a promise thereof.
+(promise<data.table>) a \link[data.table:data.table]{data.table::data.table} led by \code{time},
+\code{hash}, \code{delta_type}, \code{usdc}, then the union of the variants' fields, or
+a promise thereof.
 }
 }
 \if{html}{\out{<hr>}}
@@ -395,14 +403,14 @@ one row per (period, metric, point).
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{address}}{Character; the account's \verb{0x}-prefixed address. Defaults to
-the instance's acting address.}
+\item{\code{address}}{(scalar<character>) the account's \verb{0x}-prefixed address.
+Defaults to the instance's acting address.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-A \link[data.table:data.table]{data.table::data.table} with \code{period}, \code{metric}, \code{time},
-\code{value}, or a promise thereof.
+(promise<data.table>) a \link[data.table:data.table]{data.table::data.table} with \code{period},
+\code{metric}, \code{time}, \code{value}, or a promise thereof.
 }
 }
 \if{html}{\out{<hr>}}
@@ -418,14 +426,14 @@ Retrieve the account's per-period traded volume. Sibling of
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{address}}{Character; the account's \verb{0x}-prefixed address. Defaults to
-the instance's acting address.}
+\item{\code{address}}{(scalar<character>) the account's \verb{0x}-prefixed address.
+Defaults to the instance's acting address.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-A \link[data.table:data.table]{data.table::data.table} with \code{period}, \code{vlm}, or a promise
-thereof.
+(promise<data.table>) a \link[data.table:data.table]{data.table::data.table} with \code{period},
+\code{vlm}, or a promise thereof.
 }
 }
 \if{html}{\out{<hr>}}
@@ -440,14 +448,15 @@ Retrieve the account's current fee schedule.
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{address}}{Character; the account's \verb{0x}-prefixed address. Defaults to
-the instance's acting address.}
+\item{\code{address}}{(scalar<character>) the account's \verb{0x}-prefixed address.
+Defaults to the instance's acting address.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-A single-row \link[data.table:data.table]{data.table::data.table} with \code{user_add_rate},
-\code{user_cross_rate}, \code{active_referral_discount}, or a promise thereof.
+(promise<data.table>) a single-row \link[data.table:data.table]{data.table::data.table} with
+\code{user_add_rate}, \code{user_cross_rate}, \code{active_referral_discount}, or a
+promise thereof.
 }
 }
 \if{html}{\out{<hr>}}
@@ -463,14 +472,14 @@ Retrieve the account's daily traded volume. Sibling of
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{address}}{Character; the account's \verb{0x}-prefixed address. Defaults to
-the instance's acting address.}
+\item{\code{address}}{(scalar<character>) the account's \verb{0x}-prefixed address.
+Defaults to the instance's acting address.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-A \link[data.table:data.table]{data.table::data.table} with \code{date}, \code{exchange}, \code{user_add},
-\code{user_cross}, or a promise thereof.
+(promise<data.table>) a \link[data.table:data.table]{data.table::data.table} with \code{date},
+\code{exchange}, \code{user_add}, \code{user_cross}, or a promise thereof.
 }
 }
 \if{html}{\out{<hr>}}
@@ -485,14 +494,14 @@ Retrieve the account's current request rate-limit state.
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{address}}{Character; the account's \verb{0x}-prefixed address. Defaults to
-the instance's acting address.}
+\item{\code{address}}{(scalar<character>) the account's \verb{0x}-prefixed address.
+Defaults to the instance's acting address.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-A single-row \link[data.table:data.table]{data.table::data.table} with \code{cum_vlm},
-\code{n_requests_used}, \code{n_requests_cap}, or a promise thereof.
+(promise<data.table>) a single-row \link[data.table:data.table]{data.table::data.table} with
+\code{cum_vlm}, \code{n_requests_used}, \code{n_requests_cap}, or a promise thereof.
 }
 }
 \if{html}{\out{<hr>}}
@@ -508,14 +517,14 @@ Retrieve the account's role (e.g. \code{"user"}, \code{"vault"},
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{address}}{Character; the account's \verb{0x}-prefixed address. Defaults to
-the instance's acting address.}
+\item{\code{address}}{(scalar<character>) the account's \verb{0x}-prefixed address.
+Defaults to the instance's acting address.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-A single-row \link[data.table:data.table]{data.table::data.table} with \code{role}, or a promise
-thereof.
+(promise<data.table>) a single-row \link[data.table:data.table]{data.table::data.table} with
+\code{role}, or a promise thereof.
 }
 }
 \if{html}{\out{<hr>}}
@@ -531,15 +540,16 @@ when the account has none).
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{address}}{Character; the account's \verb{0x}-prefixed address. Defaults to
-the instance's acting address.}
+\item{\code{address}}{(scalar<character>) the account's \verb{0x}-prefixed address.
+Defaults to the instance's acting address.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-A \link[data.table:data.table]{data.table::data.table} with \code{name}, \code{sub_account_user},
-\code{master}, \code{account_value}, \code{total_ntl_pos}, \code{total_raw_usd},
-\code{total_margin_used}, \code{withdrawable}, or a promise thereof.
+(promise<data.table>) a \link[data.table:data.table]{data.table::data.table} with \code{name},
+\code{sub_account_user}, \code{master}, \code{account_value}, \code{total_ntl_pos},
+\code{total_raw_usd}, \code{total_margin_used}, \code{withdrawable}, or a promise
+thereof.
 }
 }
 \if{html}{\out{<hr>}}
@@ -558,18 +568,18 @@ client order id.
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{address}}{Character; the account's \verb{0x}-prefixed address. Defaults to
-the instance's acting address.}
+\item{\code{address}}{(scalar<character>) the account's \verb{0x}-prefixed address.
+Defaults to the instance's acting address.}
 
-\item{\code{oid_or_cloid}}{Numeric order id, or character \verb{0x}-prefixed client
-order id (cloid).}
+\item{\code{oid_or_cloid}}{(scalar<numeric> | scalar<character>) numeric order
+id, or character \verb{0x}-prefixed client order id (cloid).}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-A single-row \link[data.table:data.table]{data.table::data.table} with \code{query_status} and the
-order shape (\code{oid}, \code{coin}, \code{side}, ..., \code{status}, \code{status_timestamp}),
-or a promise thereof.
+(promise<data.table>) a single-row \link[data.table:data.table]{data.table::data.table} with
+\code{query_status} and the order shape (\code{oid}, \code{coin}, \code{side}, ..., \code{status},
+\code{status_timestamp}), or a promise thereof.
 }
 }
 \if{html}{\out{<hr>}}
@@ -585,14 +595,15 @@ into, one row per vault.
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{address}}{Character; the account's \verb{0x}-prefixed address. Defaults to
-the instance's acting address.}
+\item{\code{address}}{(scalar<character>) the account's \verb{0x}-prefixed address.
+Defaults to the instance's acting address.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-A \link[data.table:data.table]{data.table::data.table} with \code{vault_address}, \code{equity},
-\code{locked_until_timestamp}, or a promise thereof.
+(promise<data.table>) a \link[data.table:data.table]{data.table::data.table} with
+\code{vault_address}, \code{equity}, \code{locked_until_timestamp}, or a promise
+thereof.
 }
 }
 \if{html}{\out{<hr>}}
