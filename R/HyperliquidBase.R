@@ -202,6 +202,96 @@ HyperliquidBase <- R6::R6Class(
       return(private$.request(payload, signed = TRUE, .parser = .parser, timeout = timeout))
     },
 
+    # Abort unless a signing key is present. Signed /exchange actions need the
+    # wallet private key; public /info reads do not. Called by both submit
+    # helpers so the failure is the same actionable message everywhere.
+    .require_signing_key = function() {
+      if (is.null(private$.keys$private_key)) {
+        rlang::abort(paste0(
+          "A signed action requires a wallet private key, but none is set. ",
+          "Set HYPERLIQUID_PRIVATE_KEY (and optionally HYPERLIQUID_ACCOUNT_ADDRESS) ",
+          "or pass keys = get_api_keys(private_key = ...) to the constructor."
+        ))
+      }
+      return(invisible(TRUE))
+    },
+
+    # Sign and submit an L1 (exchange) action in one step. Takes the bare action
+    # (built and validated by the subclass method), allocates a monotonic nonce,
+    # signs over the Exchange domain (threading vault_address and expires_after
+    # into the action hash), and posts the {action, nonce, signature, ...} body.
+    # The network is taken from the explicit testnet flag, never URL sniffing.
+    .submit_l1 = function(action, .parser = identity, expires_after = NULL, timeout = 30) {
+      private$.require_signing_key()
+      nonce <- next_nonce()
+      is_mainnet <- !private$.testnet
+      sig <- sign_l1_action(
+        private$.keys$private_key,
+        action,
+        private$.vault_address,
+        nonce,
+        expires_after,
+        is_mainnet
+      )
+      return(private$.exchange(
+        action,
+        nonce,
+        sig,
+        vault_address = private$.vault_address,
+        expires_after = expires_after,
+        .parser = .parser,
+        timeout = timeout
+      ))
+    },
+
+    # Sign and submit a user-signed action in one step. The action must already
+    # carry its own nonce-bearing field (the subclass sets `time` or `nonce` to
+    # the payload nonce). Mirrors the Python SDK: sign_user_signed_action() adds
+    # signatureChainId and the environment-dependent hyperliquidChain tag while
+    # hashing, and the SDK posts that same mutated action -- so we reproduce the
+    # mutation on the posted body (appending those two fields, matching the SDK
+    # key order) to keep the posted JSON byte-for-byte consistent with what was
+    # signed. vaultAddress is null for user-signed actions and expiresAfter is
+    # unsupported on them, so both are sent NULL.
+    .submit_user = function(action, sign_types, primary_type, .parser = identity, timeout = 30) {
+      private$.require_signing_key()
+      is_mainnet <- !private$.testnet
+      posted_action <- action
+      posted_action$signatureChainId <- "0x66eee"
+      posted_action$hyperliquidChain <- "Testnet"
+      if (is_mainnet) {
+        posted_action$hyperliquidChain <- "Mainnet"
+      }
+      sig <- sign_user_signed_action(
+        private$.keys$private_key,
+        action,
+        sign_types,
+        primary_type,
+        is_mainnet
+      )
+      nonce <- coalesce_null(action$time, action$nonce)
+      return(private$.exchange(
+        posted_action,
+        nonce,
+        sig,
+        vault_address = NULL,
+        expires_after = NULL,
+        .parser = .parser,
+        timeout = timeout
+      ))
+    },
+
+    # The address user-scoped reads should default to. An agent (API) wallet
+    # acts for a master account, and a vault/sub-account overrides both, so the
+    # precedence is vault_address, then account_address, then the key's own
+    # derived wallet address (mirrors the Python SDK's market_close lookup).
+    .acting_address = function() {
+      return(coalesce_null(
+        private$.vault_address,
+        coalesce_null(private$.account_address, private$.keys$wallet_address)
+      ))
+    },
+
     # Return cached asset-lookup tables, fetching them on first need.
     .ensure_meta = function() {
       if (is.null(private$.meta_cache)) {
