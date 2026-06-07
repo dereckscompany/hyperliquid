@@ -15,7 +15,9 @@ validate_address <- function(x) {
   assert::assert_scalar_character(x)
   if (!grepl("^0[xX][0-9a-fA-F]{40}$", x)) {
     rlang::abort(paste0(
-      "Invalid address '", x, "'. Expected a 0x-prefixed 40-hex-character ",
+      "Invalid address '",
+      x,
+      "'. Expected a 0x-prefixed 40-hex-character ",
       "Ethereum address, e.g. \"0x5e9ee1089755c3435139848e47e6635505d5a13a\"."
     ))
   }
@@ -56,8 +58,11 @@ validate_interval <- function(x) {
   assert::assert_scalar_character(x)
   if (!x %in% HYPERLIQUID_INTERVALS) {
     rlang::abort(paste0(
-      "Invalid interval '", x, "'. Expected one of: ",
-      paste(HYPERLIQUID_INTERVALS, collapse = ", "), "."
+      "Invalid interval '",
+      x,
+      "'. Expected one of: ",
+      paste(HYPERLIQUID_INTERVALS, collapse = ", "),
+      "."
     ))
   }
   return(x)
@@ -112,7 +117,9 @@ validate_cloid <- function(x) {
   assert::assert_scalar_character(x)
   if (!grepl("^0[xX][0-9a-fA-F]{32}$", x)) {
     rlang::abort(paste0(
-      "Invalid cloid '", x, "'. Expected a 0x-prefixed 32-hex-character client ",
+      "Invalid cloid '",
+      x,
+      "'. Expected a 0x-prefixed 32-hex-character client ",
       "order id (16 bytes), e.g. the output of new_cloid()."
     ))
   }
@@ -143,7 +150,8 @@ assert_finite_positive <- function(x, name) {
   if (!is.finite(x) || x <= 0) {
     rlang::abort(sprintf(
       "`%s` must be a single finite number greater than 0 (in ]0, Inf[), got: %s",
-      name, format(x)
+      name,
+      format(x)
     ))
   }
   return(invisible(x))

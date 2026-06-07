@@ -51,6 +51,8 @@ public methods that delegate to \code{private$.info()} (reads) or
 All fields are private:
 \itemize{
 \item \code{.keys}: List; wallet credentials from \code{\link[=get_api_keys]{get_api_keys()}}.
+\item \code{.signer}: \link[ethsign:EthSigner]{ethsign::EthSigner} or \code{NULL}; the wallet signer built from the
+key (used to sign /exchange actions), or \code{NULL} when no key is set.
 \item \code{.base_url}: Character; REST base URL for the selected network.
 \item \code{.is_async}: Logical; whether the instance is in async mode.
 \item \code{.perform}: Function; \link[httr2:req_perform]{httr2::req_perform} or \link[httr2:req_perform_promise]{httr2::req_perform_promise}.

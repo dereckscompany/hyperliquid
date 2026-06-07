@@ -172,7 +172,8 @@ mock_router <- function(req) {
   if (is.null(fixture)) {
     stop(sprintf(
       "Unmocked Hyperliquid %s type: '%s'. Add it to mock_router.R.",
-      where, if (is.null(type)) "<missing>" else type
+      where,
+      if (is.null(type)) "<missing>" else type
     ))
   }
 

@@ -131,7 +131,7 @@ action_hash <- function(action, vault_address, nonce, expires_after = NULL) {
   if (!is.null(expires_after)) {
     data <- c(data, as.raw(0x00), u64_be_raw(expires_after))
   }
-  return(keccak256(data))
+  return(ethsign::keccak256(data))
 }
 
 # ---- L1 (exchange) action signing --------------------------------------------
@@ -158,6 +158,11 @@ AGENT_FIELDS <- list(
 ZERO_ADDRESS <- "0x0000000000000000000000000000000000000000"
 
 #' Compute the L1 (Exchange) Signing Digest
+#'
+#' Hashes the phantom agent under the fixed `Exchange` EIP-712 domain via
+#' [ethsign::eip712_digest()]. The phantom agent's `connectionId` is the
+#' `raw(32)` action hash, encoded as the `bytes32` field.
+#'
 #' @param action The action value.
 #' @param vault_address Character or `NULL`.
 #' @param nonce Numeric; the action nonce.
@@ -169,51 +174,24 @@ ZERO_ADDRESS <- "0x0000000000000000000000000000000000000000"
 l1_signing_digest <- function(action, vault_address, nonce, expires_after, is_mainnet) {
   hash <- action_hash(action, vault_address, nonce, expires_after)
   phantom_agent <- construct_phantom_agent(hash, is_mainnet)
-  domain_sep <- eip712_domain_separator(
-    name = "Exchange",
-    version = "1",
-    chain_id = 1337,
-    verifying_contract = ZERO_ADDRESS
-  )
-  struct_hash <- eip712_hash_struct("Agent", AGENT_FIELDS, phantom_agent)
-  return(eip712_signing_digest(domain_sep, struct_hash))
-}
-
-#' Format a Big Integer as Minimal Lowercase Hex (`eth_utils.to_hex`)
-#' @param x A `gmp::bigz` or coercible integer.
-#' @return Character; `0x`-prefixed minimal hex (no leading zeros).
-#' @importFrom gmp as.bigz
-#' @keywords internal
-#' @noRd
-to_hex_min <- function(x) {
-  h <- tolower(as.character(gmp::as.bigz(x), b = 16))
-  h <- sub("^0+", "", h)
-  if (h == "") {
-    h <- "0"
-  }
-  return(paste0("0x", h))
-}
-
-#' Sign a Digest, Returning `r`/`s`/`v` as Ethereum Hex/Integer
-#' @param priv32 `raw(32)`; the private scalar.
-#' @param digest32 `raw(32)`; the digest to sign.
-#' @return `list(r = chr, s = chr, v = integer)`.
-#' @keywords internal
-#' @noRd
-sign_digest <- function(priv32, digest32) {
-  sig <- ecdsa_sign_rfc6979(digest32, priv32)
-  return(list(r = to_hex_min(sig$r), s = to_hex_min(sig$s), v = sig$v))
+  return(ethsign::eip712_digest(
+    list(name = "Exchange", version = "1", chainId = 1337, verifyingContract = ZERO_ADDRESS),
+    "Agent",
+    AGENT_FIELDS,
+    phantom_agent
+  ))
 }
 
 #' Sign an L1 (Exchange) Action
+#' @param signer An [ethsign::EthSigner]; the wallet signer.
 #' @inheritParams l1_signing_digest
-#' @param priv32 `raw(32)`; the private scalar.
-#' @return `list(r, s, v)`.
+#' @return `list(r, s, v)` in Hyperliquid's wire shape (from
+#'   [ethsign::as_rsv()]).
 #' @keywords internal
 #' @noRd
-sign_l1_action <- function(priv32, action, vault_address, nonce, expires_after, is_mainnet) {
+sign_l1_action <- function(signer, action, vault_address, nonce, expires_after, is_mainnet) {
   digest <- l1_signing_digest(action, vault_address, nonce, expires_after, is_mainnet)
-  return(sign_digest(priv32, digest))
+  return(ethsign::as_rsv(signer$sign_digest(digest)))
 }
 
 # ---- user-signed actions (HyperliquidSignTransaction domain) -----------------
@@ -280,169 +258,42 @@ TOKEN_DELEGATE_SIGN_TYPES <- list(
   list(name = "nonce", type = "uint64")
 )
 
-#' Compute a User-Signed Action Digest (HyperliquidSignTransaction domain)
-#' @param message Named list; the action message.
-#' @param sign_types Unnamed list of `list(name, type)` (definition order).
-#' @param primary_type Character; the EIP-712 primary type.
-#' @param chain_id Numeric or `gmp::bigz`; the signature chain id.
-#' @return `raw(32)`; the digest to sign.
-#' @keywords internal
-#' @noRd
-user_signed_digest <- function(message, sign_types, primary_type, chain_id) {
-  domain_sep <- eip712_domain_separator(
-    name = "HyperliquidSignTransaction",
-    version = "1",
-    chain_id = chain_id,
-    verifying_contract = ZERO_ADDRESS
-  )
-  struct_hash <- eip712_hash_struct(primary_type, sign_types, message)
-  return(eip712_signing_digest(domain_sep, struct_hash))
-}
-
 #' Sign a User-Signed Action
 #'
 #' Mutates the action as signing.py does: a fixed `signatureChainId` and an
 #' environment-dependent `hyperliquidChain` tag, then signs over the
-#' HyperliquidSignTransaction domain.
+#' HyperliquidSignTransaction EIP-712 domain via [ethsign::eip712_digest()].
+#' Extra action keys (e.g. `type`) are ignored by the digest.
 #'
-#' @param priv32 `raw(32)`; the private scalar.
+#' @param signer An [ethsign::EthSigner]; the wallet signer.
 #' @param action Named list; the action message.
 #' @param sign_types Unnamed list of `list(name, type)`.
 #' @param primary_type Character; the EIP-712 primary type.
 #' @param is_mainnet Logical.
-#' @return `list(r, s, v)`.
+#' @return `list(r, s, v)` in Hyperliquid's wire shape (from
+#'   [ethsign::as_rsv()]).
 #' @importFrom gmp as.bigz
 #' @keywords internal
 #' @noRd
-sign_user_signed_action <- function(priv32, action, sign_types, primary_type, is_mainnet) {
+sign_user_signed_action <- function(signer, action, sign_types, primary_type, is_mainnet) {
   action$signatureChainId <- "0x66eee"
   action$hyperliquidChain <- "Testnet"
   if (is_mainnet) {
     action$hyperliquidChain <- "Mainnet"
   }
-  chain_id <- gmp::as.bigz(strtoi(sub("^0x", "", action$signatureChainId), 16L))
-  digest <- user_signed_digest(action, sign_types, primary_type, chain_id)
-  return(sign_digest(priv32, digest))
-}
-
-#' Sign a `usdSend` Transfer Action
-#' @inheritParams sign_user_signed_action
-#' @return `list(r, s, v)`.
-#' @keywords internal
-#' @noRd
-sign_usd_transfer_action <- function(priv32, action, is_mainnet) {
-  return(sign_user_signed_action(
-    priv32,
-    action,
-    USD_SEND_SIGN_TYPES,
-    "HyperliquidTransaction:UsdSend",
-    is_mainnet
-  ))
-}
-
-#' Sign a `withdraw3` (Withdraw from Bridge) Action
-#' @inheritParams sign_user_signed_action
-#' @return `list(r, s, v)`.
-#' @keywords internal
-#' @noRd
-sign_withdraw_from_bridge_action <- function(priv32, action, is_mainnet) {
-  return(sign_user_signed_action(
-    priv32,
-    action,
-    WITHDRAW_SIGN_TYPES,
-    "HyperliquidTransaction:Withdraw",
-    is_mainnet
-  ))
-}
-
-#' Sign a `spotSend` Transfer Action
-#' @inheritParams sign_user_signed_action
-#' @return `list(r, s, v)`.
-#' @keywords internal
-#' @noRd
-sign_spot_transfer_action <- function(priv32, action, is_mainnet) {
-  return(sign_user_signed_action(
-    priv32,
-    action,
-    SPOT_TRANSFER_SIGN_TYPES,
-    "HyperliquidTransaction:SpotSend",
-    is_mainnet
-  ))
-}
-
-#' Sign a `usdClassTransfer` Action
-#' @inheritParams sign_user_signed_action
-#' @return `list(r, s, v)`.
-#' @keywords internal
-#' @noRd
-sign_usd_class_transfer_action <- function(priv32, action, is_mainnet) {
-  return(sign_user_signed_action(
-    priv32,
-    action,
-    USD_CLASS_TRANSFER_SIGN_TYPES,
-    "HyperliquidTransaction:UsdClassTransfer",
-    is_mainnet
-  ))
-}
-
-#' Sign a `sendAsset` Action
-#' @inheritParams sign_user_signed_action
-#' @return `list(r, s, v)`.
-#' @keywords internal
-#' @noRd
-sign_send_asset_action <- function(priv32, action, is_mainnet) {
-  return(sign_user_signed_action(
-    priv32,
-    action,
-    SEND_ASSET_SIGN_TYPES,
-    "HyperliquidTransaction:SendAsset",
-    is_mainnet
-  ))
-}
-
-#' Sign an `approveAgent` Action
-#' @inheritParams sign_user_signed_action
-#' @return `list(r, s, v)`.
-#' @keywords internal
-#' @noRd
-sign_agent <- function(priv32, action, is_mainnet) {
-  return(sign_user_signed_action(
-    priv32,
-    action,
-    APPROVE_AGENT_SIGN_TYPES,
-    "HyperliquidTransaction:ApproveAgent",
-    is_mainnet
-  ))
-}
-
-#' Sign an `approveBuilderFee` Action
-#' @inheritParams sign_user_signed_action
-#' @return `list(r, s, v)`.
-#' @keywords internal
-#' @noRd
-sign_approve_builder_fee <- function(priv32, action, is_mainnet) {
-  return(sign_user_signed_action(
-    priv32,
-    action,
-    APPROVE_BUILDER_FEE_SIGN_TYPES,
-    "HyperliquidTransaction:ApproveBuilderFee",
-    is_mainnet
-  ))
-}
-
-#' Sign a `tokenDelegate` (Staking) Action
-#' @inheritParams sign_user_signed_action
-#' @return `list(r, s, v)`.
-#' @keywords internal
-#' @noRd
-sign_token_delegate_action <- function(priv32, action, is_mainnet) {
-  return(sign_user_signed_action(
-    priv32,
-    action,
-    TOKEN_DELEGATE_SIGN_TYPES,
-    "HyperliquidTransaction:TokenDelegate",
-    is_mainnet
-  ))
+  chain_id <- gmp::as.bigz(strtoi("66eee", 16L))
+  digest <- ethsign::eip712_digest(
+    list(
+      name = "HyperliquidSignTransaction",
+      version = "1",
+      chainId = chain_id,
+      verifyingContract = ZERO_ADDRESS
+    ),
+    primary_type,
+    sign_types,
+    action
+  )
+  return(ethsign::as_rsv(signer$sign_digest(digest)))
 }
 
 # ---- order wire construction -------------------------------------------------
@@ -462,11 +313,13 @@ order_type_to_wire <- function(order_type) {
     return(list(limit = order_type$limit))
   }
   if ("trigger" %in% names(order_type)) {
-    return(list(trigger = list(
-      isMarket = order_type$trigger$isMarket,
-      triggerPx = float_to_wire(order_type$trigger$triggerPx),
-      tpsl = order_type$trigger$tpsl
-    )))
+    return(list(
+      trigger = list(
+        isMarket = order_type$trigger$isMarket,
+        triggerPx = float_to_wire(order_type$trigger$triggerPx),
+        tpsl = order_type$trigger$tpsl
+      )
+    ))
   }
   rlang::abort("Invalid order type")
 }

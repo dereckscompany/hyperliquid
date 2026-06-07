@@ -97,7 +97,14 @@ HyperliquidTrading <- R6::R6Class(
       builder = NULL
     ) {
       assert_args_HyperliquidTrading__place_order(
-        name, is_buy, sz, limit_px, order_type, reduce_only, cloid, builder
+        name,
+        is_buy,
+        sz,
+        limit_px,
+        order_type,
+        reduce_only,
+        cloid,
+        builder
       )
       order <- list(
         coin = name,
@@ -195,7 +202,9 @@ HyperliquidTrading <- R6::R6Class(
       szi <- private$.position_szi(state, coin)
       if (is.null(szi)) {
         rlang::abort(paste0(
-          "No open position for '", coin, "' to close. Open one with market_open()."
+          "No open position for '",
+          coin,
+          "' to close. Open one with market_open()."
         ))
       }
       is_buy <- szi < 0
@@ -238,7 +247,14 @@ HyperliquidTrading <- R6::R6Class(
       cloid = NULL
     ) {
       assert_args_HyperliquidTrading__modify_order(
-        oid, name, is_buy, sz, limit_px, order_type, reduce_only, cloid
+        oid,
+        name,
+        is_buy,
+        sz,
+        limit_px,
+        order_type,
+        reduce_only,
+        cloid
       )
       order <- list(
         coin = name,
@@ -427,7 +443,7 @@ HyperliquidTrading <- R6::R6Class(
       private$.require_signing_key()
       agent_raw <- openssl::rand_bytes(32L)
       agent_key <- paste0("0x", paste(sprintf("%02x", as.integer(agent_raw)), collapse = ""))
-      agent_address <- eth_address(agent_raw)
+      agent_address <- ethsign::eth_address(agent_raw)
       action <- list(
         type = "approveAgent",
         agentAddress = agent_address,

@@ -36,6 +36,8 @@
 #' @section Fields:
 #' All fields are private:
 #' - `.keys`: List; wallet credentials from [get_api_keys()].
+#' - `.signer`: [ethsign::EthSigner] or `NULL`; the wallet signer built from the
+#'   key (used to sign /exchange actions), or `NULL` when no key is set.
 #' - `.base_url`: Character; REST base URL for the selected network.
 #' - `.is_async`: Logical; whether the instance is in async mode.
 #' - `.perform`: Function; [httr2::req_perform] or [httr2::req_perform_promise].
@@ -72,6 +74,11 @@ HyperliquidBase <- R6::R6Class(
       assert_args_HyperliquidBase__initialize(keys, testnet, async, vault_address)
 
       private$.keys <- keys
+      private$.signer <- if (!is.null(private$.keys$private_key)) {
+        ethsign::eth_signer(private_key = private$.keys$private_key)
+      } else {
+        NULL
+      }
       private$.testnet <- isTRUE(testnet)
       private$.base_url <- get_base_url(testnet = private$.testnet)
       private$.is_async <- isTRUE(async)
@@ -160,6 +167,7 @@ HyperliquidBase <- R6::R6Class(
   ),
   private = list(
     .keys = NULL,
+    .signer = NULL,
     .base_url = NULL,
     .is_async = FALSE,
     .perform = NULL,
@@ -243,7 +251,7 @@ HyperliquidBase <- R6::R6Class(
       nonce <- next_nonce()
       is_mainnet <- !private$.testnet
       sig <- sign_l1_action(
-        private$.keys$private_key,
+        private$.signer,
         action,
         private$.vault_address,
         nonce,
@@ -280,7 +288,7 @@ HyperliquidBase <- R6::R6Class(
         posted_action$hyperliquidChain <- "Mainnet"
       }
       sig <- sign_user_signed_action(
-        private$.keys$private_key,
+        private$.signer,
         action,
         sign_types,
         primary_type,

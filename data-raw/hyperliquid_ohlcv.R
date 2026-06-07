@@ -27,5 +27,8 @@ hyperliquid_ohlcv <- hyperliquid_ohlcv[]
 
 usethis::use_data(hyperliquid_ohlcv, overwrite = TRUE, compress = "bzip2")
 
-cat(sprintf("hyperliquid_ohlcv: %d rows across %d symbols\n",
-  nrow(hyperliquid_ohlcv), length(unique(hyperliquid_ohlcv$symbol))))
+cat(sprintf(
+  "hyperliquid_ohlcv: %d rows across %d symbols\n",
+  nrow(hyperliquid_ohlcv),
+  length(unique(hyperliquid_ohlcv$symbol))
+))

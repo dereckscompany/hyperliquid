@@ -24,9 +24,11 @@ box::use(./mock_router[mock_router])
 # asset 10000) with no metadata fetch. Built via build_asset_maps so the cache
 # layout matches the live one exactly.
 seed_meta <- function(client) {
-  meta <- list(universe = list(
-    list(name = "BTC", szDecimals = 5, maxLeverage = 40)
-  ))
+  meta <- list(
+    universe = list(
+      list(name = "BTC", szDecimals = 5, maxLeverage = 40)
+    )
+  )
   spot_meta <- list(
     tokens = list(
       list(name = "USDC", index = 0, szDecimals = 8),
@@ -130,7 +132,10 @@ test_that("HyperliquidTransfers public methods round-trip through the router", {
   expect_equal(nrow(transfers$usd_send(25, .dest)), 1L)
   expect_equal(nrow(transfers$spot_send(25, .dest, token = .token)), 1L)
   expect_equal(nrow(transfers$withdraw(25, .dest)), 1L)
-  expect_equal(nrow(transfers$send_asset(.dest, source_dex = "", destination_dex = "spot", token = .token, amount = 10)), 1L)
+  expect_equal(
+    nrow(transfers$send_asset(.dest, source_dex = "", destination_dex = "spot", token = .token, amount = 10)),
+    1L
+  )
   expect_equal(nrow(transfers$sub_account_transfer(.dest, is_deposit = TRUE, usd = 100)), 1L)
   expect_equal(nrow(transfers$sub_account_spot_transfer(.dest, is_deposit = TRUE, token = .token, amount = 10)), 1L)
   expect_equal(nrow(transfers$vault_transfer(.dest, is_deposit = TRUE, usd = 100)), 1L)

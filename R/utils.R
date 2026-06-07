@@ -2,6 +2,30 @@
 # General utility functions for the hyperliquid package: base URLs, wallet
 # credentials, and client order id generation.
 
+#' Decode a Hex String to Raw Bytes
+#'
+#' Decodes a `0x`-optional, even-length hex string to a raw vector. Used by
+#' `normalise_private_key()` (64-hex key) and `address_to_bytes()` (40-hex
+#' address) in the signing path.
+#'
+#' @param h Character; a hex string, optional `0x` prefix, even length.
+#' @return A raw vector.
+#'
+#' @importFrom rlang abort
+#' @keywords internal
+#' @noRd
+hex2raw <- function(h) {
+  h <- sub("^0[xX]", "", h)
+  if (nchar(h) %% 2L != 0L) {
+    rlang::abort("hex2raw: hex string must have an even number of characters.")
+  }
+  if (nchar(h) == 0L) {
+    return(raw(0))
+  }
+  starts <- seq.int(1L, nchar(h) - 1L, by = 2L)
+  return(as.raw(strtoi(substring(h, starts, starts + 1L), 16L)))
+}
+
 #' Retrieve the Hyperliquid REST Base URL
 #'
 #' Returns the REST base URL for the selected network. Hyperliquid exposes the
@@ -127,6 +151,6 @@ get_api_keys <- function(
   return(assert_return_get_api_keys(list(
     private_key = priv_raw,
     account_address = account,
-    wallet_address = eth_address(priv_raw)
+    wallet_address = ethsign::eth_address(priv_raw)
   )))
 }

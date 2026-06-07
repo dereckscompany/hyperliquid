@@ -269,7 +269,9 @@ encode_msgpack <- function(x) {
       # arrive as strings (float_to_wire). A fractional double here means a
       # caller bug -- abort instead of emitting float64.
       rlang::abort(paste0(
-        "msgpack: non-whole numeric ", x, " -- Hyperliquid actions carry only ints; ",
+        "msgpack: non-whole numeric ",
+        x,
+        " -- Hyperliquid actions carry only ints; ",
         "convert floats with float_to_wire() first"
       ))
     }

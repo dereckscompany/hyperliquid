@@ -18,8 +18,16 @@ make_recording_req_fn <- function(coin, interval) {
     ts <- seq(from = req$startTime, to = req$endTime, by = step_ms)
     raw <- lapply(ts, function(t) {
       list(
-        t = t, T = t + step_ms - 1, s = coin, i = interval,
-        o = "100", c = "101", h = "102", l = "99", v = "10", n = 5L
+        t = t,
+        T = t + step_ms - 1,
+        s = coin,
+        i = interval,
+        o = "100",
+        c = "101",
+        h = "102",
+        l = "99",
+        v = "10",
+        n = 5L
       )
     })
     return(.parser(raw))
@@ -39,9 +47,12 @@ test_that("a range within max_candles is fetched in a single window", {
   from_ms <- anchor_ms
   to_ms <- anchor_ms + 10L * hour_ms
   dt <- hyperliquid:::hyperliquid_fetch_klines(
-    coin = "BTC", interval = "1h",
-    from = from_ms, to = to_ms,
-    .req_fn = rec$fn, max_candles = 5000L
+    coin = "BTC",
+    interval = "1h",
+    from = from_ms,
+    to = to_ms,
+    .req_fn = rec$fn,
+    max_candles = 5000L
   )
   expect_length(rec$calls, 1L)
   expect_equal(rec$calls[[1]]$startTime, from_ms)
@@ -58,9 +69,12 @@ test_that("a range beyond max_candles is split into overlapping windows", {
   from_ms <- anchor_ms
   to_ms <- anchor_ms + 10L * hour_ms
   dt <- hyperliquid:::hyperliquid_fetch_klines(
-    coin = "BTC", interval = "1h",
-    from = from_ms, to = to_ms,
-    .req_fn = rec$fn, max_candles = 3L
+    coin = "BTC",
+    interval = "1h",
+    from = from_ms,
+    to = to_ms,
+    .req_fn = rec$fn,
+    max_candles = 3L
   )
 
   # window = 3 candles = 3h. Walking forward with a 1-candle back-up:
@@ -84,9 +98,12 @@ test_that("the 1-candle overlap is deduplicated and the result is ascending", {
   from_ms <- anchor_ms
   to_ms <- anchor_ms + 10L * hour_ms
   dt <- hyperliquid:::hyperliquid_fetch_klines(
-    coin = "ETH", interval = "1h",
-    from = from_ms, to = to_ms,
-    .req_fn = rec$fn, max_candles = 3L
+    coin = "ETH",
+    interval = "1h",
+    from = from_ms,
+    to = to_ms,
+    .req_fn = rec$fn,
+    max_candles = 3L
   )
   # Despite overlapping windows, exactly 11 distinct hourly candles remain.
   expect_equal(nrow(dt), 11L)
@@ -100,7 +117,10 @@ test_that("the 1-candle overlap is deduplicated and the result is ascending", {
 
 test_that("combine_klines dedups on datetime and sorts ascending", {
   a <- data.table::data.table(datetime = ms_to_datetime(c(anchor_ms + hour_ms, anchor_ms)), open = c(2, 1))
-  b <- data.table::data.table(datetime = ms_to_datetime(c(anchor_ms + hour_ms, anchor_ms + 2 * hour_ms)), open = c(2, 3))
+  b <- data.table::data.table(
+    datetime = ms_to_datetime(c(anchor_ms + hour_ms, anchor_ms + 2 * hour_ms)),
+    open = c(2, 3)
+  )
   out <- hyperliquid:::combine_klines(list(a, b))
   expect_equal(nrow(out), 3L)
   expect_false(is.unsorted(out$datetime))
@@ -117,8 +137,11 @@ test_that("an invalid interval aborts before any request", {
   rec <- make_recording_req_fn("BTC", "1h")
   expect_error(
     hyperliquid:::hyperliquid_fetch_klines(
-      coin = "BTC", interval = "7m",
-      from = anchor_ms, to = anchor_ms + hour_ms, .req_fn = rec$fn
+      coin = "BTC",
+      interval = "7m",
+      from = anchor_ms,
+      to = anchor_ms + hour_ms,
+      .req_fn = rec$fn
     ),
     "Invalid interval"
   )
@@ -138,13 +161,19 @@ test_that("async mode yields the same candles as sync mode", {
     promises::promise_resolve(rec$fn(payload, .parser))
   }
   p <- hyperliquid:::hyperliquid_fetch_klines(
-    coin = "BTC", interval = "1h",
-    from = from_ms, to = to_ms,
-    .req_fn = async_fn, is_async = TRUE, max_candles = 3L
+    coin = "BTC",
+    interval = "1h",
+    from = from_ms,
+    to = to_ms,
+    .req_fn = async_fn,
+    is_async = TRUE,
+    max_candles = 3L
   )
   out_env <- new.env(parent = emptyenv())
   promises::then(p, function(v) out_env$value <- v)
-  while (!later::loop_empty()) later::run_now()
+  while (!later::loop_empty()) {
+    later::run_now()
+  }
   expect_equal(nrow(out_env$value), 11L)
   expect_false(is.unsorted(out_env$value$datetime))
 })

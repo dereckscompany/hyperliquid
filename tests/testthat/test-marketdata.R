@@ -46,8 +46,7 @@ test_that("parse_meta returns the perp universe with sparse logical/string cols"
   expect_equal(nrow(dt), 4L)
   expect_equal(
     names(dt),
-    c("name", "sz_decimals", "max_leverage", "margin_table_id",
-      "only_isolated", "is_delisted", "margin_mode")
+    c("name", "sz_decimals", "max_leverage", "margin_table_id", "only_isolated", "is_delisted", "margin_mode")
   )
   expect_equal(dt$name, c("BTC", "ETH", "MATIC", "HOOD"))
   expect_equal(dt$sz_decimals, c(5, 4, 1, 3))
@@ -123,9 +122,21 @@ test_that("parse_meta_and_asset_ctxs joins universe[i] with ctx[i] by index", {
   expect_equal(nrow(dt), 2L)
   expect_equal(
     names(dt),
-    c("name", "sz_decimals", "max_leverage", "day_ntl_vlm", "funding", "mark_px",
-      "mid_px", "oracle_px", "open_interest", "premium", "prev_day_px",
-      "impact_px_bid", "impact_px_ask")
+    c(
+      "name",
+      "sz_decimals",
+      "max_leverage",
+      "day_ntl_vlm",
+      "funding",
+      "mark_px",
+      "mid_px",
+      "oracle_px",
+      "open_interest",
+      "premium",
+      "prev_day_px",
+      "impact_px_bid",
+      "impact_px_ask"
+    )
   )
   expect_equal(dt$name, c("BTC", "ETH"))
   expect_equal(dt$mark_px, c(61964, 1606.2))
@@ -213,8 +224,7 @@ test_that("parse_candles emits canonical OHLCV sorted ascending by open time", {
   expect_equal(nrow(dt), 2L)
   expect_equal(
     names(dt),
-    c("datetime", "open", "high", "low", "close", "volume", "trades",
-      "close_time", "interval", "coin")
+    c("datetime", "open", "high", "low", "close", "volume", "trades", "close_time", "interval", "coin")
   )
   expect_s3_class(dt$datetime, "POSIXct")
   expect_s3_class(dt$close_time, "POSIXct")

@@ -48,9 +48,18 @@ test_that("parse_positions returns one row per position with split leverage", {
   expect_equal(nrow(dt), 2L)
   expect_equal(
     names(dt),
-    c("coin", "szi", "entry_px", "position_value", "unrealized_pnl",
-      "return_on_equity", "leverage_type", "leverage_value", "liquidation_px",
-      "margin_used")
+    c(
+      "coin",
+      "szi",
+      "entry_px",
+      "position_value",
+      "unrealized_pnl",
+      "return_on_equity",
+      "leverage_type",
+      "leverage_value",
+      "liquidation_px",
+      "margin_used"
+    )
   )
   expect_equal(dt$coin, c("BTC", "ETH"))
   expect_equal(dt$szi, c(0.61148, -0.3708))
@@ -76,9 +85,17 @@ test_that("parse_margin_summary flattens the summary to one typed row", {
   expect_equal(nrow(dt), 1L)
   expect_equal(
     names(dt),
-    c("account_value", "total_ntl_pos", "total_raw_usd", "total_margin_used",
-      "withdrawable", "cross_account_value", "cross_total_ntl_pos",
-      "cross_total_raw_usd", "cross_total_margin_used")
+    c(
+      "account_value",
+      "total_ntl_pos",
+      "total_raw_usd",
+      "total_margin_used",
+      "withdrawable",
+      "cross_account_value",
+      "cross_total_ntl_pos",
+      "cross_total_raw_usd",
+      "cross_total_margin_used"
+    )
   )
   expect_equal(dt$account_value, 2976574.9037540001)
   expect_equal(dt$total_margin_used, 161989.260803)
@@ -140,9 +157,22 @@ test_that("parse_frontend_open_orders adds detail columns and drops children/clo
   expect_equal(nrow(dt), 2L)
   expect_equal(
     names(dt),
-    c("coin", "oid", "side", "limit_px", "sz", "timestamp", "order_type",
-      "is_trigger", "trigger_px", "trigger_condition", "reduce_only", "tif",
-      "orig_sz", "is_position_tpsl")
+    c(
+      "coin",
+      "oid",
+      "side",
+      "limit_px",
+      "sz",
+      "timestamp",
+      "order_type",
+      "is_trigger",
+      "trigger_px",
+      "trigger_condition",
+      "reduce_only",
+      "tif",
+      "orig_sz",
+      "is_position_tpsl"
+    )
   )
   expect_false("children" %in% names(dt))
   expect_false("cloid" %in% names(dt))
@@ -168,8 +198,22 @@ test_that("parse_user_fills flattens fills with mapped side and POSIXct time", {
   expect_equal(nrow(dt), 2L)
   expect_equal(
     names(dt),
-    c("coin", "px", "sz", "side", "time", "start_position", "dir", "closed_pnl",
-      "hash", "oid", "crossed", "fee", "fee_token", "tid")
+    c(
+      "coin",
+      "px",
+      "sz",
+      "side",
+      "time",
+      "start_position",
+      "dir",
+      "closed_pnl",
+      "hash",
+      "oid",
+      "crossed",
+      "fee",
+      "fee_token",
+      "tid"
+    )
   )
   expect_equal(dt$coin, c("IOTA", "PENDLE"))
   expect_equal(dt$side, c("buy", "sell"))
@@ -197,9 +241,25 @@ test_that("parse_historical_orders emits one row per status transition (no dedup
   expect_equal(nrow(dt), 3L)
   expect_equal(
     names(dt),
-    c("oid", "coin", "side", "limit_px", "sz", "orig_sz", "order_type", "tif",
-      "reduce_only", "trigger_px", "trigger_condition", "is_trigger",
-      "is_position_tpsl", "cloid", "timestamp", "status", "status_timestamp")
+    c(
+      "oid",
+      "coin",
+      "side",
+      "limit_px",
+      "sz",
+      "orig_sz",
+      "order_type",
+      "tif",
+      "reduce_only",
+      "trigger_px",
+      "trigger_condition",
+      "is_trigger",
+      "is_position_tpsl",
+      "cloid",
+      "timestamp",
+      "status",
+      "status_timestamp"
+    )
   )
   # The STRK oid recurs across canceled then open -- not deduplicated.
   expect_equal(dt$oid, c(461291892194, 461291892194, 461291888494))
@@ -248,8 +308,7 @@ test_that("parse_non_funding_ledger stacks variants under a delta_type discrimin
   expect_equal(names(dt)[1:4], c("time", "hash", "delta_type", "usdc"))
   expect_equal(
     dt$delta_type,
-    c("deposit", "withdraw", "accountClassTransfer", "spotTransfer",
-      "vaultDeposit", "liquidation")
+    c("deposit", "withdraw", "accountClassTransfer", "spotTransfer", "vaultDeposit", "liquidation")
   )
   expect_equal(dt$usdc[1], 1000)
   # spotTransfer carries an amount but no usdc.
@@ -372,8 +431,16 @@ test_that("parse_sub_accounts flattens the per-sub-account summary", {
   expect_equal(nrow(dt), 2L)
   expect_equal(
     names(dt),
-    c("name", "sub_account_user", "master", "account_value", "total_ntl_pos",
-      "total_raw_usd", "total_margin_used", "withdrawable")
+    c(
+      "name",
+      "sub_account_user",
+      "master",
+      "account_value",
+      "total_ntl_pos",
+      "total_raw_usd",
+      "total_margin_used",
+      "withdrawable"
+    )
   )
   expect_equal(dt$name, c("hyperliquid_1s2", "hyperliquid_1s3"))
   expect_equal(dt$sub_account_user[1], "0x4cd2393c90a4e769972a9862540492b4bc19695c")

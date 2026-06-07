@@ -22,8 +22,16 @@ backfill_mock <- function(req) {
     ts <- seq(from = r$startTime, to = r$endTime, by = step_ms)
     payload <- lapply(ts, function(t) {
       list(
-        t = t, T = t + step_ms - 1, s = r$coin, i = r$interval,
-        o = "100", c = "101", h = "102", l = "99", v = "10", n = 5L
+        t = t,
+        T = t + step_ms - 1,
+        s = r$coin,
+        i = r$interval,
+        o = "100",
+        c = "101",
+        h = "102",
+        l = "99",
+        v = "10",
+        n = 5L
       )
     })
   } else if (identical(body$type, "fundingHistory")) {
@@ -54,9 +62,13 @@ test_that("hyperliquid_backfill_klines writes the canonical schema", {
   on.exit(unlink(file), add = TRUE)
 
   hyperliquid_backfill_klines(
-    symbols = "BTC", intervals = "1d",
-    from = anchor_dt(0), to = anchor_dt(5L * day_ms),
-    file = file, sleep = 0, verbose = FALSE
+    symbols = "BTC",
+    intervals = "1d",
+    from = anchor_dt(0),
+    to = anchor_dt(5L * day_ms),
+    file = file,
+    sleep = 0,
+    verbose = FALSE
   )
 
   dt <- data.table::fread(file)
@@ -79,25 +91,37 @@ test_that("hyperliquid_backfill_klines resumes without duplicating rows", {
 
   # First pass: 6 daily candles.
   hyperliquid_backfill_klines(
-    symbols = "BTC", intervals = "1d",
-    from = anchor_dt(0), to = anchor_dt(5L * day_ms),
-    file = file, sleep = 0, verbose = FALSE
+    symbols = "BTC",
+    intervals = "1d",
+    from = anchor_dt(0),
+    to = anchor_dt(5L * day_ms),
+    file = file,
+    sleep = 0,
+    verbose = FALSE
   )
   expect_equal(nrow(data.table::fread(file)), 6L)
 
   # Re-run identically: the series is already up to date, nothing is added.
   hyperliquid_backfill_klines(
-    symbols = "BTC", intervals = "1d",
-    from = anchor_dt(0), to = anchor_dt(5L * day_ms),
-    file = file, sleep = 0, verbose = FALSE
+    symbols = "BTC",
+    intervals = "1d",
+    from = anchor_dt(0),
+    to = anchor_dt(5L * day_ms),
+    file = file,
+    sleep = 0,
+    verbose = FALSE
   )
   expect_equal(nrow(data.table::fread(file)), 6L)
 
   # Extend the window: only the 3 new candles are appended, no overlap dup.
   hyperliquid_backfill_klines(
-    symbols = "BTC", intervals = "1d",
-    from = anchor_dt(0), to = anchor_dt(8L * day_ms),
-    file = file, sleep = 0, verbose = FALSE
+    symbols = "BTC",
+    intervals = "1d",
+    from = anchor_dt(0),
+    to = anchor_dt(8L * day_ms),
+    file = file,
+    sleep = 0,
+    verbose = FALSE
   )
   dt <- data.table::fread(file)
   expect_equal(nrow(dt), 9L)
@@ -116,9 +140,13 @@ test_that("hyperliquid_backfill_klines refuses a file with different columns", {
 
   expect_error(
     hyperliquid_backfill_klines(
-      symbols = "BTC", intervals = "1d",
-      from = anchor_dt(0), to = anchor_dt(5L * day_ms),
-      file = file, sleep = 0, verbose = FALSE
+      symbols = "BTC",
+      intervals = "1d",
+      from = anchor_dt(0),
+      to = anchor_dt(5L * day_ms),
+      file = file,
+      sleep = 0,
+      verbose = FALSE
     ),
     "differ"
   )
@@ -142,8 +170,11 @@ test_that("hyperliquid_backfill_funding writes the canonical schema", {
 
   hyperliquid_backfill_funding(
     symbols = "BTC",
-    from = anchor_dt(0), to = anchor_dt(10L * hour_ms),
-    file = file, sleep = 0, verbose = FALSE
+    from = anchor_dt(0),
+    to = anchor_dt(10L * hour_ms),
+    file = file,
+    sleep = 0,
+    verbose = FALSE
   )
 
   dt <- data.table::fread(file)
@@ -160,16 +191,22 @@ test_that("hyperliquid_backfill_funding resumes without duplicating rows", {
 
   hyperliquid_backfill_funding(
     symbols = "BTC",
-    from = anchor_dt(0), to = anchor_dt(10L * hour_ms),
-    file = file, sleep = 0, verbose = FALSE
+    from = anchor_dt(0),
+    to = anchor_dt(10L * hour_ms),
+    file = file,
+    sleep = 0,
+    verbose = FALSE
   )
   expect_equal(nrow(data.table::fread(file)), 11L)
 
   # Extend by 5 hours: 5 new records appended, no boundary dup.
   hyperliquid_backfill_funding(
     symbols = "BTC",
-    from = anchor_dt(0), to = anchor_dt(15L * hour_ms),
-    file = file, sleep = 0, verbose = FALSE
+    from = anchor_dt(0),
+    to = anchor_dt(15L * hour_ms),
+    file = file,
+    sleep = 0,
+    verbose = FALSE
   )
   dt <- data.table::fread(file)
   expect_equal(nrow(dt), 16L)
@@ -186,8 +223,12 @@ test_that("hyperliquid_backfill_funding refuses a file with different columns", 
 
   expect_error(
     hyperliquid_backfill_funding(
-      symbols = "BTC", from = anchor_dt(0), to = anchor_dt(10L * hour_ms),
-      file = file, sleep = 0, verbose = FALSE
+      symbols = "BTC",
+      from = anchor_dt(0),
+      to = anchor_dt(10L * hour_ms),
+      file = file,
+      sleep = 0,
+      verbose = FALSE
     ),
     "differ"
   )
@@ -202,10 +243,13 @@ test_that("hyperliquid_backfill_klines hits mainnet (live, opt-in)", {
   on.exit(unlink(file), add = TRUE)
 
   suppressWarnings(hyperliquid_backfill_klines(
-    symbols = "BTC", intervals = "1d",
+    symbols = "BTC",
+    intervals = "1d",
     from = lubridate::now("UTC") - lubridate::ddays(10),
     to = lubridate::now("UTC"),
-    file = file, sleep = 0, verbose = FALSE
+    file = file,
+    sleep = 0,
+    verbose = FALSE
   ))
   dt <- data.table::fread(file)
   expect_true(nrow(dt) > 0L)

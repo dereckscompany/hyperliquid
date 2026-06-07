@@ -74,14 +74,28 @@ hyperliquid_backfill_klines <- function(
     validate_interval(intv)
   }
   assert_args_hyperliquid_backfill_klines(
-    symbols, intervals, from, to, file, testnet, sleep, verbose
+    symbols,
+    intervals,
+    from,
+    to,
+    file,
+    testnet,
+    sleep,
+    verbose
   )
   from <- lubridate::as_datetime(from, tz = "UTC")
   to <- lubridate::as_datetime(to, tz = "UTC")
 
   out_cols <- c(
-    "symbol", "interval", "datetime",
-    "open", "high", "low", "close", "volume", "trades"
+    "symbol",
+    "interval",
+    "datetime",
+    "open",
+    "high",
+    "low",
+    "close",
+    "volume",
+    "trades"
   )
 
   # Resume support: read the existing file, refuse to append onto a mismatched
@@ -92,7 +106,9 @@ hyperliquid_backfill_klines <- function(
     if (!is.null(existing) && nrow(existing) > 0L) {
       if (!identical(names(existing), out_cols)) {
         rlang::abort(paste0(
-          "Output file '", file, "' has columns (",
+          "Output file '",
+          file,
+          "' has columns (",
           paste(names(existing), collapse = ", "),
           ") that differ from the expected (",
           paste(out_cols, collapse = ", "),
@@ -188,7 +204,9 @@ hyperliquid_backfill_klines <- function(
   if (length(failures) > 0L) {
     rlang::warn(sprintf(
       "hyperliquid_backfill_klines: %d of %d (symbol, interval) combinations failed: %s",
-      length(failures), total, paste(failures, collapse = ", ")
+      length(failures),
+      total,
+      paste(failures, collapse = ", ")
     ))
   }
 
@@ -314,7 +332,13 @@ hyperliquid_backfill_funding <- function(
     validate_coin(s)
   }
   assert_args_hyperliquid_backfill_funding(
-    symbols, from, to, file, testnet, sleep, verbose
+    symbols,
+    from,
+    to,
+    file,
+    testnet,
+    sleep,
+    verbose
   )
   from <- lubridate::as_datetime(from, tz = "UTC")
   to <- lubridate::as_datetime(to, tz = "UTC")
@@ -329,7 +353,9 @@ hyperliquid_backfill_funding <- function(
     if (!is.null(existing) && nrow(existing) > 0L) {
       if (!identical(names(existing), out_cols)) {
         rlang::abort(paste0(
-          "Output file '", file, "' has columns (",
+          "Output file '",
+          file,
+          "' has columns (",
           paste(names(existing), collapse = ", "),
           ") that differ from the expected (",
           paste(out_cols, collapse = ", "),
@@ -415,7 +441,9 @@ hyperliquid_backfill_funding <- function(
   if (length(failures) > 0L) {
     rlang::warn(sprintf(
       "hyperliquid_backfill_funding: %d of %d coin(s) failed: %s",
-      length(failures), total, paste(failures, collapse = ", ")
+      length(failures),
+      total,
+      paste(failures, collapse = ", ")
     ))
   }
 

@@ -96,7 +96,13 @@ hyperliquid_build_request <- function(
   timeout = 30
 ) {
   assert_args_hyperliquid_build_request(
-    base_url, path, body, .perform, .parser, is_async, timeout
+    base_url,
+    path,
+    body,
+    .perform,
+    .parser,
+    is_async,
+    timeout
   )
   req <- httr2::request(base_url)
   req <- httr2::req_url_path_append(req, path)

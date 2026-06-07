@@ -189,11 +189,25 @@ parse_frontend_open_orders <- function(items) {
   }
   dt <- data.table::rbindlist(lapply(items, flatten_order), fill = TRUE)
   data.table::set(dt, j = "cloid", value = NULL)
-  data.table::setcolorder(dt, c(
-    "coin", "oid", "side", "limit_px", "sz", "timestamp", "order_type",
-    "is_trigger", "trigger_px", "trigger_condition", "reduce_only", "tif",
-    "orig_sz", "is_position_tpsl"
-  ))
+  data.table::setcolorder(
+    dt,
+    c(
+      "coin",
+      "oid",
+      "side",
+      "limit_px",
+      "sz",
+      "timestamp",
+      "order_type",
+      "is_trigger",
+      "trigger_px",
+      "trigger_condition",
+      "reduce_only",
+      "tif",
+      "orig_sz",
+      "is_position_tpsl"
+    )
+  )
   return(dt[])
 }
 
@@ -261,11 +275,28 @@ parse_historical_orders <- function(items) {
     core
   })
   dt <- data.table::rbindlist(rows, fill = TRUE)
-  data.table::setcolorder(dt, c(
-    "oid", "coin", "side", "limit_px", "sz", "orig_sz", "order_type", "tif",
-    "reduce_only", "trigger_px", "trigger_condition", "is_trigger",
-    "is_position_tpsl", "cloid", "timestamp", "status", "status_timestamp"
-  ))
+  data.table::setcolorder(
+    dt,
+    c(
+      "oid",
+      "coin",
+      "side",
+      "limit_px",
+      "sz",
+      "orig_sz",
+      "order_type",
+      "tif",
+      "reduce_only",
+      "trigger_px",
+      "trigger_condition",
+      "is_trigger",
+      "is_position_tpsl",
+      "cloid",
+      "timestamp",
+      "status",
+      "status_timestamp"
+    )
+  )
   return(dt[])
 }
 
@@ -321,10 +352,18 @@ parse_non_funding_ledger <- function(items) {
   if ("type" %in% names(dt)) {
     data.table::setnames(dt, "type", "delta_type")
   }
-  dt <- coerce_numeric_cols(dt, c(
-    "usdc", "usdc_value", "amount", "fee", "native_token_fee",
-    "liquidated_ntl_pos", "account_value"
-  ))
+  dt <- coerce_numeric_cols(
+    dt,
+    c(
+      "usdc",
+      "usdc_value",
+      "amount",
+      "fee",
+      "native_token_fee",
+      "liquidated_ntl_pos",
+      "account_value"
+    )
+  )
   lead <- intersect(c("time", "hash", "delta_type", "usdc"), names(dt))
   data.table::setcolorder(dt, c(lead, setdiff(names(dt), lead)))
   return(dt[])
@@ -528,12 +567,29 @@ parse_order_status <- function(data) {
     j = "status_timestamp",
     value = ms_to_datetime(num_or_na(inner$statusTimestamp))
   )
-  data.table::setcolorder(core, c(
-    "query_status", "oid", "coin", "side", "limit_px", "sz", "orig_sz",
-    "order_type", "tif", "reduce_only", "trigger_px", "trigger_condition",
-    "is_trigger", "is_position_tpsl", "cloid", "timestamp", "status",
-    "status_timestamp"
-  ))
+  data.table::setcolorder(
+    core,
+    c(
+      "query_status",
+      "oid",
+      "coin",
+      "side",
+      "limit_px",
+      "sz",
+      "orig_sz",
+      "order_type",
+      "tif",
+      "reduce_only",
+      "trigger_px",
+      "trigger_condition",
+      "is_trigger",
+      "is_position_tpsl",
+      "cloid",
+      "timestamp",
+      "status",
+      "status_timestamp"
+    )
+  )
   return(core[])
 }
 

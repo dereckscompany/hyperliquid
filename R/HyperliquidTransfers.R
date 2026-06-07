@@ -182,7 +182,11 @@ HyperliquidTransfers <- R6::R6Class(
     #'   `status` and `response_type`, or a promise thereof.
     send_asset = function(destination, source_dex, destination_dex, token, amount) {
       assert_args_HyperliquidTransfers__send_asset(
-        destination, source_dex, destination_dex, token, amount
+        destination,
+        source_dex,
+        destination_dex,
+        token,
+        amount
       )
       destination <- validate_address(destination)
       private$.validate_token(token)
@@ -219,7 +223,9 @@ HyperliquidTransfers <- R6::R6Class(
     #'   `status` and `response_type`, or a promise thereof.
     sub_account_transfer = function(sub_account_user, is_deposit, usd) {
       assert_args_HyperliquidTransfers__sub_account_transfer(
-        sub_account_user, is_deposit, usd
+        sub_account_user,
+        is_deposit,
+        usd
       )
       sub_account_user <- validate_address(sub_account_user)
       action <- list(
@@ -245,7 +251,10 @@ HyperliquidTransfers <- R6::R6Class(
     #'   `status` and `response_type`, or a promise thereof.
     sub_account_spot_transfer = function(sub_account_user, is_deposit, token, amount) {
       assert_args_HyperliquidTransfers__sub_account_spot_transfer(
-        sub_account_user, is_deposit, token, amount
+        sub_account_user,
+        is_deposit,
+        token,
+        amount
       )
       sub_account_user <- validate_address(sub_account_user)
       private$.validate_token(token)

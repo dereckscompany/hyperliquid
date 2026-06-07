@@ -30,9 +30,11 @@ decode_body <- function(req) {
 # (spot asset 10000). Built via build_asset_maps so the cache layout matches the
 # live one exactly.
 seed_meta <- function(client) {
-  meta <- list(universe = list(
-    list(name = "BTC", szDecimals = 5, maxLeverage = 40)
-  ))
+  meta <- list(
+    universe = list(
+      list(name = "BTC", szDecimals = 5, maxLeverage = 40)
+    )
+  )
   spot_meta <- list(
     tokens = list(
       list(name = "USDC", index = 0, szDecimals = 8),
@@ -59,8 +61,12 @@ mock_trade <- function(call_fn, ack, mids = NULL, state = NULL) {
   httr2::local_mocked_responses(function(req) {
     body <- decode_body(req)
     if (!is.null(body$type)) {
-      if (identical(body$type, "allMids")) return(mk_resp(mids))
-      if (identical(body$type, "clearinghouseState")) return(mk_resp(state))
+      if (identical(body$type, "allMids")) {
+        return(mk_resp(mids))
+      }
+      if (identical(body$type, "clearinghouseState")) {
+        return(mk_resp(state))
+      }
       return(mk_resp(list()))
     }
     posted <<- body
@@ -94,9 +100,12 @@ test_that("parse_order_response flattens mixed statuses with no list columns", {
 
 test_that("parse_order_response returns a zero-row table on empty input", {
   expect_equal(nrow(hyperliquid:::parse_order_response(list())), 0L)
-  expect_equal(nrow(hyperliquid:::parse_order_response(
-    list(response = list(data = list(statuses = list())))
-  )), 0L)
+  expect_equal(
+    nrow(hyperliquid:::parse_order_response(
+      list(response = list(data = list(statuses = list())))
+    )),
+    0L
+  )
 })
 
 test_that("parse_cancel_response maps success and error rows", {

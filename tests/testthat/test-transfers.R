@@ -12,7 +12,7 @@ priv_raw <- hyperliquid:::hex2raw(priv_hex)
 throwaway_keys <- list(
   private_key = priv_raw,
   account_address = NULL,
-  wallet_address = hyperliquid:::eth_address(priv_raw)
+  wallet_address = ethsign::eth_address(priv_raw)
 )
 
 mk_resp <- function(data) {
@@ -118,11 +118,13 @@ test_that("usd_send posts usdSend with destination, amount, time, and a signatur
 test_that("spot_send posts spotSend carrying the token", {
   client <- new_client()
   res <- post_capture(
-    function() client$spot_send(
-      1.5,
-      "0x5e9ee1089755c3435139848e47e6635505d5a13a",
-      "PURR:0xc1fb593aeffbeb02f85e0308e9956a90"
-    ),
+    function() {
+      client$spot_send(
+        1.5,
+        "0x5e9ee1089755c3435139848e47e6635505d5a13a",
+        "PURR:0xc1fb593aeffbeb02f85e0308e9956a90"
+      )
+    },
     fixture_spot_send()
   )
   expect_equal(res$posted$action$type, "spotSend")
@@ -146,13 +148,15 @@ test_that("withdraw posts withdraw3", {
 test_that("send_asset posts sendAsset with dex routing and an empty fromSubAccount", {
   client <- new_client()
   res <- post_capture(
-    function() client$send_asset(
-      "0x5e9ee1089755c3435139848e47e6635505d5a13a",
-      "",
-      "spot",
-      "USDC:0xeb62eee3685fc4c43992febcd9e75443",
-      42
-    ),
+    function() {
+      client$send_asset(
+        "0x5e9ee1089755c3435139848e47e6635505d5a13a",
+        "",
+        "spot",
+        "USDC:0xeb62eee3685fc4c43992febcd9e75443",
+        42
+      )
+    },
     fixture_send_asset()
   )
   expect_equal(res$posted$action$type, "sendAsset")
@@ -170,11 +174,13 @@ test_that("send_asset posts sendAsset with dex routing and an empty fromSubAccou
 test_that("sub_account_transfer posts subAccountTransfer with a micro-USD integer", {
   client <- new_client()
   res <- post_capture(
-    function() client$sub_account_transfer(
-      "0x5e9ee1089755c3435139848e47e6635505d5a13a",
-      is_deposit = TRUE,
-      usd = 10
-    ),
+    function() {
+      client$sub_account_transfer(
+        "0x5e9ee1089755c3435139848e47e6635505d5a13a",
+        is_deposit = TRUE,
+        usd = 10
+      )
+    },
     fixture_sub_account_transfer()
   )
   expect_equal(res$posted$action$type, "subAccountTransfer")
@@ -189,12 +195,14 @@ test_that("sub_account_transfer posts subAccountTransfer with a micro-USD intege
 test_that("sub_account_spot_transfer posts subAccountSpotTransfer with a string amount", {
   client <- new_client()
   res <- post_capture(
-    function() client$sub_account_spot_transfer(
-      "0x5e9ee1089755c3435139848e47e6635505d5a13a",
-      is_deposit = FALSE,
-      token = "PURR:0xc1fb593aeffbeb02f85e0308e9956a90",
-      amount = 5
-    ),
+    function() {
+      client$sub_account_spot_transfer(
+        "0x5e9ee1089755c3435139848e47e6635505d5a13a",
+        is_deposit = FALSE,
+        token = "PURR:0xc1fb593aeffbeb02f85e0308e9956a90",
+        amount = 5
+      )
+    },
     fixture_sub_account_spot_transfer()
   )
   expect_equal(res$posted$action$type, "subAccountSpotTransfer")
@@ -207,11 +215,13 @@ test_that("sub_account_spot_transfer posts subAccountSpotTransfer with a string 
 test_that("vault_transfer posts vaultTransfer with a micro-USD integer", {
   client <- new_client()
   res <- post_capture(
-    function() client$vault_transfer(
-      "0xdfc24b077bc1425ad1dea75bcb6f8158e10df303",
-      is_deposit = TRUE,
-      usd = 250
-    ),
+    function() {
+      client$vault_transfer(
+        "0xdfc24b077bc1425ad1dea75bcb6f8158e10df303",
+        is_deposit = TRUE,
+        usd = 250
+      )
+    },
     fixture_vault_transfer()
   )
   expect_equal(res$posted$action$type, "vaultTransfer")

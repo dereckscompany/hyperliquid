@@ -22,9 +22,11 @@ fixture_order_resting <- function() {
     status = "ok",
     response = list(
       type = "order",
-      data = list(statuses = list(
-        list(resting = list(oid = 77738308))
-      ))
+      data = list(
+        statuses = list(
+          list(resting = list(oid = 77738308))
+        )
+      )
     )
   ))
 }
@@ -35,9 +37,11 @@ fixture_order_filled <- function() {
     status = "ok",
     response = list(
       type = "order",
-      data = list(statuses = list(
-        list(filled = list(totalSz = "0.02", avgPx = "1891.4", oid = 77747314))
-      ))
+      data = list(
+        statuses = list(
+          list(filled = list(totalSz = "0.02", avgPx = "1891.4", oid = 77747314))
+        )
+      )
     )
   ))
 }
@@ -48,11 +52,13 @@ fixture_order_mixed <- function() {
     status = "ok",
     response = list(
       type = "order",
-      data = list(statuses = list(
-        list(resting = list(oid = 77738308)),
-        list(filled = list(totalSz = "0.02", avgPx = "1891.4", oid = 77747314)),
-        list(error = "Order must have minimum value of $10.")
-      ))
+      data = list(
+        statuses = list(
+          list(resting = list(oid = 77738308)),
+          list(filled = list(totalSz = "0.02", avgPx = "1891.4", oid = 77747314)),
+          list(error = "Order must have minimum value of $10.")
+        )
+      )
     )
   ))
 }

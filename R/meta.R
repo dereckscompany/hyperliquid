@@ -80,7 +80,9 @@ meta_name_to_coin <- function(maps, name) {
   coin <- maps$name_to_coin[[name]]
   if (is.null(coin)) {
     rlang::abort(paste0(
-      "Unknown coin/name: '", name, "'. Call refresh_meta() if it was newly listed."
+      "Unknown coin/name: '",
+      name,
+      "'. Call refresh_meta() if it was newly listed."
     ))
   }
   return(assert_return_meta_name_to_coin(coin))
@@ -118,7 +120,9 @@ meta_sz_decimals <- function(maps, asset) {
   sz <- maps$asset_to_sz_decimals[[as.character(asset)]]
   if (is.null(sz)) {
     rlang::abort(paste0(
-      "Unknown asset id: ", asset, ". Call refresh_meta() if it was newly listed."
+      "Unknown asset id: ",
+      asset,
+      ". Call refresh_meta() if it was newly listed."
     ))
   }
   return(sz)
