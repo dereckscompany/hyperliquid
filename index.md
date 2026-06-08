@@ -1,7 +1,7 @@
 # hyperliquid
 
 R API wrapper to the [Hyperliquid](https://hyperliquid.xyz)
-decentralized exchange supporting both synchronous and asynchronous
+decentralised exchange supporting both synchronous and asynchronous
 (promise based) operations. Provides R6 classes for market data,
 perpetual and spot trading, account management, transfers, and staking.
 Every method returns a flat `data.table`. The `/exchange` endpoint is
@@ -31,11 +31,13 @@ mainnet.
 - **snake_case columns.** API `camelCase` fields become `snake_case`
   columns; prices and sizes are returned as numerics.
 - **Pure-R Ethereum signing via
-  [`ethsign`](https://github.com/dereckscompany/ethsign).** secp256k1
-  ECDSA, Keccak-256, and EIP-712 come from our standalone pure-R
-  `ethsign` package; the Hyperliquid-specific msgpack action hash lives
-  here. No compiled code, and verified byte-identical to the official
-  Python and Rust SDK test vectors.
+  [github.com/dereckscompany/ethsign](https://github.com/dereckscompany/ethsign).**
+  secp256k1 ECDSA, Keccak-256, and EIP-712 come from our standalone
+  pure-R `ethsign` package; the Hyperliquid-specific msgpack action hash
+  lives here. No compiled code, and verified byte-identical to the test
+  vectors of the official [Hyperliquid Python
+  SDK](https://github.com/hyperliquid-dex/hyperliquid-python-sdk)
+  (v0.24.0), which we used as the reference implementation.
 - **One host, two paths.** The whole REST API lives behind one host:
   `/info` (public reads) and `/exchange` (signed writes). The network is
   chosen by an explicit `testnet` flag, never by URL sniffing, because
@@ -45,8 +47,11 @@ mainnet.
 
 ``` r
 
+renv::install("dereckscompany/hyperliquid")
+
+# or, if you use remotes instead of renv:
 # install.packages("remotes")
-remotes::install_github("dereckscompany/hyperliquid")
+# remotes::install_github("dereckscompany/hyperliquid")
 ```
 
 ## Authentication

@@ -2,7 +2,7 @@
 
 ## hyperliquid 0.0.1
 
-Initial release: an R wrapper for the Hyperliquid decentralized
+Initial release: an R wrapper for the Hyperliquid decentralised
 exchange, covering perpetual and spot trading across both synchronous
 and asynchronous (promise-based) operations, with Ethereum wallet
 signing for the `/exchange` endpoint computed in pure R.

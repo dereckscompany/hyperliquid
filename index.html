@@ -11,8 +11,8 @@
 <script src="deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="deps/headroom-0.11.0/headroom.min.js"></script><script src="deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="deps/search-1.0.0/fuse.min.js"></script><script src="deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="pkgdown.js"></script><meta property="og:title" content="API Wrapper to the Hyperliquid Exchange">
-<meta name="description" content="R API wrapper to the Hyperliquid decentralized exchange supporting both synchronous and asynchronous (promise based) operations. Provides R6 classes for market data, perpetual and spot trading, account management, transfers, and staking, with Ethereum-style wallet signing for the exchange endpoint.">
-<meta property="og:description" content="R API wrapper to the Hyperliquid decentralized exchange supporting both synchronous and asynchronous (promise based) operations. Provides R6 classes for market data, perpetual and spot trading, account management, transfers, and staking, with Ethereum-style wallet signing for the exchange endpoint.">
+<meta name="description" content="R API wrapper to the Hyperliquid decentralised exchange supporting both synchronous and asynchronous (promise based) operations. Provides R6 classes for market data, perpetual and spot trading, account management, transfers, and staking, with Ethereum-style wallet signing for the exchange endpoint.">
+<meta property="og:description" content="R API wrapper to the Hyperliquid decentralised exchange supporting both synchronous and asynchronous (promise based) operations. Provides R6 classes for market data, perpetual and spot trading, account management, transfers, and staking, with Ethereum-style wallet signing for the exchange endpoint.">
 </head>
 <body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
@@ -60,7 +60,7 @@
 </h1></div>
 <!-- badges: start -->
 
-<p>R API wrapper to the <a href="https://hyperliquid.xyz" class="external-link">Hyperliquid</a> decentralized exchange supporting both synchronous and asynchronous (promise based) operations. Provides R6 classes for market data, perpetual and spot trading, account management, transfers, and staking. Every method returns a flat <code>data.table</code>. The <code>/exchange</code> endpoint is authenticated by an Ethereum wallet signature, computed in <strong>pure R</strong> via the companion <a href="https://github.com/dereckscompany/ethsign" class="external-link"><code>ethsign</code></a> package (no compiled code) and verified byte-for-byte against the official Hyperliquid SDKs.</p>
+<p>R API wrapper to the <a href="https://hyperliquid.xyz" class="external-link">Hyperliquid</a> decentralised exchange supporting both synchronous and asynchronous (promise based) operations. Provides R6 classes for market data, perpetual and spot trading, account management, transfers, and staking. Every method returns a flat <code>data.table</code>. The <code>/exchange</code> endpoint is authenticated by an Ethereum wallet signature, computed in <strong>pure R</strong> via the companion <a href="https://github.com/dereckscompany/ethsign" class="external-link"><code>ethsign</code></a> package (no compiled code) and verified byte-for-byte against the official Hyperliquid SDKs.</p>
 <div class="section level2">
 <h2 id="disclaimer">Disclaimer<a class="anchor" aria-label="anchor" href="#disclaimer"></a>
 </h2>
@@ -77,7 +77,7 @@
 <li>
 <strong>snake_case columns.</strong> API <code>camelCase</code> fields become <code>snake_case</code> columns; prices and sizes are returned as numerics.</li>
 <li>
-<strong>Pure-R Ethereum signing via <a href="https://github.com/dereckscompany/ethsign" class="external-link"><code>ethsign</code></a>.</strong> secp256k1 ECDSA, Keccak-256, and EIP-712 come from our standalone pure-R <code>ethsign</code> package; the Hyperliquid-specific msgpack action hash lives here. No compiled code, and verified byte-identical to the official Python and Rust SDK test vectors.</li>
+<strong>Pure-R Ethereum signing via <a href="https://github.com/dereckscompany/ethsign" class="external-link">github.com/dereckscompany/ethsign</a>.</strong> secp256k1 ECDSA, Keccak-256, and EIP-712 come from our standalone pure-R <code>ethsign</code> package; the Hyperliquid-specific msgpack action hash lives here. No compiled code, and verified byte-identical to the test vectors of the official <a href="https://github.com/hyperliquid-dex/hyperliquid-python-sdk" class="external-link">Hyperliquid Python SDK</a> (v0.24.0), which we used as the reference implementation.</li>
 <li>
 <strong>One host, two paths.</strong> The whole REST API lives behind one host: <code>/info</code> (public reads) and <code>/exchange</code> (signed writes). The network is chosen by an explicit <code>testnet</code> flag, never by URL sniffing, because the network changes the signature itself.</li>
 </ul>
@@ -86,8 +86,11 @@
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># install.packages("remotes")</span></span>
-<span><span class="fu">remotes</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"dereckscompany/hyperliquid"</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu">renv</span><span class="fu">::</span><span class="fu">install</span><span class="op">(</span><span class="st">"dereckscompany/hyperliquid"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># or, if you use remotes instead of renv:</span></span>
+<span><span class="co"># install.packages("remotes")</span></span>
+<span><span class="co"># remotes::install_github("dereckscompany/hyperliquid")</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="authentication">Authentication<a class="anchor" aria-label="anchor" href="#authentication"></a>
