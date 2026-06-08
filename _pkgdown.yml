@@ -58,4 +58,5 @@ articles:
   - title: Guides
     navbar: Guides
     contents:
+      - trading-strategies
       - live-testnet-walkthrough
