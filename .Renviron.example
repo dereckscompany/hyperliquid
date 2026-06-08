@@ -1,0 +1,14 @@
+# Hyperliquid signing credentials.
+# Copy this file to `.Renviron` and fill in real values.
+# NEVER commit `.Renviron` -- it holds a secret and is gitignored.
+
+# HYPERLIQUID_PRIVATE_KEY: the secp256k1 private key that SIGNS /exchange
+# actions -- "0x" + 64 hex characters (NOT the 40-char wallet address).
+# For safety prefer an API/agent wallet key (Hyperliquid UI: More > API),
+# which can trade but CANNOT withdraw funds.
+HYPERLIQUID_PRIVATE_KEY=0x0000000000000000000000000000000000000000000000000000000000000000
+
+# HYPERLIQUID_ACCOUNT_ADDRESS (optional): the master account the agent/API
+# wallet trades on behalf of -- "0x" + 40 hex characters. Leave unset when the
+# private key above IS the account's own key.
+HYPERLIQUID_ACCOUNT_ADDRESS=0x0000000000000000000000000000000000000000

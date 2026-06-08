@@ -51,7 +51,11 @@ reference:
       - HYPERLIQUID_INTERVALS
 
 articles:
-  - title: Getting Started
+  - title: Get started
     navbar: ~
     contents:
       - getting-started
+  - title: Guides
+    navbar: Guides
+    contents:
+      - live-testnet-walkthrough
