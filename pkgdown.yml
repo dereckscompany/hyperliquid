@@ -1,0 +1,11 @@
+pandoc: 3.8.3
+pkgdown: 2.2.0
+pkgdown_sha: ~
+articles:
+  getting-started: getting-started.html
+  live-testnet-walkthrough: live-testnet-walkthrough.html
+  trading-strategies: trading-strategies.html
+last_built: 2026-06-08T06:32Z
+urls:
+  reference: https://dereckscompany.github.io/hyperliquid/reference
+  article: https://dereckscompany.github.io/hyperliquid/articles
