@@ -10,7 +10,7 @@ Authors@R:
            role = c("aut", "cre"),
            email = "dereck@mezquita.io",
            comment = c(ORCID = "0000-0002-9307-6762"))
-Description: R API wrapper to the Hyperliquid decentralized exchange supporting
+Description: R API wrapper to the Hyperliquid decentralised exchange supporting
     both synchronous and asynchronous (promise based) operations. Provides R6
     classes for market data, perpetual and spot trading, account management,
     transfers, and staking, with Ethereum-style wallet signing for the exchange
