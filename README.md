@@ -35,9 +35,9 @@ mainnet.
   scalar columns, and heterogeneous rows are stacked with a
   discriminator column (`side`, `delta_type`, `status`, …).
 - **Sync and async.** Every method works in both modes. `async = TRUE`
-  returns a \[promise\]\[promises::promise\]; otherwise results are
-  returned directly. There is a single sync/async branch point
-  (\[hyperliquid_build_request()\]).
+  returns a [promise](https://rstudio.github.io/promises/); otherwise
+  results are returned directly. There is a single sync/async branch
+  point (`hyperliquid_build_request()`).
 - **snake_case columns.** API `camelCase` fields become `snake_case`
   columns; prices and sizes are returned as numerics.
 - **Pure-R Ethereum signing via
@@ -309,9 +309,10 @@ head(hyperliquid_ohlcv)
 
 The package is written around promises for non-blocking, event-loop use.
 Pass `async = TRUE` to any class and its methods return a
-\[promise\]\[promises::promise\] instead of a `data.table`. Resolve it
-with `coro::async()` / `await()` for sequential-looking code, and drive
-the event loop with [later](https://r-lib.github.io/later/).
+[promise](https://rstudio.github.io/promises/) instead of a
+`data.table`. Resolve it with `coro::async()` / `await()` for
+sequential-looking code, and drive the event loop with
+[later](https://r-lib.github.io/later/).
 
 ``` r
 market_async <- HyperliquidMarketData$new(async = TRUE)
