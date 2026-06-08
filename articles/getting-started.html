@@ -381,7 +381,7 @@ candles for <code>"BTC"</code>, <code>"ETH"</code>, and
 <h2 id="asynchronous-use">Asynchronous Use<a class="anchor" aria-label="anchor" href="#asynchronous-use"></a>
 </h2>
 <p>Every class works in async mode. Pass <code>async = TRUE</code> and
-each method returns a [promise][promises::promise] instead of a
+each method returns a <a href="https://rstudio.github.io/promises/" class="external-link">promise</a> instead of a
 <code>data.table</code>. The recommended idiom is
 <code><a href="https://coro.r-lib.org/reference/async.html" class="external-link">coro::async()</a></code> / <code>await()</code> for sequential-looking
 code, driving the event loop with <a href="https://r-lib.github.io/later/" class="external-link">later</a>:</p>

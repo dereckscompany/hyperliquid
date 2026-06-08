@@ -73,7 +73,7 @@
 <li>
 <strong>One method, one <code>data.table</code>, no list columns.</strong> Every method returns a flat <code>data.table</code>; nested API objects are flattened into scalar columns, and heterogeneous rows are stacked with a discriminator column (<code>side</code>, <code>delta_type</code>, <code>status</code>, …).</li>
 <li>
-<strong>Sync and async.</strong> Every method works in both modes. <code>async = TRUE</code> returns a [promise][promises::promise]; otherwise results are returned directly. There is a single sync/async branch point ([hyperliquid_build_request()]).</li>
+<strong>Sync and async.</strong> Every method works in both modes. <code>async = TRUE</code> returns a <a href="https://rstudio.github.io/promises/" class="external-link">promise</a>; otherwise results are returned directly. There is a single sync/async branch point (<code><a href="reference/hyperliquid_build_request.html">hyperliquid_build_request()</a></code>).</li>
 <li>
 <strong>snake_case columns.</strong> API <code>camelCase</code> fields become <code>snake_case</code> columns; prices and sizes are returned as numerics.</li>
 <li>
@@ -263,7 +263,7 @@
 <div class="section level2">
 <h2 id="asynchronous-use">Asynchronous Use<a class="anchor" aria-label="anchor" href="#asynchronous-use"></a>
 </h2>
-<p>The package is written around promises for non-blocking, event-loop use. Pass <code>async = TRUE</code> to any class and its methods return a [promise][promises::promise] instead of a <code>data.table</code>. Resolve it with <code><a href="https://coro.r-lib.org/reference/async.html" class="external-link">coro::async()</a></code> / <code>await()</code> for sequential-looking code, and drive the event loop with <a href="https://r-lib.github.io/later/" class="external-link">later</a>.</p>
+<p>The package is written around promises for non-blocking, event-loop use. Pass <code>async = TRUE</code> to any class and its methods return a <a href="https://rstudio.github.io/promises/" class="external-link">promise</a> instead of a <code>data.table</code>. Resolve it with <code><a href="https://coro.r-lib.org/reference/async.html" class="external-link">coro::async()</a></code> / <code>await()</code> for sequential-looking code, and drive the event loop with <a href="https://r-lib.github.io/later/" class="external-link">later</a>.</p>
 <div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">market_async</span> <span class="op">&lt;-</span> <span class="va"><a href="reference/HyperliquidMarketData.html">HyperliquidMarketData</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span>async <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span></span>

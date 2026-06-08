@@ -358,8 +358,8 @@ head(hyperliquid_ohlcv)
 ## Asynchronous Use
 
 Every class works in async mode. Pass `async = TRUE` and each method
-returns a \[promise\]\[promises::promise\] instead of a `data.table`.
-The recommended idiom is
+returns a [promise](https://rstudio.github.io/promises/) instead of a
+`data.table`. The recommended idiom is
 [`coro::async()`](https://coro.r-lib.org/reference/async.html) /
 `await()` for sequential-looking code, driving the event loop with
 [later](https://r-lib.github.io/later/):
