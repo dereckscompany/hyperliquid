@@ -16,8 +16,9 @@ decentralized exchange supporting both synchronous and asynchronous
 perpetual and spot trading, account management, transfers, and staking.
 Every method returns a flat `data.table`. The `/exchange` endpoint is
 authenticated by an Ethereum wallet signature, computed in **pure R**
-(`openssl` + `gmp`, no compiled code) and verified byte-for-byte against
-the official Hyperliquid SDKs.
+via the companion [`ethsign`](https://github.com/dereckscompany/ethsign)
+package (no compiled code) and verified byte-for-byte against the
+official Hyperliquid SDKs.
 
 ## Disclaimer
 
@@ -39,9 +40,11 @@ mainnet.
   (\[hyperliquid_build_request()\]).
 - **snake_case columns.** API `camelCase` fields become `snake_case`
   columns; prices and sizes are returned as numerics.
-- **Pure-R Ethereum signing.** secp256k1 ECDSA, Keccak-256, EIP-712, and
-  the msgpack action hash are implemented in pure R (`openssl` + `gmp`)
-  with no compiled code, and verified byte-identical to the official
+- **Pure-R Ethereum signing via
+  [`ethsign`](https://github.com/dereckscompany/ethsign).** secp256k1
+  ECDSA, Keccak-256, and EIP-712 come from our standalone pure-R
+  `ethsign` package; the Hyperliquid-specific msgpack action hash lives
+  here. No compiled code, and verified byte-identical to the official
   Python and Rust SDK test vectors.
 - **One host, two paths.** The whole REST API lives behind one host:
   `/info` (public reads) and `/exchange` (signed writes). The network is
@@ -61,6 +64,17 @@ Public market-data and account reads (the `/info` endpoint) need no
 credentials. Signed `/exchange` actions (trading, transfers, staking
 writes) are authenticated by an **Ethereum wallet signature**:
 Hyperliquid uses no API keys, only your wallet’s secp256k1 private key.
+
+When you call a signed method, the package builds the action, hashes it,
+and signs it **locally** with your key, then sends only the resulting
+signature in the request body — your private key never leaves your
+machine and is never transmitted to Hyperliquid. The low-level signing
+primitives (secp256k1 ECDSA, Keccak-256, EIP-712) are factored into a
+small standalone package,
+[`ethsign`](https://github.com/dereckscompany/ethsign), which this
+package builds on; read it if you want the mechanics or to reuse
+Ethereum signing elsewhere. (This is not a cryptography library — it
+just uses one.)
 
 Store the key as an environment variable in `.Renviron`:
 
@@ -335,6 +349,11 @@ while (!later$loop_empty()) {
 | `HyperliquidTrading` | place / modify / cancel orders, market open/close, leverage, margin, approvals | Yes |
 | `HyperliquidTransfers` | collateral class transfer, sends, withdrawals, sub-account and vault transfers | Yes |
 | `HyperliquidStaking` | delegator summary, delegations, rewards, history, delegate / undelegate | Mixed |
+
+## Author
+
+Dereck Mezquita — [ORCID:
+0000-0002-9307-6762](https://orcid.org/0000-0002-9307-6762)
 
 ## License
 
