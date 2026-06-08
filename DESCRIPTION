@@ -1,6 +1,6 @@
 Package: hyperliquid
 Title: API Wrapper to the Hyperliquid Exchange
-Version: 0.0.0.9000
+Version: 0.0.1
 URL: https://dereckscompany.github.io/hyperliquid,
     https://github.com/dereckscompany/hyperliquid
 BugReports: https://github.com/dereckscompany/hyperliquid/issues
@@ -10,7 +10,11 @@ Authors@R:
            role = c("aut", "cre"),
            email = "dereck@mezquita.io",
            comment = c(ORCID = "0000-0002-9307-6762"))
-Description: R API wrapper to the Hyperliquid decentralized exchange supporting both synchronous and asynchronous (promise based) operations. Provides R6 classes for market data, perpetual and spot trading, account management, transfers, and staking, with Ethereum-style wallet signing for the exchange endpoint.
+Description: R API wrapper to the Hyperliquid decentralized exchange supporting
+    both synchronous and asynchronous (promise based) operations. Provides R6
+    classes for market data, perpetual and spot trading, account management,
+    transfers, and staking, with Ethereum-style wallet signing for the exchange
+    endpoint.
 License: MIT
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE, roclets = c("namespace", "rd", "roxyassert::contract_roclet"))

@@ -13,5 +13,6 @@ exclusions: list(
     "renv/activate.R",
     "packages/*/renv/",
     "scripts/",
+    "data-raw/",
     "R/contracts-generated.R"
   )

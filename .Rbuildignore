@@ -17,4 +17,5 @@
 ^\.lintr$
 ^air\.toml$
 ^\.Renviron$
+^\.Renviron\.example$
 ^README\.Rmd$

@@ -50,6 +50,11 @@ reference:
       - time_convert_to_hyperliquid
       - HYPERLIQUID_INTERVALS
 
+  - title: Return Shapes
+    desc: The data.table shape every method returns
+    contents:
+      - hyperliquid_shapes
+
 articles:
   - title: Get started
     navbar: ~
