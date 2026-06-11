@@ -33,10 +33,14 @@ Imports:
 Suggests:
     box,
     coro,
+    covr,
+    DT,
     knitr,
     later,
+    lintr,
     pkgdown,
     promises,
+    rcmdcheck,
     rmarkdown,
     roxyassert,
     testthat (>= 3.0.0)

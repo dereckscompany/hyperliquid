@@ -10,12 +10,14 @@
 ^docs$
 ^.*\.csv$
 ^local$
-^dev$
 ^scripts$
 ^data-raw$
 ^\.cruft\.json$
 ^\.lintr$
+^LICENSE$
+^\.clang-format$
 ^air\.toml$
 ^\.Renviron$
 ^\.Renviron\.example$
 ^README\.Rmd$
+^README\.html$
