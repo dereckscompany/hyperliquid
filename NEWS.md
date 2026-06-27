@@ -1,4 +1,4 @@
-# hyperliquid (development version)
+# hyperliquid 0.1.0
 
 ## Transport: migrate to connectcore
 
