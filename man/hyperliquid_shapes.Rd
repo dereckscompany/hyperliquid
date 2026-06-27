@@ -5,11 +5,13 @@
 \title{Hyperliquid return shapes}
 \description{
 Reusable roxyassert \verb{@type} record shapes for the \code{data.table}s
-returned by the Hyperliquid client classes. \verb{@genassert} emits a standalone
-\verb{assert_type_<Shape>()} validator for each shape and \verb{@exportassert} exports
-them (alongside this block's \verb{assert_args_*}/\verb{assert_return_*}), so callers
-and the backtester can validate any value against a Hyperliquid shape as a
-conformance oracle.
+returned by the Hyperliquid client classes. Each shape is referenced by a
+method's \verb{@return} as \verb{promise<Shape>}, so the contract roclet expands it
+inline into that method's generated \verb{assert_return_*} -- no standalone
+\verb{assert_type_<Shape>()} is emitted. hyperliquid is a leaf connector: nothing
+internal calls a per-shape validator and no downstream package validates
+against these shapes, so there is no \verb{@genassert} (no callable validators to
+generate) and no \verb{@exportassert} (nothing to export).
 
 Shapes: \code{PerpMeta}, \code{Candles}, \code{L2Level}, \code{Position}, \code{MarginSummary},
 \code{Fill}, \code{OrderResult}, \code{FundingHistory}, \code{StakingSummary}, \code{TransferAck}.
