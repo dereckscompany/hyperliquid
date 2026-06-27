@@ -1,3 +1,26 @@
+# hyperliquid (development version)
+
+## Transport: migrate to connectcore
+
+* `HyperliquidBase` now **inherits `connectcore::RestClient`**, the shared
+  transport base, for credential storage, the sync/async perform function, and
+  the overridable `.parse_envelope()` error seam. The Hyperliquid two-failure-
+  shape parser (`/info` HTTP 422 text, `/exchange` 200 `{status:"err"}`) is
+  wired as the `.parse_envelope()` override. The `.sign()` request seam is left
+  at its no-op default: Hyperliquid signs the **body** (a wallet signature
+  embedded as a `signature` field), not the HTTP request.
+* The duplicated `then_or_now()` (the single sync/async branch point) and
+  `next_nonce()` (the monotonic epoch-millisecond nonce) now come from
+  connectcore; the local copies were removed.
+* `hyperliquid_build_request()` stays Hyperliquid-specific — the body-signed
+  wire contract requires the exact signed JSON on the wire (including
+  `vaultAddress`/`expiresAfter` as JSON `null`), so it keeps `req_body_raw()`
+  rather than connectcore's request funnel — but it now delegates its sync/async
+  branch to `connectcore::then_or_now()` and accepts an overridable
+  `parse_envelope` seam.
+* No public API change: every exported class, method, signature, and return
+  shape is unchanged, and the full test suite passes.
+
 # hyperliquid 0.0.1
 
 Initial release: an R wrapper for the Hyperliquid decentralised

@@ -71,8 +71,8 @@ account$get_user_fills_by_time(addr, start = lubridate::now("UTC") - lubridate::
 }
 
 }
-\section{Super class}{
-\code{\link[hyperliquid:HyperliquidBase]{hyperliquid::HyperliquidBase}} -> \code{HyperliquidAccount}
+\section{Super classes}{
+\code{\link[connectcore:RestClient]{connectcore::RestClient}} -> \code{\link[hyperliquid:HyperliquidBase]{hyperliquid::HyperliquidBase}} -> \code{HyperliquidAccount}
 }
 \section{Methods}{
 \subsection{Public methods}{

@@ -21,6 +21,7 @@ Roxygen: list(markdown = TRUE, roclets = c("namespace", "rd", "roxyassert::contr
 RoxygenNote: 7.3.3
 Imports:
     assert,
+    connectcore,
     data.table,
     ethsign,
     gmp,
@@ -46,6 +47,7 @@ Suggests:
     testthat (>= 3.0.0)
 Remotes:
     dereckscompany/assert,
+    dereckscompany/connectcore@v0.0.1,
     dereckscompany/ethsign,
     dereckscompany/roxyassert@v0.9.1
 VignetteBuilder: knitr

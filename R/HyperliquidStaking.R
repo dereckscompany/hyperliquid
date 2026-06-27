@@ -154,7 +154,7 @@ HyperliquidStaking <- R6::R6Class(
         validator = validator,
         wei = wei,
         isUndelegate = is_undelegate,
-        nonce = next_nonce(),
+        nonce = connectcore::next_nonce(),
         type = "tokenDelegate"
       )
       return(private$.submit_user(

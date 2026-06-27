@@ -12,6 +12,18 @@ HyperliquidBase: Abstract Base Class for Hyperliquid API Clients
 Provides shared infrastructure for all Hyperliquid R6 classes: wallet
 credentials, network selection, sync/async execution mode, the request
 funnel (\code{\link[=hyperliquid_build_request]{hyperliquid_build_request()}}), and lazy exchange-metadata caching.
+
+It \strong{inherits \link[connectcore:RestClient]{connectcore::RestClient}}, the shared transport base, for the
+credential storage, sync/async perform function, and the overridable
+\code{.parse_envelope()} error seam — which it overrides with Hyperliquid's
+two-failure-shape parser (\code{parse_hyperliquid_response()}). The \code{.sign()} seam
+is left at its no-op default: Hyperliquid does not sign the HTTP request but
+the \strong{body} (a wallet signature embedded as a \code{signature} field, built and
+attached by \code{.submit_l1()} / \code{.submit_user()} before the funnel), so request
+signing does not apply. The body-signed wire contract also means the funnel
+itself stays Hyperliquid-specific (\code{\link[=hyperliquid_build_request]{hyperliquid_build_request()}}) rather than
+connectcore's request funnel; the generic sync/async branch and the monotonic
+nonce, however, come from connectcore.
 \subsection{Sync vs Async}{
 
 The \code{async} parameter controls execution mode for all API methods:
@@ -48,14 +60,16 @@ public methods that delegate to \code{private$.info()} (reads) or
 }
 \section{Fields}{
 
-All fields are private:
+All fields are private. \code{.keys}, \code{.is_async}, and \code{.perform} are inherited
+from \link[connectcore:RestClient]{connectcore::RestClient}; the rest are Hyperliquid-specific:
 \itemize{
-\item \code{.keys}: List; wallet credentials from \code{\link[=get_api_keys]{get_api_keys()}}.
+\item \code{.keys}: List; wallet credentials from \code{\link[=get_api_keys]{get_api_keys()}} (inherited).
 \item \code{.signer}: \link[ethsign:EthSigner]{ethsign::EthSigner} or \code{NULL}; the wallet signer built from the
 key (used to sign /exchange actions), or \code{NULL} when no key is set.
-\item \code{.base_url}: Character; REST base URL for the selected network.
-\item \code{.is_async}: Logical; whether the instance is in async mode.
-\item \code{.perform}: Function; \link[httr2:req_perform]{httr2::req_perform} or \link[httr2:req_perform_promise]{httr2::req_perform_promise}.
+\item \code{.base_url}: Character; REST base URL for the selected network (inherited).
+\item \code{.is_async}: Logical; whether the instance is in async mode (inherited).
+\item \code{.perform}: Function; \link[httr2:req_perform]{httr2::req_perform} or \link[httr2:req_perform_promise]{httr2::req_perform_promise}
+(inherited).
 \item \code{.testnet}: Logical; whether the instance targets testnet.
 \item \code{.vault_address}: Character or \code{NULL}; vault/sub-account to act for.
 \item \code{.account_address}: Character or \code{NULL}; master account for an agent wallet.
@@ -63,14 +77,14 @@ key (used to sign /exchange actions), or \code{NULL} when no key is set.
 }
 }
 
+\section{Super class}{
+\code{\link[connectcore:RestClient]{connectcore::RestClient}} -> \code{HyperliquidBase}
+}
 \section{Active bindings}{
 \if{html}{\out{<div class="r6-active-bindings">}}
 \describe{
-\item{\code{is_async}}{Logical; read-only flag indicating whether this instance
-operates in async mode.}
-
 \item{\code{testnet}}{Logical; read-only flag indicating whether this instance
-targets testnet.}
+targets testnet. (\code{is_async} is inherited from \link[connectcore:RestClient]{connectcore::RestClient}.)}
 }
 \if{html}{\out{</div>}}
 }

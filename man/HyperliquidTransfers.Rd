@@ -61,8 +61,8 @@ transfers$usd_send(25, "0x5e9ee1089755c3435139848e47e6635505d5a13a")
 }
 
 }
-\section{Super class}{
-\code{\link[hyperliquid:HyperliquidBase]{hyperliquid::HyperliquidBase}} -> \code{HyperliquidTransfers}
+\section{Super classes}{
+\code{\link[connectcore:RestClient]{connectcore::RestClient}} -> \code{\link[hyperliquid:HyperliquidBase]{hyperliquid::HyperliquidBase}} -> \code{HyperliquidTransfers}
 }
 \section{Methods}{
 \subsection{Public methods}{

@@ -37,7 +37,16 @@ mainnet.
 - **Sync and async.** Every method works in both modes. `async = TRUE`
   returns a [promise](https://rstudio.github.io/promises/); otherwise
   results are returned directly. There is a single sync/async branch
-  point (`hyperliquid_build_request()`).
+  point (`connectcore::then_or_now()`, which
+  `hyperliquid_build_request()` delegates to).
+- **Shared transport base via
+  [github.com/dereckscompany/connectcore](https://github.com/dereckscompany/connectcore).**
+  `HyperliquidBase` inherits `connectcore::RestClient` for credential
+  storage, the sync/async perform function, and the overridable error
+  seam (Hyperliquid’s two-failure-shape parser plugs into
+  `.parse_envelope()`). Because Hyperliquid signs the request **body**
+  (not the request) and posts the exact signed JSON on the wire, the
+  funnel itself stays Hyperliquid-specific.
 - **snake_case columns.** API `camelCase` fields become `snake_case`
   columns; prices and sizes are returned as numerics.
 - **Pure-R Ethereum signing via

@@ -7,6 +7,18 @@
 #' credentials, network selection, sync/async execution mode, the request
 #' funnel ([hyperliquid_build_request()]), and lazy exchange-metadata caching.
 #'
+#' It **inherits [connectcore::RestClient]**, the shared transport base, for the
+#' credential storage, sync/async perform function, and the overridable
+#' `.parse_envelope()` error seam — which it overrides with Hyperliquid's
+#' two-failure-shape parser (`parse_hyperliquid_response()`). The `.sign()` seam
+#' is left at its no-op default: Hyperliquid does not sign the HTTP request but
+#' the **body** (a wallet signature embedded as a `signature` field, built and
+#' attached by `.submit_l1()` / `.submit_user()` before the funnel), so request
+#' signing does not apply. The body-signed wire contract also means the funnel
+#' itself stays Hyperliquid-specific ([hyperliquid_build_request()]) rather than
+#' connectcore's request funnel; the generic sync/async branch and the monotonic
+#' nonce, however, come from connectcore.
+#'
 #' ### Sync vs Async
 #' The `async` parameter controls execution mode for all API methods:
 #' - `async = FALSE` (default): methods return results directly.
@@ -34,13 +46,15 @@
 #' `.parser` closure and is otherwise sync/async-unaware.
 #'
 #' @section Fields:
-#' All fields are private:
-#' - `.keys`: List; wallet credentials from [get_api_keys()].
+#' All fields are private. `.keys`, `.is_async`, and `.perform` are inherited
+#' from [connectcore::RestClient]; the rest are Hyperliquid-specific:
+#' - `.keys`: List; wallet credentials from [get_api_keys()] (inherited).
 #' - `.signer`: [ethsign::EthSigner] or `NULL`; the wallet signer built from the
 #'   key (used to sign /exchange actions), or `NULL` when no key is set.
-#' - `.base_url`: Character; REST base URL for the selected network.
-#' - `.is_async`: Logical; whether the instance is in async mode.
-#' - `.perform`: Function; [httr2::req_perform] or [httr2::req_perform_promise].
+#' - `.base_url`: Character; REST base URL for the selected network (inherited).
+#' - `.is_async`: Logical; whether the instance is in async mode (inherited).
+#' - `.perform`: Function; [httr2::req_perform] or [httr2::req_perform_promise]
+#'   (inherited).
 #' - `.testnet`: Logical; whether the instance targets testnet.
 #' - `.vault_address`: Character or `NULL`; vault/sub-account to act for.
 #' - `.account_address`: Character or `NULL`; master account for an agent wallet.
@@ -51,6 +65,7 @@
 #' @export
 HyperliquidBase <- R6::R6Class(
   "HyperliquidBase",
+  inherit = connectcore::RestClient,
   public = list(
     #' @description
     #' Initialise a HyperliquidBase object.
@@ -73,26 +88,25 @@ HyperliquidBase <- R6::R6Class(
     ) {
       assert_args_HyperliquidBase__initialize(keys, testnet, async, vault_address)
 
-      private$.keys <- keys
-      private$.signer <- if (!is.null(private$.keys$private_key)) {
-        ethsign::eth_signer(private_key = private$.keys$private_key)
+      # Inherit credential storage, the sync/async perform function, base URL,
+      # and the .parse_envelope error seam from connectcore::RestClient. The body
+      # is hand-built and signed before the funnel, so body_format = "none".
+      super$initialize(
+        keys = keys,
+        base_url = get_base_url(testnet = isTRUE(testnet)),
+        async = isTRUE(async),
+        body_format = "none",
+        user_agent = "dereckscompany/hyperliquid"
+      )
+
+      private$.signer <- if (!is.null(keys$private_key)) {
+        ethsign::eth_signer(private_key = keys$private_key)
       } else {
         NULL
       }
       private$.testnet <- isTRUE(testnet)
-      private$.base_url <- get_base_url(testnet = private$.testnet)
-      private$.is_async <- isTRUE(async)
       private$.vault_address <- vault_address
       private$.account_address <- keys$account_address
-
-      if (private$.is_async) {
-        if (!requireNamespace("promises", quietly = TRUE)) {
-          rlang::abort("Async mode requires the 'promises' package. Install it with install.packages(\"promises\").")
-        }
-        private$.perform <- httr2::req_perform_promise
-      } else {
-        private$.perform <- httr2::req_perform
-      }
 
       return(invisible(assert_return_HyperliquidBase__initialize(self)))
     },
@@ -153,35 +167,36 @@ HyperliquidBase <- R6::R6Class(
     }
   ),
   active = list(
-    #' @field is_async Logical; read-only flag indicating whether this instance
-    #'   operates in async mode.
-    is_async = function() {
-      return(private$.is_async)
-    },
-
     #' @field testnet Logical; read-only flag indicating whether this instance
-    #'   targets testnet.
+    #'   targets testnet. (`is_async` is inherited from [connectcore::RestClient].)
     testnet = function() {
       return(private$.testnet)
     }
   ),
   private = list(
-    .keys = NULL,
+    # .keys, .base_url, .is_async, and .perform are inherited from RestClient.
     .signer = NULL,
-    .base_url = NULL,
-    .is_async = FALSE,
-    .perform = NULL,
     .testnet = FALSE,
     .vault_address = NULL,
     .account_address = NULL,
     .meta_cache = NULL,
 
-    # Execute a Hyperliquid API request through the single funnel.
+    # Hyperliquid's error envelope, overriding RestClient's default JSON/non-2xx
+    # parser: /info signals failure with HTTP >= 400, /exchange with a 200 body
+    # of {status:"err"}.
+    .parse_envelope = function(resp) {
+      return(parse_hyperliquid_response(resp))
+    },
+
+    # Execute a Hyperliquid API request through the single funnel. Overrides
+    # RestClient's request funnel because Hyperliquid signs the body (not the
+    # request) and requires the raw, byte-exact signed JSON on the wire.
     #
-    # Injects the instance's base URL and perform function. `signed = FALSE`
-    # targets /info (public reads) and `signed = TRUE` targets /exchange (the
-    # caller has already built the full {action, nonce, signature, ...} body).
-    # The .parser closure makes subclass methods sync/async-unaware.
+    # Injects the inherited base URL, perform function, and async flag, and the
+    # overridable .parse_envelope error seam. `signed = FALSE` targets /info
+    # (public reads) and `signed = TRUE` targets /exchange (the caller has
+    # already built the full {action, nonce, signature, ...} body). The .parser
+    # closure makes subclass methods sync/async-unaware.
     .request = function(payload, signed = FALSE, .parser = identity, timeout = 30) {
       path <- "/info"
       if (isTRUE(signed)) {
@@ -194,7 +209,8 @@ HyperliquidBase <- R6::R6Class(
         .perform = private$.perform,
         .parser = .parser,
         is_async = private$.is_async,
-        timeout = timeout
+        timeout = timeout,
+        parse_envelope = private$.parse_envelope
       ))
     },
 
@@ -248,7 +264,7 @@ HyperliquidBase <- R6::R6Class(
     # The network is taken from the explicit testnet flag, never URL sniffing.
     .submit_l1 = function(action, .parser = identity, expires_after = NULL, timeout = 30) {
       private$.require_signing_key()
-      nonce <- next_nonce()
+      nonce <- connectcore::next_nonce()
       is_mainnet <- !private$.testnet
       sig <- sign_l1_action(
         private$.signer,

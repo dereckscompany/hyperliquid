@@ -75,8 +75,8 @@ trading$schedule_cancel(lubridate::now("UTC") + lubridate::seconds(60))
 }
 
 }
-\section{Super class}{
-\code{\link[hyperliquid:HyperliquidBase]{hyperliquid::HyperliquidBase}} -> \code{HyperliquidTrading}
+\section{Super classes}{
+\code{\link[connectcore:RestClient]{connectcore::RestClient}} -> \code{\link[hyperliquid:HyperliquidBase]{hyperliquid::HyperliquidBase}} -> \code{HyperliquidTrading}
 }
 \section{Methods}{
 \subsection{Public methods}{
