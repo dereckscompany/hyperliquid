@@ -2675,7 +2675,7 @@
     },
     "roxyassert": {
       "Package": "roxyassert",
-      "Version": "0.9.0",
+      "Version": "0.9.1",
       "Source": "GitHub",
       "Title": "Generate Runtime Assertions from roxygen2 Documentation",
       "URL": "https://dereckscompany.github.io/roxyassert, https://github.com/dereckscompany/roxyassert",
@@ -2705,8 +2705,8 @@
       "RemoteHost": "api.github.com",
       "RemoteUsername": "dereckscompany",
       "RemoteRepo": "roxyassert",
-      "RemoteRef": "master",
-      "RemoteSha": "ad7f9ee1edc0a492dce60e09b73ad497cb69893d",
+      "RemoteRef": "v0.9.1",
+      "RemoteSha": "8fc6101b91f3f33cdfa85ebf155ed268d885977e",
       "Remotes": "dereckscompany/assert"
     },
     "roxygen2": {
