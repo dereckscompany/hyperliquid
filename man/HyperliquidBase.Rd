@@ -20,10 +20,12 @@ two-failure-shape parser (\code{parse_hyperliquid_response()}). The \code{.sign(
 is left at its no-op default: Hyperliquid does not sign the HTTP request but
 the \strong{body} (a wallet signature embedded as a \code{signature} field, built and
 attached by \code{.submit_l1()} / \code{.submit_user()} before the funnel), so request
-signing does not apply. The body-signed wire contract also means the funnel
-itself stays Hyperliquid-specific (\code{\link[=hyperliquid_build_request]{hyperliquid_build_request()}}) rather than
-connectcore's request funnel; the generic sync/async branch and the monotonic
-nonce, however, come from connectcore.
+signing does not apply. The body-signed wire contract is honoured by routing
+the pre-serialised, byte-exact JSON through connectcore's shared funnel as a
+\strong{raw body} (\code{body_format = "raw"}), so the connector owns no transport: the
+request build, perform, sync/async branch, and monotonic nonce all come from
+connectcore. Only the body serialisation and error envelope stay
+Hyperliquid-specific (\code{\link[=hyperliquid_build_request]{hyperliquid_build_request()}}).
 \subsection{Sync vs Async}{
 
 The \code{async} parameter controls execution mode for all API methods:

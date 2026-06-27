@@ -1,3 +1,24 @@
+# hyperliquid 0.1.1
+
+## Transport: route the body through connectcore's raw-body funnel
+
+* The connector now owns **no transport**. `hyperliquid_build_request()` is
+  reduced to a thin serialise-and-delegate helper: it pre-serialises the
+  (already body-signed) payload with
+  `jsonlite::toJSON(..., auto_unbox = TRUE, null = "null")` and routes it
+  through `connectcore::build_request()` with `body_format = "raw"`, which sends
+  the bytes verbatim via `httr2::req_body_raw()`. The hand-rolled `httr2`
+  request builder (`request()` / `req_url_path_append()` / `req_method()` /
+  `req_body_raw()` / `req_timeout()` / `req_user_agent()` / `req_error()`) is
+  removed. connectcore v0.1.0's `body_format = "raw"` makes this possible: it
+  performs no `NULL`-pruning, no pretty-printing, and no re-encoding, and its
+  `.sign` seam runs after the body is set — so the exact signed bytes reach the
+  wire.
+* This is an internal refactor with **zero behaviour change**: the wire bytes
+  (especially the signed `/exchange` body) are byte-identical to before,
+  including `vaultAddress`/`expiresAfter` serialised as JSON `null`. The signing
+  vectors and the mock-router body assertions remain green.
+
 # hyperliquid 0.1.0
 
 ## Transport: migrate to connectcore

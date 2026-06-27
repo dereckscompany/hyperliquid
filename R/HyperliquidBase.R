@@ -14,10 +14,12 @@
 #' is left at its no-op default: Hyperliquid does not sign the HTTP request but
 #' the **body** (a wallet signature embedded as a `signature` field, built and
 #' attached by `.submit_l1()` / `.submit_user()` before the funnel), so request
-#' signing does not apply. The body-signed wire contract also means the funnel
-#' itself stays Hyperliquid-specific ([hyperliquid_build_request()]) rather than
-#' connectcore's request funnel; the generic sync/async branch and the monotonic
-#' nonce, however, come from connectcore.
+#' signing does not apply. The body-signed wire contract is honoured by routing
+#' the pre-serialised, byte-exact JSON through connectcore's shared funnel as a
+#' **raw body** (`body_format = "raw"`), so the connector owns no transport: the
+#' request build, perform, sync/async branch, and monotonic nonce all come from
+#' connectcore. Only the body serialisation and error envelope stay
+#' Hyperliquid-specific ([hyperliquid_build_request()]).
 #'
 #' ### Sync vs Async
 #' The `async` parameter controls execution mode for all API methods:
@@ -90,7 +92,9 @@ HyperliquidBase <- R6::R6Class(
 
       # Inherit credential storage, the sync/async perform function, base URL,
       # and the .parse_envelope error seam from connectcore::RestClient. The body
-      # is hand-built and signed before the funnel, so body_format = "none".
+      # is built and signed before the funnel and sent byte-verbatim via
+      # body_format = "raw"; the instance-level default is "none" because every
+      # call passes its own pre-serialised raw body explicitly.
       super$initialize(
         keys = keys,
         base_url = get_base_url(testnet = isTRUE(testnet)),
@@ -188,9 +192,10 @@ HyperliquidBase <- R6::R6Class(
       return(parse_hyperliquid_response(resp))
     },
 
-    # Execute a Hyperliquid API request through the single funnel. Overrides
-    # RestClient's request funnel because Hyperliquid signs the body (not the
-    # request) and requires the raw, byte-exact signed JSON on the wire.
+    # Execute a Hyperliquid API request through the single funnel. Serialises the
+    # body to byte-exact signed JSON and routes it through connectcore's shared
+    # funnel as a raw body (Hyperliquid signs the body, not the request, and
+    # requires those exact bytes on the wire).
     #
     # Injects the inherited base URL, perform function, and async flag, and the
     # overridable .parse_envelope error seam. `signed = FALSE` targets /info

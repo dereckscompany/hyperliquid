@@ -1,34 +1,37 @@
 # File: R/helpers_request.R
-# Hyperliquid's request funnel and error envelope. The generic sync/async branch
-# (then_or_now) and the monotonic nonce counter (next_nonce) now come from
-# connectcore; only what is genuinely Hyperliquid-specific lives here: the
-# raw-JSON body funnel (both POST paths carry a hand-built, body-signed JSON
-# payload) and the two-failure-shape response parser.
+# Hyperliquid's request funnel and error envelope. The connector now owns NO
+# transport: the request is built, performed, and sync/async-branched entirely
+# by connectcore's shared funnel ([connectcore::build_request()]). Only what is
+# genuinely Hyperliquid-specific lives here — the byte-exact body serialisation
+# (both POST paths carry a body-signed JSON payload that must hit the wire
+# exactly as it was signed) and the two-failure-shape response parser.
 
 #' Build and Execute a Hyperliquid API Request
 #'
-#' Constructs an [httr2::request] for one of Hyperliquid's two POST endpoints
-#' (`/info` or `/exchange`), serialises `body` as JSON, performs it via the
-#' supplied `.perform` function, and parses the response. This is the single
-#' point through which all Hyperliquid API calls flow.
+#' Serialises `body` to the byte-exact signed JSON and routes it through
+#' [connectcore::build_request()] as a raw body, to one of Hyperliquid's two
+#' POST endpoints (`/info` or `/exchange`). This is the single point through
+#' which all Hyperliquid API calls flow.
 #'
 #' Hyperliquid authenticates by signing the request **body** (a wallet signature
 #' embedded as a `signature` field), not the HTTP request, and requires the body
 #' on the wire exactly as it was signed — including `vaultAddress`/`expiresAfter`
-#' serialised as JSON `null`. It is therefore posted with [httr2::req_body_raw]
-#' and `jsonlite::toJSON(..., null = "null")`, not connectcore's request funnel
-#' (which signs the request and prunes `NULL` body fields). The generic
-#' sync/async branch is delegated to [connectcore::then_or_now()].
+#' serialised as JSON `null`. The body is therefore pre-serialised here with
+#' `jsonlite::toJSON(..., auto_unbox = TRUE, null = "null")` and passed to
+#' connectcore's funnel with `body_format = "raw"`, which sends it byte-verbatim
+#' via [httr2::req_body_raw] — no `NULL`-pruning, no re-encoding — so the exact
+#' signed bytes reach the wire. (The default request-signing `.sign` seam is a
+#' no-op for Hyperliquid; signing happens in the body content, not the request.)
 #'
 #' ### Sync vs Async
 #' The `.perform` argument controls execution mode:
 #' - `httr2::req_perform` (default): synchronous, returns an [httr2::response].
 #' - `httr2::req_perform_promise`: asynchronous, returns a [promises::promise].
 #'
-#' Errors are surfaced by `parse_envelope`, not httr2: the request is built with
-#' `req_error(is_error = ...)` returning `FALSE` so the API's own error body
-#' (HTTP 422 text for `/info`, an `{status:"err"}` envelope for `/exchange`) is
-#' formatted by the parser.
+#' Errors are surfaced by `parse_envelope`, not httr2: connectcore's funnel
+#' disables httr2's auto-error so the API's own error body (HTTP 422 text for
+#' `/info`, an `{status:"err"}` envelope for `/exchange`) is formatted by the
+#' parser.
 #'
 #' @param base_url (scalar<character>) the REST base URL (scheme + host).
 #' @param path (scalar<character>) the endpoint path, `"/info"` or
@@ -47,9 +50,8 @@
 #' @return (any) parsed and post-processed API response data, or a promise
 #'   thereof.
 #'
-#' @importFrom httr2 request req_url_path_append req_method req_body_raw req_timeout
-#' @importFrom httr2 req_user_agent req_error req_perform
 #' @importFrom jsonlite toJSON
+#' @importFrom httr2 req_perform
 #' @export
 hyperliquid_build_request <- function(
   base_url,
@@ -71,27 +73,23 @@ hyperliquid_build_request <- function(
     timeout,
     parse_envelope
   )
-  req <- httr2::request(base_url)
-  req <- httr2::req_url_path_append(req, path)
-  req <- httr2::req_method(req, "POST")
-  req <- httr2::req_body_raw(
-    req,
-    jsonlite::toJSON(body, auto_unbox = TRUE, null = "null"),
-    type = "application/json"
-  )
-  req <- httr2::req_timeout(req, timeout)
-  req <- httr2::req_user_agent(req, "dereckscompany/hyperliquid")
-  # Surface the API's own error body rather than httr2's generic message.
-  req <- httr2::req_error(req, is_error = function(resp) FALSE)
-
-  result <- .perform(req)
-
-  return(connectcore::then_or_now(
-    result,
-    function(resp) {
-      return(.parser(parse_envelope(resp)))
-    },
-    is_async = is_async
+  # Pre-serialise to the byte-exact signed JSON, then send it byte-verbatim
+  # through connectcore's funnel as a raw body. `null = "null"` keeps
+  # vaultAddress/expiresAfter as JSON null (the raw path does not prune them).
+  raw_body <- as.character(jsonlite::toJSON(body, auto_unbox = TRUE, null = "null"))
+  return(connectcore::build_request(
+    base_url = base_url,
+    endpoint = path,
+    method = "POST",
+    body = raw_body,
+    body_format = "raw",
+    raw_content_type = "application/json",
+    parse_envelope = parse_envelope,
+    .perform = .perform,
+    .parser = .parser,
+    is_async = is_async,
+    timeout = timeout,
+    user_agent = "dereckscompany/hyperliquid"
   ))
 }
 
