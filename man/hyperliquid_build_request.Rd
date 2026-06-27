@@ -43,19 +43,21 @@ error; the overridable error seam. Default \code{parse_hyperliquid_response()}.}
 thereof.
 }
 \description{
-Constructs an \link[httr2:request]{httr2::request} for one of Hyperliquid's two POST endpoints
-(\verb{/info} or \verb{/exchange}), serialises \code{body} as JSON, performs it via the
-supplied \code{.perform} function, and parses the response. This is the single
-point through which all Hyperliquid API calls flow.
+Serialises \code{body} to the byte-exact signed JSON and routes it through
+\code{\link[connectcore:build_request]{connectcore::build_request()}} as a raw body, to one of Hyperliquid's two
+POST endpoints (\verb{/info} or \verb{/exchange}). This is the single point through
+which all Hyperliquid API calls flow.
 }
 \details{
 Hyperliquid authenticates by signing the request \strong{body} (a wallet signature
 embedded as a \code{signature} field), not the HTTP request, and requires the body
 on the wire exactly as it was signed — including \code{vaultAddress}/\code{expiresAfter}
-serialised as JSON \code{null}. It is therefore posted with \link[httr2:req_body]{httr2::req_body_raw}
-and \code{jsonlite::toJSON(..., null = "null")}, not connectcore's request funnel
-(which signs the request and prunes \code{NULL} body fields). The generic
-sync/async branch is delegated to \code{\link[connectcore:then_or_now]{connectcore::then_or_now()}}.
+serialised as JSON \code{null}. The body is therefore pre-serialised here with
+\code{jsonlite::toJSON(..., auto_unbox = TRUE, null = "null")} and passed to
+connectcore's funnel with \code{body_format = "raw"}, which sends it byte-verbatim
+via \link[httr2:req_body]{httr2::req_body_raw} — no \code{NULL}-pruning, no re-encoding — so the exact
+signed bytes reach the wire. (The default request-signing \code{.sign} seam is a
+no-op for Hyperliquid; signing happens in the body content, not the request.)
 \subsection{Sync vs Async}{
 
 The \code{.perform} argument controls execution mode:
@@ -64,9 +66,9 @@ The \code{.perform} argument controls execution mode:
 \item \code{httr2::req_perform_promise}: asynchronous, returns a \link[promises:promise]{promises::promise}.
 }
 
-Errors are surfaced by \code{parse_envelope}, not httr2: the request is built with
-\code{req_error(is_error = ...)} returning \code{FALSE} so the API's own error body
-(HTTP 422 text for \verb{/info}, an \code{{status:"err"}} envelope for \verb{/exchange}) is
-formatted by the parser.
+Errors are surfaced by \code{parse_envelope}, not httr2: connectcore's funnel
+disables httr2's auto-error so the API's own error body (HTTP 422 text for
+\verb{/info}, an \code{{status:"err"}} envelope for \verb{/exchange}) is formatted by the
+parser.
 }
 }

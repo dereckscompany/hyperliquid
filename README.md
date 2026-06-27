@@ -44,9 +44,11 @@ mainnet.
   `HyperliquidBase` inherits `connectcore::RestClient` for credential
   storage, the sync/async perform function, and the overridable error
   seam (Hyperliquid’s two-failure-shape parser plugs into
-  `.parse_envelope()`). Because Hyperliquid signs the request **body**
-  (not the request) and posts the exact signed JSON on the wire, the
-  funnel itself stays Hyperliquid-specific.
+  `.parse_envelope()`). The connector owns no transport: because
+  Hyperliquid signs the request **body** (not the request), the
+  pre-serialised, byte-exact signed JSON is routed through connectcore’s
+  funnel as a raw body (`body_format = "raw"`), which sends it on the
+  wire verbatim.
 - **snake_case columns.** API `camelCase` fields become `snake_case`
   columns; prices and sizes are returned as numerics.
 - **Pure-R Ethereum signing via
