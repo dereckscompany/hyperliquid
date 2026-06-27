@@ -65,8 +65,8 @@ staking$token_delegate(
 }
 
 }
-\section{Super class}{
-\code{\link[hyperliquid:HyperliquidBase]{hyperliquid::HyperliquidBase}} -> \code{HyperliquidStaking}
+\section{Super classes}{
+\code{\link[connectcore:RestClient]{connectcore::RestClient}} -> \code{\link[hyperliquid:HyperliquidBase]{hyperliquid::HyperliquidBase}} -> \code{HyperliquidStaking}
 }
 \section{Methods}{
 \subsection{Public methods}{

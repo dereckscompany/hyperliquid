@@ -11,7 +11,8 @@ hyperliquid_build_request(
   .perform = httr2::req_perform,
   .parser = identity,
   is_async = FALSE,
-  timeout = 30
+  timeout = 30,
+  parse_envelope = parse_hyperliquid_response
 )
 }
 \arguments{
@@ -33,6 +34,9 @@ Default \code{FALSE}.}
 
 \item{timeout}{(scalar<numeric in ]0, Inf[>) request timeout in seconds.
 Default \code{30}.}
+
+\item{parse_envelope}{(function) turns a response into data and raises on
+error; the overridable error seam. Default \code{parse_hyperliquid_response()}.}
 }
 \value{
 (any) parsed and post-processed API response data, or a promise
@@ -45,6 +49,13 @@ supplied \code{.perform} function, and parses the response. This is the single
 point through which all Hyperliquid API calls flow.
 }
 \details{
+Hyperliquid authenticates by signing the request \strong{body} (a wallet signature
+embedded as a \code{signature} field), not the HTTP request, and requires the body
+on the wire exactly as it was signed — including \code{vaultAddress}/\code{expiresAfter}
+serialised as JSON \code{null}. It is therefore posted with \link[httr2:req_body]{httr2::req_body_raw}
+and \code{jsonlite::toJSON(..., null = "null")}, not connectcore's request funnel
+(which signs the request and prunes \code{NULL} body fields). The generic
+sync/async branch is delegated to \code{\link[connectcore:then_or_now]{connectcore::then_or_now()}}.
 \subsection{Sync vs Async}{
 
 The \code{.perform} argument controls execution mode:
@@ -53,9 +64,9 @@ The \code{.perform} argument controls execution mode:
 \item \code{httr2::req_perform_promise}: asynchronous, returns a \link[promises:promise]{promises::promise}.
 }
 
-Errors are surfaced by \code{parse_hyperliquid_response()}, not httr2: the request
-is built with \code{req_error(is_error = ...)} returning \code{FALSE} so the API's own
-error body (HTTP 422 text for \verb{/info}, an \code{{status:"err"}} envelope for
-\verb{/exchange}) is formatted by the parser.
+Errors are surfaced by \code{parse_envelope}, not httr2: the request is built with
+\code{req_error(is_error = ...)} returning \code{FALSE} so the API's own error body
+(HTTP 422 text for \verb{/info}, an \code{{status:"err"}} envelope for \verb{/exchange}) is
+formatted by the parser.
 }
 }

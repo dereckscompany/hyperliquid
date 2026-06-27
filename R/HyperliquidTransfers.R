@@ -65,7 +65,7 @@ HyperliquidTransfers <- R6::R6Class(
     #'   `status` and `response_type`, or a promise thereof.
     usd_class_transfer = function(amount, to_perp) {
       assert_args_HyperliquidTransfers__usd_class_transfer(amount, to_perp)
-      nonce <- next_nonce()
+      nonce <- connectcore::next_nonce()
       str_amount <- as.character(amount)
       if (!is.null(private$.vault_address)) {
         str_amount <- paste0(str_amount, " subaccount:", private$.vault_address)
@@ -95,7 +95,7 @@ HyperliquidTransfers <- R6::R6Class(
     usd_send = function(amount, destination) {
       assert_args_HyperliquidTransfers__usd_send(amount, destination)
       destination <- validate_address(destination)
-      time <- next_nonce()
+      time <- connectcore::next_nonce()
       action <- list(
         destination = destination,
         amount = as.character(amount),
@@ -123,7 +123,7 @@ HyperliquidTransfers <- R6::R6Class(
       assert_args_HyperliquidTransfers__spot_send(amount, destination, token)
       destination <- validate_address(destination)
       private$.validate_token(token)
-      time <- next_nonce()
+      time <- connectcore::next_nonce()
       action <- list(
         destination = destination,
         amount = as.character(amount),
@@ -150,7 +150,7 @@ HyperliquidTransfers <- R6::R6Class(
     withdraw = function(amount, destination) {
       assert_args_HyperliquidTransfers__withdraw(amount, destination)
       destination <- validate_address(destination)
-      time <- next_nonce()
+      time <- connectcore::next_nonce()
       action <- list(
         destination = destination,
         amount = as.character(amount),
@@ -190,7 +190,7 @@ HyperliquidTransfers <- R6::R6Class(
       )
       destination <- validate_address(destination)
       private$.validate_token(token)
-      nonce <- next_nonce()
+      nonce <- connectcore::next_nonce()
       action <- list(
         type = "sendAsset",
         destination = destination,

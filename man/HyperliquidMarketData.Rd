@@ -71,8 +71,8 @@ while (!later::loop_empty()) later::run_now()
 }
 
 }
-\section{Super class}{
-\code{\link[hyperliquid:HyperliquidBase]{hyperliquid::HyperliquidBase}} -> \code{HyperliquidMarketData}
+\section{Super classes}{
+\code{\link[connectcore:RestClient]{connectcore::RestClient}} -> \code{\link[hyperliquid:HyperliquidBase]{hyperliquid::HyperliquidBase}} -> \code{HyperliquidMarketData}
 }
 \section{Methods}{
 \subsection{Public methods}{

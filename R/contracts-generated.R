@@ -1229,22 +1229,7 @@ assert_return_hyperliquid_backfill_funding <- function(value) {
   return(value)
 }
 
-assert_args_then_or_now <- function(x, fn, is_async) {
-  assert_function(fn)
-  assert_scalar_logical(is_async)
-  return(invisible(NULL))
-}
-
-assert_return_then_or_now <- function(value) {
-  return(value)
-}
-
-assert_return_next_nonce <- function(value) {
-  assert_scalar_double(value)
-  return(value)
-}
-
-assert_args_hyperliquid_build_request <- function(base_url, path, body, .perform, .parser, is_async, timeout) {
+assert_args_hyperliquid_build_request <- function(base_url, path, body, .perform, .parser, is_async, timeout, parse_envelope) {
   assert_scalar_character(base_url)
   assert_scalar_character(path)
   assert_list(body)
@@ -1253,6 +1238,7 @@ assert_args_hyperliquid_build_request <- function(base_url, path, body, .perform
   assert_scalar_logical(is_async)
   assert_scalar_double(timeout)
   assert_between(timeout, lower = 0, lower_inclusive = FALSE, upper = Inf, upper_inclusive = FALSE)
+  assert_function(parse_envelope)
   return(invisible(NULL))
 }
 

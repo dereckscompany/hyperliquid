@@ -448,7 +448,7 @@ HyperliquidTrading <- R6::R6Class(
         type = "approveAgent",
         agentAddress = agent_address,
         agentName = coalesce_null(name, ""),
-        nonce = next_nonce()
+        nonce = connectcore::next_nonce()
       )
       return(private$.submit_user(
         action,
@@ -477,7 +477,7 @@ HyperliquidTrading <- R6::R6Class(
       action <- list(
         maxFeeRate = max_fee_rate,
         builder = builder,
-        nonce = next_nonce(),
+        nonce = connectcore::next_nonce(),
         type = "approveBuilderFee"
       )
       return(private$.submit_user(
