@@ -297,8 +297,11 @@ parse_delta_ledger <- function(items) {
 # set and return a bare `data.table()`.
 #
 # Each constructor closes with `[]` so the returned table prints on the first
-# call, and timestamp columns use `ms_to_datetime(numeric(0))`, the same coercion
-# the parsers apply, so an empty column's class and tz match a populated one.
+# call. Timestamp columns use `ms_to_datetime(numeric(0))` -- a length-0 POSIXct
+# in UTC. Every Hyperliquid timestamp is epoch milliseconds, and `ms_to_datetime()`
+# (R/utils_time.R) fixes the zone to UTC, so an empty column's class AND timezone
+# (UTC) match a populated one exactly. The same applies to the timestamp columns
+# in the parsers' inlined empty branches.
 
 #' Typed zero-row candle (OHLCV) schema. Shared by `parse_candles()` and the
 #' segmented kline fetcher (`combine_klines()` / `hyperliquid_fetch_klines()`).
