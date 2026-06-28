@@ -1,0 +1,118 @@
+[
+  {
+    "name": "hyperliquid_1s2",
+    "subAccountUser": "0x0000000000000000000000000000000000000005",
+    "master": "0x0000000000000000000000000000000000000006",
+    "clearinghouseState": {
+      "marginSummary": {
+        "accountValue": "50041.813241",
+        "totalNtlPos": "564.00245",
+        "totalRawUsd": "50605.815691",
+        "totalMarginUsed": "28.200122"
+      },
+      "crossMarginSummary": {
+        "accountValue": "50041.813241",
+        "totalNtlPos": "564.00245",
+        "totalRawUsd": "50605.815691",
+        "totalMarginUsed": "28.200122"
+      },
+      "crossMaintenanceMarginUsed": "8.008514",
+      "withdrawable": "49985.412996",
+      "assetPositions": [
+        {
+          "type": "oneWay",
+          "position": {
+            "coin": "BTC",
+            "szi": "-0.00705",
+            "leverage": {
+              "type": "cross",
+              "value": 20
+            },
+            "entryPx": "74661.5",
+            "positionValue": "436.20465",
+            "unrealizedPnl": "90.159492",
+            "returnOnEquity": "3.4257459734",
+            "liquidationPx": "7071249.3736100169",
+            "marginUsed": "21.810232",
+            "maxLeverage": 40,
+            "cumFunding": {
+              "allTime": "-3.138913",
+              "sinceOpen": "-0.511572",
+              "sinceChange": "-0.800986"
+            }
+          }
+        }
+      ],
+      "time": 1780809879828
+    },
+    "spotState": {
+      "balances": [
+        {
+          "coin": "USDC",
+          "token": 0,
+          "total": "23383.53574",
+          "hold": "0.0",
+          "entryNtl": "0.0"
+        }
+      ]
+    }
+  },
+  {
+    "name": "hyperliquid_1s3",
+    "subAccountUser": "0x0000000000000000000000000000000000000007",
+    "master": "0x0000000000000000000000000000000000000006",
+    "clearinghouseState": {
+      "marginSummary": {
+        "accountValue": "4581524.7700629998",
+        "totalNtlPos": "16567257.1122210007",
+        "totalRawUsd": "15746315.0516860001",
+        "totalMarginUsed": "1521768.8570419999"
+      },
+      "crossMarginSummary": {
+        "accountValue": "4581524.7700629998",
+        "totalNtlPos": "16567257.1122210007",
+        "totalRawUsd": "15746315.0516860001",
+        "totalMarginUsed": "1521768.8570419999"
+      },
+      "crossMaintenanceMarginUsed": "744317.568065",
+      "withdrawable": "2788861.0905010002",
+      "assetPositions": [
+        {
+          "type": "oneWay",
+          "position": {
+            "coin": "BTC",
+            "szi": "-0.95157",
+            "leverage": {
+              "type": "cross",
+              "value": 20
+            },
+            "entryPx": "65530.6",
+            "positionValue": "58876.49061",
+            "unrealizedPnl": "3480.48126",
+            "returnOnEquity": "1.1163086198",
+            "liquidationPx": "4044590.2710128045",
+            "marginUsed": "2943.82453",
+            "maxLeverage": 40,
+            "cumFunding": {
+              "allTime": "11724.093137",
+              "sinceOpen": "-108.169544",
+              "sinceChange": "-8.412"
+            }
+          }
+        }
+      ],
+      "time": 1780809879828
+    },
+    "spotState": {
+      "balances": [
+        {
+          "coin": "USDC",
+          "token": 0,
+          "total": "330249.81399404",
+          "hold": "15101.6371",
+          "entryNtl": "0.0"
+        }
+      ]
+    }
+  }
+]

@@ -1,0 +1,49 @@
+{
+  "universe": [
+    {
+      "tokens": [
+        1,
+        0
+      ],
+      "name": "PURR/USDC",
+      "index": 0,
+      "isCanonical": true
+    },
+    {
+      "tokens": [
+        2,
+        0
+      ],
+      "name": "@1",
+      "index": 1,
+      "isCanonical": false
+    }
+  ],
+  "tokens": [
+    {
+      "name": "USDC",
+      "szDecimals": 8,
+      "weiDecimals": 8,
+      "index": 0,
+      "tokenId": "0x00000000000000000000000000000001",
+      "isCanonical": true,
+      "evmContract": {
+        "address": "0x0000000000000000000000000000000000000009",
+        "evm_extra_wei_decimals": -2
+      },
+      "fullName": null,
+      "deployerTradingFeeShare": "0.0"
+    },
+    {
+      "name": "PURR",
+      "szDecimals": 0,
+      "weiDecimals": 5,
+      "index": 1,
+      "tokenId": "0x00000000000000000000000000000002",
+      "isCanonical": true,
+      "evmContract": null,
+      "fullName": null,
+      "deployerTradingFeeShare": "0.0"
+    }
+  ]
+}

@@ -6,7 +6,7 @@
 # closure -- which otherwise only runs during a docs render. The router
 # intercepts every request, so nothing here touches the network.
 
-box::use(./mock_router[mock_router])
+box::use(./mock_router[.mock_routes])
 
 # A throwaway wallet key so signing (which runs before the request) succeeds; the
 # mock ignores the signature entirely. 0x0101..01 is a valid non-zero secp256k1
@@ -43,8 +43,7 @@ seed_meta <- function(client) {
 }
 
 test_that("HyperliquidMarketData public methods round-trip through the router", {
-  old <- options(httr2_mock = mock_router)
-  on.exit(options(old), add = TRUE)
+  connectcore::local_mock_api(.mock_routes)
   market <- HyperliquidMarketData$new(keys = .keys)
 
   start <- lubridate::now("UTC") - lubridate::days(1)
@@ -66,8 +65,7 @@ test_that("HyperliquidMarketData public methods round-trip through the router", 
 })
 
 test_that("HyperliquidAccount public methods round-trip through the router", {
-  old <- options(httr2_mock = mock_router)
-  on.exit(options(old), add = TRUE)
+  connectcore::local_mock_api(.mock_routes)
   account <- HyperliquidAccount$new(keys = .keys)
 
   start <- lubridate::now("UTC") - lubridate::days(1)
@@ -94,8 +92,7 @@ test_that("HyperliquidAccount public methods round-trip through the router", {
 })
 
 test_that("HyperliquidTrading public methods round-trip through the router", {
-  old <- options(httr2_mock = mock_router)
-  on.exit(options(old), add = TRUE)
+  connectcore::local_mock_api(.mock_routes)
   trading <- HyperliquidTrading$new(keys = .keys)
   seed_meta(trading)
 
@@ -124,8 +121,7 @@ test_that("HyperliquidTrading public methods round-trip through the router", {
 })
 
 test_that("HyperliquidTransfers public methods round-trip through the router", {
-  old <- options(httr2_mock = mock_router)
-  on.exit(options(old), add = TRUE)
+  connectcore::local_mock_api(.mock_routes)
   transfers <- HyperliquidTransfers$new(keys = .keys)
 
   expect_equal(nrow(transfers$usd_class_transfer(100, to_perp = TRUE)), 1L)
@@ -142,8 +138,7 @@ test_that("HyperliquidTransfers public methods round-trip through the router", {
 })
 
 test_that("HyperliquidStaking public methods round-trip through the router", {
-  old <- options(httr2_mock = mock_router)
-  on.exit(options(old), add = TRUE)
+  connectcore::local_mock_api(.mock_routes)
   staking <- HyperliquidStaking$new(keys = .keys)
 
   expect_equal(nrow(staking$get_staking_summary(.validator)), 1L)

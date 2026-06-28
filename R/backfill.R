@@ -265,7 +265,7 @@ hyperliquid_fetch_funding <- function(coin, from, to, .req_fn, page_limit = 500L
   }
 
   if (length(acc) == 0L) {
-    return(data.table::data.table()[])
+    return(empty_dt_funding_history())
   }
   dt <- data.table::rbindlist(acc)
   dt <- unique(dt, by = "time")
