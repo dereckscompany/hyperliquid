@@ -67,8 +67,19 @@ parse_positions <- function(data) {
   positions <- data$assetPositions
   if (is.null(positions) || length(positions) == 0L) {
     # A flat account (no open positions) is a routine live response; return the
-    # documented zero-row schema so the column contract still holds.
-    return(empty_dt_positions())
+    # typed zero-row schema so the column contract still holds.
+    return(data.table::data.table(
+      coin = character(0),
+      szi = numeric(0),
+      entry_px = numeric(0),
+      position_value = numeric(0),
+      unrealized_pnl = numeric(0),
+      return_on_equity = numeric(0),
+      leverage_type = character(0),
+      leverage_value = numeric(0),
+      liquidation_px = numeric(0),
+      margin_used = numeric(0)
+    )[])
   }
   rows <- lapply(positions, function(ap) {
     p <- ap$position
@@ -104,8 +115,18 @@ parse_positions <- function(data) {
 parse_margin_summary <- function(data) {
   if (is.null(data) || length(data) == 0L) {
     # An address that never deposited returns an empty clearinghouseState;
-    # return the documented zero-row schema so the column contract still holds.
-    return(empty_dt_margin_summary())
+    # return the typed zero-row schema so the column contract still holds.
+    return(data.table::data.table(
+      account_value = numeric(0),
+      total_ntl_pos = numeric(0),
+      total_raw_usd = numeric(0),
+      total_margin_used = numeric(0),
+      withdrawable = numeric(0),
+      cross_account_value = numeric(0),
+      cross_total_ntl_pos = numeric(0),
+      cross_total_raw_usd = numeric(0),
+      cross_total_margin_used = numeric(0)
+    )[])
   }
   ms <- data$marginSummary
   cms <- data$crossMarginSummary
@@ -134,7 +155,12 @@ parse_margin_summary <- function(data) {
 parse_spot_balances <- function(data) {
   balances <- data$balances
   if (is.null(balances) || length(balances) == 0L) {
-    return(empty_dt_spot_balances())
+    return(data.table::data.table(
+      coin = character(0),
+      total = numeric(0),
+      hold = numeric(0),
+      entry_ntl = numeric(0)
+    )[])
   }
   rows <- lapply(balances, function(b) {
     return(data.table::data.table(
@@ -159,7 +185,14 @@ parse_spot_balances <- function(data) {
 #' @noRd
 parse_open_orders <- function(items) {
   if (is.null(items) || length(items) == 0L) {
-    return(empty_dt_open_orders())
+    return(data.table::data.table(
+      coin = character(0),
+      oid = numeric(0),
+      side = character(0),
+      limit_px = numeric(0),
+      sz = numeric(0),
+      timestamp = ms_to_datetime(numeric(0))
+    )[])
   }
   rows <- lapply(items, function(o) {
     return(data.table::data.table(
@@ -188,10 +221,14 @@ parse_open_orders <- function(items) {
 #' @keywords internal
 #' @noRd
 parse_frontend_open_orders <- function(items) {
-  if (is.null(items) || length(items) == 0L) {
-    return(empty_dt_frontend_open_orders())
+  # An empty response still owes its caller every column; the order shape comes
+  # from flatten_order(), so the empty case reuses it rather than restating it.
+  rows <- lapply(items, flatten_order)
+  dt <- if (length(rows) > 0L) {
+    data.table::rbindlist(rows, fill = TRUE)
+  } else {
+    flatten_order(NULL)[0L]
   }
-  dt <- data.table::rbindlist(lapply(items, flatten_order), fill = TRUE)
   data.table::set(dt, j = "cloid", value = NULL)
   data.table::setcolorder(
     dt,
@@ -229,8 +266,23 @@ parse_frontend_open_orders <- function(items) {
 parse_user_fills <- function(items) {
   if (is.null(items) || length(items) == 0L) {
     # An account that never traded returns an empty fills array; return the
-    # documented zero-row schema so the column contract still holds.
-    return(empty_dt_user_fills())
+    # typed zero-row schema so the column contract still holds.
+    return(data.table::data.table(
+      coin = character(0),
+      px = numeric(0),
+      sz = numeric(0),
+      side = character(0),
+      time = ms_to_datetime(numeric(0)),
+      start_position = numeric(0),
+      dir = character(0),
+      closed_pnl = numeric(0),
+      hash = character(0),
+      oid = numeric(0),
+      crossed = logical(0),
+      fee = numeric(0),
+      fee_token = character(0),
+      tid = numeric(0)
+    )[])
   }
   rows <- lapply(items, function(f) {
     return(data.table::data.table(
@@ -267,9 +319,6 @@ parse_user_fills <- function(items) {
 #' @keywords internal
 #' @noRd
 parse_historical_orders <- function(items) {
-  if (is.null(items) || length(items) == 0L) {
-    return(empty_dt_historical_orders())
-  }
   rows <- lapply(items, function(it) {
     core <- flatten_order(it$order)
     data.table::set(core, j = "status", value = chr_or_na(it$status))
@@ -280,7 +329,16 @@ parse_historical_orders <- function(items) {
     )
     return(core)
   })
-  dt <- data.table::rbindlist(rows, fill = TRUE)
+  # An empty response still owes its caller every column; the order shape comes
+  # from flatten_order(), extended with the two status columns.
+  dt <- if (length(rows) > 0L) {
+    data.table::rbindlist(rows, fill = TRUE)
+  } else {
+    core <- flatten_order(NULL)[0L]
+    data.table::set(core, j = "status", value = character(0))
+    data.table::set(core, j = "status_timestamp", value = ms_to_datetime(numeric(0)))
+    core
+  }
   data.table::setcolorder(
     dt,
     c(
@@ -319,7 +377,15 @@ parse_historical_orders <- function(items) {
 #' @noRd
 parse_user_funding <- function(items) {
   if (is.null(items) || length(items) == 0L) {
-    return(empty_dt_user_funding())
+    return(data.table::data.table(
+      time = ms_to_datetime(numeric(0)),
+      hash = character(0),
+      coin = character(0),
+      funding_rate = numeric(0),
+      szi = numeric(0),
+      usdc = numeric(0),
+      n_samples = numeric(0)
+    )[])
   }
   rows <- lapply(items, function(it) {
     d <- it$delta
@@ -353,7 +419,14 @@ parse_user_funding <- function(items) {
 parse_non_funding_ledger <- function(items) {
   dt <- parse_delta_ledger(items)
   if (nrow(dt) == 0L) {
-    return(empty_dt_non_funding_ledger())
+    # Heterogeneous ledger: only the always-present lead columns are knowable
+    # when empty (the per-variant fields appear with data).
+    return(data.table::data.table(
+      time = ms_to_datetime(numeric(0)),
+      hash = character(0),
+      delta_type = character(0),
+      usdc = numeric(0)
+    )[])
   }
   if ("type" %in% names(dt)) {
     data.table::setnames(dt, "type", "delta_type")
@@ -387,9 +460,6 @@ parse_non_funding_ledger <- function(items) {
 #' @keywords internal
 #' @noRd
 parse_portfolio <- function(data) {
-  if (is.null(data) || length(data) == 0L) {
-    return(empty_dt_portfolio())
-  }
   rows <- list()
   for (entry in data) {
     period <- chr_or_na(entry[[1]])
@@ -409,7 +479,12 @@ parse_portfolio <- function(data) {
     }
   }
   if (length(rows) == 0L) {
-    return(empty_dt_portfolio())
+    return(data.table::data.table(
+      period = character(0),
+      metric = character(0),
+      time = ms_to_datetime(numeric(0)),
+      value = numeric(0)
+    )[])
   }
   return(data.table::rbindlist(rows, fill = TRUE)[])
 }
@@ -425,7 +500,10 @@ parse_portfolio <- function(data) {
 #' @noRd
 parse_portfolio_volume <- function(data) {
   if (is.null(data) || length(data) == 0L) {
-    return(empty_dt_portfolio_volume())
+    return(data.table::data.table(
+      period = character(0),
+      vlm = numeric(0)
+    )[])
   }
   rows <- lapply(data, function(entry) {
     return(data.table::data.table(
@@ -447,7 +525,11 @@ parse_portfolio_volume <- function(data) {
 #' @noRd
 parse_user_fees <- function(data) {
   if (is.null(data) || length(data) == 0L) {
-    return(empty_dt_user_fees())
+    return(data.table::data.table(
+      user_add_rate = numeric(0),
+      user_cross_rate = numeric(0),
+      active_referral_discount = numeric(0)
+    )[])
   }
   return(data.table::data.table(
     user_add_rate = num_or_na(data$userAddRate),
@@ -469,7 +551,12 @@ parse_user_fees <- function(data) {
 parse_user_volume <- function(data) {
   daily <- data$dailyUserVlm
   if (is.null(daily) || length(daily) == 0L) {
-    return(empty_dt_user_volume())
+    return(data.table::data.table(
+      date = character(0),
+      exchange = numeric(0),
+      user_add = numeric(0),
+      user_cross = numeric(0)
+    )[])
   }
   rows <- lapply(daily, function(d) {
     return(data.table::data.table(
@@ -491,7 +578,11 @@ parse_user_volume <- function(data) {
 #' @noRd
 parse_user_rate_limit <- function(data) {
   if (is.null(data) || length(data) == 0L) {
-    return(empty_dt_user_rate_limit())
+    return(data.table::data.table(
+      cum_vlm = numeric(0),
+      n_requests_used = numeric(0),
+      n_requests_cap = numeric(0)
+    )[])
   }
   return(data.table::data.table(
     cum_vlm = num_or_na(data$cumVlm),
@@ -509,7 +600,7 @@ parse_user_rate_limit <- function(data) {
 #' @noRd
 parse_user_role <- function(data) {
   if (is.null(data) || length(data) == 0L) {
-    return(empty_dt_user_role())
+    return(data.table::data.table(role = character(0))[])
   }
   return(data.table::data.table(role = chr_or_na(data$role))[])
 }
@@ -528,7 +619,16 @@ parse_user_role <- function(data) {
 #' @noRd
 parse_sub_accounts <- function(items) {
   if (is.null(items) || length(items) == 0L) {
-    return(empty_dt_sub_accounts())
+    return(data.table::data.table(
+      name = character(0),
+      sub_account_user = character(0),
+      master = character(0),
+      account_value = numeric(0),
+      total_ntl_pos = numeric(0),
+      total_raw_usd = numeric(0),
+      total_margin_used = numeric(0),
+      withdrawable = numeric(0)
+    )[])
   }
   rows <- lapply(items, function(s) {
     ch <- s$clearinghouseState
@@ -561,18 +661,24 @@ parse_sub_accounts <- function(items) {
 #' @keywords internal
 #' @noRd
 parse_order_status <- function(data) {
+  # An empty response still owes its caller every column; the order shape comes
+  # from flatten_order(), extended with the query/status columns.
   if (is.null(data) || length(data) == 0L) {
-    return(empty_dt_order_status())
+    core <- flatten_order(NULL)[0L]
+    data.table::set(core, j = "query_status", value = character(0))
+    data.table::set(core, j = "status", value = character(0))
+    data.table::set(core, j = "status_timestamp", value = ms_to_datetime(numeric(0)))
+  } else {
+    inner <- data$order
+    core <- flatten_order(inner$order)
+    data.table::set(core, j = "query_status", value = chr_or_na(data$status))
+    data.table::set(core, j = "status", value = chr_or_na(inner$status))
+    data.table::set(
+      core,
+      j = "status_timestamp",
+      value = ms_to_datetime(num_or_na(inner$statusTimestamp))
+    )
   }
-  inner <- data$order
-  core <- flatten_order(inner$order)
-  data.table::set(core, j = "query_status", value = chr_or_na(data$status))
-  data.table::set(core, j = "status", value = chr_or_na(inner$status))
-  data.table::set(
-    core,
-    j = "status_timestamp",
-    value = ms_to_datetime(num_or_na(inner$statusTimestamp))
-  )
   data.table::setcolorder(
     core,
     c(
@@ -610,7 +716,11 @@ parse_order_status <- function(data) {
 #' @noRd
 parse_user_vault_equities <- function(items) {
   if (is.null(items) || length(items) == 0L) {
-    return(empty_dt_user_vault_equities())
+    return(data.table::data.table(
+      vault_address = character(0),
+      equity = numeric(0),
+      locked_until_timestamp = ms_to_datetime(numeric(0))
+    )[])
   }
   rows <- lapply(items, function(v) {
     return(data.table::data.table(

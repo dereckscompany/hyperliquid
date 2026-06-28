@@ -19,7 +19,15 @@
 parse_meta <- function(data) {
   universe <- data$universe
   if (is.null(universe) || length(universe) == 0L) {
-    return(empty_dt_meta())
+    return(data.table::data.table(
+      name = character(0),
+      sz_decimals = numeric(0),
+      max_leverage = numeric(0),
+      margin_table_id = numeric(0),
+      only_isolated = logical(0),
+      is_delisted = logical(0),
+      margin_mode = character(0)
+    )[])
   }
   rows <- lapply(universe, function(u) {
     return(data.table::data.table(
@@ -48,7 +56,13 @@ parse_meta <- function(data) {
 parse_spot_meta_universe <- function(data) {
   universe <- data$universe
   if (is.null(universe) || length(universe) == 0L) {
-    return(empty_dt_spot_meta_universe())
+    return(data.table::data.table(
+      name = character(0),
+      index = numeric(0),
+      is_canonical = logical(0),
+      token_base = numeric(0),
+      token_quote = numeric(0)
+    )[])
   }
   rows <- lapply(universe, function(u) {
     return(data.table::data.table(
@@ -74,7 +88,14 @@ parse_spot_meta_universe <- function(data) {
 parse_spot_tokens <- function(data) {
   tokens <- data$tokens
   if (is.null(tokens) || length(tokens) == 0L) {
-    return(empty_dt_spot_tokens())
+    return(data.table::data.table(
+      name = character(0),
+      index = numeric(0),
+      sz_decimals = numeric(0),
+      wei_decimals = numeric(0),
+      token_id = character(0),
+      is_canonical = logical(0)
+    )[])
   }
   rows <- lapply(tokens, function(t) {
     return(data.table::data.table(
@@ -105,7 +126,21 @@ parse_meta_and_asset_ctxs <- function(data) {
   universe <- data[[1]]$universe
   ctxs <- data[[2]]
   if (is.null(universe) || length(universe) == 0L) {
-    return(empty_dt_meta_and_asset_ctxs())
+    return(data.table::data.table(
+      name = character(0),
+      sz_decimals = numeric(0),
+      max_leverage = numeric(0),
+      day_ntl_vlm = numeric(0),
+      funding = numeric(0),
+      mark_px = numeric(0),
+      mid_px = numeric(0),
+      oracle_px = numeric(0),
+      open_interest = numeric(0),
+      premium = numeric(0),
+      prev_day_px = numeric(0),
+      impact_px_bid = numeric(0),
+      impact_px_ask = numeric(0)
+    )[])
   }
   rows <- lapply(seq_along(universe), function(i) {
     u <- universe[[i]]
@@ -145,7 +180,14 @@ parse_meta_and_asset_ctxs <- function(data) {
 parse_spot_meta_and_asset_ctxs <- function(data) {
   ctxs <- data[[2]]
   if (is.null(ctxs) || length(ctxs) == 0L) {
-    return(empty_dt_spot_meta_and_asset_ctxs())
+    return(data.table::data.table(
+      coin = character(0),
+      day_ntl_vlm = numeric(0),
+      mark_px = numeric(0),
+      mid_px = numeric(0),
+      prev_day_px = numeric(0),
+      circulating_supply = numeric(0)
+    )[])
   }
   rows <- lapply(ctxs, function(ctx) {
     return(data.table::data.table(
@@ -171,7 +213,10 @@ parse_spot_meta_and_asset_ctxs <- function(data) {
 #' @noRd
 parse_all_mids <- function(data) {
   if (is.null(data) || length(data) == 0L) {
-    return(empty_dt_all_mids())
+    return(data.table::data.table(
+      coin = character(0),
+      mid = numeric(0)
+    )[])
   }
   coins <- names(data)
   return(data.table::data.table(
@@ -192,9 +237,6 @@ parse_all_mids <- function(data) {
 #' @noRd
 parse_l2_book <- function(data) {
   levels <- data$levels
-  if (is.null(levels) || length(levels) == 0L) {
-    return(empty_dt_l2_book())
-  }
   side_names <- c("bid", "ask")
   rows <- list()
   for (s in seq_along(levels)) {
@@ -215,7 +257,13 @@ parse_l2_book <- function(data) {
     }
   }
   if (length(rows) == 0L) {
-    return(empty_dt_l2_book())
+    return(data.table::data.table(
+      side = character(0),
+      level = integer(0),
+      px = numeric(0),
+      sz = numeric(0),
+      n = numeric(0)
+    )[])
   }
   return(data.table::rbindlist(rows)[])
 }
@@ -287,9 +335,6 @@ parse_funding_history <- function(data) {
 #' @keywords internal
 #' @noRd
 parse_predicted_fundings <- function(data) {
-  if (is.null(data) || length(data) == 0L) {
-    return(empty_dt_predicted_fundings())
-  }
   rows <- list()
   for (entry in data) {
     coin <- entry[[1]]
@@ -307,7 +352,13 @@ parse_predicted_fundings <- function(data) {
     }
   }
   if (length(rows) == 0L) {
-    return(empty_dt_predicted_fundings())
+    return(data.table::data.table(
+      coin = character(0),
+      venue = character(0),
+      funding_rate = numeric(0),
+      next_funding_time = ms_to_datetime(numeric(0)),
+      funding_interval_hours = numeric(0)
+    )[])
   }
   return(data.table::rbindlist(rows)[])
 }
@@ -323,9 +374,6 @@ parse_predicted_fundings <- function(data) {
 #' @keywords internal
 #' @noRd
 parse_perp_dexs <- function(data) {
-  if (is.null(data) || length(data) == 0L) {
-    return(empty_dt_perp_dexs())
-  }
   rows <- list()
   for (dex in data) {
     if (is.null(dex)) {
@@ -340,7 +388,13 @@ parse_perp_dexs <- function(data) {
     )
   }
   if (length(rows) == 0L) {
-    return(empty_dt_perp_dexs())
+    return(data.table::data.table(
+      name = character(0),
+      full_name = character(0),
+      deployer = character(0),
+      oracle_updater = character(0),
+      fee_recipient = character(0)
+    )[])
   }
   return(data.table::rbindlist(rows)[])
 }
@@ -357,7 +411,17 @@ parse_perp_dexs <- function(data) {
 #' @noRd
 parse_recent_trades <- function(data) {
   if (is.null(data) || length(data) == 0L) {
-    return(empty_dt_recent_trades())
+    return(data.table::data.table(
+      coin = character(0),
+      side = character(0),
+      px = numeric(0),
+      sz = numeric(0),
+      time = ms_to_datetime(numeric(0)),
+      hash = character(0),
+      tid = numeric(0),
+      user_buyer = character(0),
+      user_seller = character(0)
+    )[])
   }
   rows <- lapply(data, function(tr) {
     return(data.table::data.table(
@@ -384,7 +448,10 @@ parse_recent_trades <- function(data) {
 #' @noRd
 parse_exchange_status <- function(data) {
   if (is.null(data) || length(data) == 0L) {
-    return(empty_dt_exchange_status())
+    return(data.table::data.table(
+      time = ms_to_datetime(numeric(0)),
+      special_statuses = character(0)
+    )[])
   }
   special <- NA_character_
   if (!is.null(data$specialStatuses)) {
