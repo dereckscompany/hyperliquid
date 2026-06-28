@@ -71,3 +71,54 @@ test_that("every endpoint parser returns a typed zero-row empty, never column-le
     expect_false(any(vapply(dt, is.list, logical(1L))), label = paste(nm, "list column"))
   }
 })
+
+test_that("order parsers build the same schema empty as populated (setcolorder drift guard)", {
+  # frontendOpenOrders / historicalOrders / orderStatus derive their empty schema
+  # from flatten_order(NULL)[0L] and then setcolorder() with an explicit column
+  # list, exactly as the populated path does. data.table::setcolorder() appends
+  # any column not named in that list, so a new flatten_order() field flows through
+  # both paths identically -- but only while neither path's transform drifts from
+  # the other. This pins that: empty and populated output must agree on column
+  # names, order, and types, for every order parser whose empty reuses flatten_order.
+  ord <- list(
+    coin = "BTC",
+    oid = 1,
+    side = "B",
+    limitPx = "100",
+    sz = "1",
+    origSz = "2",
+    orderType = "Limit",
+    tif = "Gtc",
+    reduceOnly = FALSE,
+    triggerPx = "0",
+    triggerCondition = "N/A",
+    isTrigger = FALSE,
+    isPositionTpsl = FALSE,
+    cloid = "0xabc",
+    timestamp = 1700000000000
+  )
+  cases <- list(
+    frontend_open_orders = list(parse_frontend_open_orders, list(ord)),
+    historical_orders = list(
+      parse_historical_orders,
+      list(list(order = ord, status = "filled", statusTimestamp = 1700000001000))
+    ),
+    order_status = list(
+      parse_order_status,
+      list(status = "order", order = list(status = "filled", order = ord, statusTimestamp = 1700000001000))
+    )
+  )
+  for (nm in names(cases)) {
+    parser <- cases[[nm]][[1L]]
+    populated <- parser(cases[[nm]][[2L]])
+    empty <- parser(NULL)
+    expect_identical(nrow(populated), 1L, label = paste(nm, "populated row count"))
+    expect_identical(nrow(empty), 0L, label = paste(nm, "empty row count"))
+    expect_identical(names(empty), names(populated), label = paste(nm, "column names and order"))
+    expect_identical(
+      vapply(empty, function(x) class(x)[1L], ""),
+      vapply(populated, function(x) class(x)[1L], ""),
+      label = paste(nm, "column types")
+    )
+  }
+})
