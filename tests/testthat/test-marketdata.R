@@ -241,7 +241,11 @@ test_that("parse_candles emits canonical OHLCV sorted ascending by open time", {
 
 test_that("parse_candles returns a zero-row data.table when empty", {
   expect_equal(nrow(hyperliquid:::parse_candles(NULL)), 0L)
-  expect_equal(nrow(hyperliquid:::parse_candles(list())), 0L)
+  # An empty candle window is a routine live response: the typed zero-row
+  # schema must still satisfy the @return contract.
+  empty <- hyperliquid:::parse_candles(list())
+  expect_equal(nrow(empty), 0L)
+  expect_silent(hyperliquid:::assert_return_HyperliquidMarketData__get_candles(empty))
 })
 
 # ---- parse_funding_history ---------------------------------------------------
@@ -259,7 +263,11 @@ test_that("parse_funding_history returns coin/rate/premium/time rows", {
 
 test_that("parse_funding_history returns a zero-row data.table when empty", {
   expect_equal(nrow(hyperliquid:::parse_funding_history(NULL)), 0L)
-  expect_equal(nrow(hyperliquid:::parse_funding_history(list())), 0L)
+  # A coin/window with no funding events is a routine live response: the typed
+  # zero-row schema must still satisfy the @return contract.
+  empty <- hyperliquid:::parse_funding_history(list())
+  expect_equal(nrow(empty), 0L)
+  expect_silent(hyperliquid:::assert_return_HyperliquidMarketData__get_funding_history(empty))
 })
 
 # ---- parse_predicted_fundings ------------------------------------------------

@@ -3,6 +3,9 @@ deprecated/
 *.ignore
 *.ignore.*
 
+# local scratch / raw API captures (real account data -- never commit)
+local/
+
 # build
 docs/
 *html

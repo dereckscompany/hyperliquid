@@ -74,7 +74,17 @@ test_that("parse_positions returns one row per position with split leverage", {
 })
 
 test_that("parse_positions returns a zero-row data.table when empty", {
-  expect_equal(nrow(hyperliquid:::parse_positions(fixture_clearinghouse_state_empty())), 0L)
+  empty <- hyperliquid:::parse_positions(fixture_clearinghouse_state_empty())
+  expect_equal(nrow(empty), 0L)
+  # A flat account is a routine live response: the typed zero-row schema must
+  # still carry every contracted column so the @return contract holds.
+  expect_equal(
+    names(empty),
+    c("coin", "szi", "entry_px", "position_value", "unrealized_pnl",
+      "return_on_equity", "leverage_type", "leverage_value", "liquidation_px",
+      "margin_used")
+  )
+  expect_silent(hyperliquid:::assert_return_HyperliquidAccount__get_positions(empty))
   expect_equal(nrow(hyperliquid:::parse_positions(NULL)), 0L)
 })
 
@@ -109,7 +119,11 @@ test_that("parse_margin_summary returns zeros on the empty fixture, zero-row on 
   dt <- hyperliquid:::parse_margin_summary(fixture_clearinghouse_state_empty())
   expect_equal(nrow(dt), 1L)
   expect_equal(dt$account_value, 0)
-  expect_equal(nrow(hyperliquid:::parse_margin_summary(NULL)), 0L)
+  # An address that never deposited returns an empty clearinghouseState: the
+  # typed zero-row schema must still satisfy the @return contract.
+  empty <- hyperliquid:::parse_margin_summary(NULL)
+  expect_equal(nrow(empty), 0L)
+  expect_silent(hyperliquid:::assert_return_HyperliquidAccount__get_margin_summary(empty))
 })
 
 # ---- parse_spot_balances -----------------------------------------------------
@@ -230,7 +244,11 @@ test_that("parse_user_fills handles the by-time payload and the empty case", {
   expect_equal(nrow(dt), 2L)
   expect_equal(dt$coin, c("SKR", "PURR"))
   expect_equal(dt$closed_pnl, c(0, -0.542685))
-  expect_equal(nrow(hyperliquid:::parse_user_fills(fixture_user_fills_empty())), 0L)
+  # An account that never traded returns an empty fills array: the typed
+  # zero-row schema must still satisfy the @return contract.
+  empty <- hyperliquid:::parse_user_fills(fixture_user_fills_empty())
+  expect_equal(nrow(empty), 0L)
+  expect_silent(hyperliquid:::assert_return_HyperliquidAccount__get_user_fills(empty))
   expect_equal(nrow(hyperliquid:::parse_user_fills(NULL)), 0L)
 })
 

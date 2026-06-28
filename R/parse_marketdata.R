@@ -232,7 +232,20 @@ parse_l2_book <- function(data) {
 #' @noRd
 parse_candles <- function(data) {
   if (is.null(data) || length(data) == 0L) {
-    return(data.table::data.table()[])
+    # A window with no candles is a routine live response; return the typed
+    # zero-row schema so the column contract still holds.
+    return(data.table::data.table(
+      datetime = ms_to_datetime(numeric(0)),
+      open = numeric(0),
+      high = numeric(0),
+      low = numeric(0),
+      close = numeric(0),
+      volume = numeric(0),
+      trades = numeric(0),
+      close_time = ms_to_datetime(numeric(0)),
+      interval = character(0),
+      coin = character(0)
+    )[])
   }
   rows <- lapply(data, function(c) {
     return(data.table::data.table(
@@ -262,7 +275,14 @@ parse_candles <- function(data) {
 #' @noRd
 parse_funding_history <- function(data) {
   if (is.null(data) || length(data) == 0L) {
-    return(data.table::data.table()[])
+    # A coin/window with no funding events is a routine live response; return
+    # the typed zero-row schema so the column contract still holds.
+    return(data.table::data.table(
+      coin = character(0),
+      funding_rate = numeric(0),
+      premium = numeric(0),
+      time = ms_to_datetime(numeric(0))
+    )[])
   }
   rows <- lapply(data, function(f) {
     return(data.table::data.table(

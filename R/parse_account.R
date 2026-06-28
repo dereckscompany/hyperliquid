@@ -66,7 +66,20 @@ flatten_order <- function(o) {
 parse_positions <- function(data) {
   positions <- data$assetPositions
   if (is.null(positions) || length(positions) == 0L) {
-    return(data.table::data.table()[])
+    # A flat account (no open positions) is a routine live response; return the
+    # typed zero-row schema so the column contract still holds.
+    return(data.table::data.table(
+      coin = character(0),
+      szi = numeric(0),
+      entry_px = numeric(0),
+      position_value = numeric(0),
+      unrealized_pnl = numeric(0),
+      return_on_equity = numeric(0),
+      leverage_type = character(0),
+      leverage_value = numeric(0),
+      liquidation_px = numeric(0),
+      margin_used = numeric(0)
+    )[])
   }
   rows <- lapply(positions, function(ap) {
     p <- ap$position
@@ -101,7 +114,19 @@ parse_positions <- function(data) {
 #' @noRd
 parse_margin_summary <- function(data) {
   if (is.null(data) || length(data) == 0L) {
-    return(data.table::data.table()[])
+    # An address that never deposited returns an empty clearinghouseState;
+    # return the typed zero-row schema so the column contract still holds.
+    return(data.table::data.table(
+      account_value = numeric(0),
+      total_ntl_pos = numeric(0),
+      total_raw_usd = numeric(0),
+      total_margin_used = numeric(0),
+      withdrawable = numeric(0),
+      cross_account_value = numeric(0),
+      cross_total_ntl_pos = numeric(0),
+      cross_total_raw_usd = numeric(0),
+      cross_total_margin_used = numeric(0)
+    )[])
   }
   ms <- data$marginSummary
   cms <- data$crossMarginSummary
@@ -224,7 +249,24 @@ parse_frontend_open_orders <- function(items) {
 #' @noRd
 parse_user_fills <- function(items) {
   if (is.null(items) || length(items) == 0L) {
-    return(data.table::data.table()[])
+    # An account that never traded returns an empty fills array; return the
+    # typed zero-row schema so the column contract still holds.
+    return(data.table::data.table(
+      coin = character(0),
+      px = numeric(0),
+      sz = numeric(0),
+      side = character(0),
+      time = ms_to_datetime(numeric(0)),
+      start_position = numeric(0),
+      dir = character(0),
+      closed_pnl = numeric(0),
+      hash = character(0),
+      oid = numeric(0),
+      crossed = logical(0),
+      fee = numeric(0),
+      fee_token = character(0),
+      tid = numeric(0)
+    )[])
   }
   rows <- lapply(items, function(f) {
     return(data.table::data.table(

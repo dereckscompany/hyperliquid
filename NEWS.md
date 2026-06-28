@@ -1,3 +1,14 @@
+# hyperliquid 0.2.1
+
+## Hardening: validate fixtures and contracts against the real testnet API
+
+* Added `dev/capture-hyperliquid.R`, a read-only capture harness that hits the real Hyperliquid API and writes each raw `/info` response verbatim to the git-ignored `local/raw-data/hyperliquid/`. Hyperliquid is body-routed, so reads are `POST /info` discriminated by `body$type`; the harness issues only those reads (it never touches the signed-write `/exchange` endpoint, never signs anything, and uses only the public account address), then summarises each endpoint as POPULATED / EMPTY / FAIL. All 32 read endpoints were captured against testnet with zero failures, and every committed fixture's structure was validated against its live counterpart: the parsers parse the real responses cleanly, and the only divergences are additive API fields (e.g. `marginTables`, `feeSchedule`, `isDelisted`) that no parser consumes, so no fixture enrichment was required.
+
+## Fixes: empty-collection responses violated their own column contracts
+
+* `get_positions()` raised a contract error on a **flat account** (no open positions). The live capture reproduced this: `parse_positions()` returned a bare zero-column `data.table` on an empty `assetPositions`, but the `@return` contract requires the ten position columns. The empty branch now returns the typed zero-row schema (a zero-row typed column satisfies `assert_no_missing_values`), so a flat account parses cleanly. The synthetic fixture hid the bug because it always carried two open positions.
+* The same empty-collection defect was fixed in `parse_margin_summary()` (an address that never deposited), `parse_user_fills()` / `get_user_fills()` / `get_user_fills_by_time()` (an account that never traded), `parse_funding_history()` (a coin/window with no funding events), and `parse_candles()` (an empty candle window): each empty branch now returns the typed zero-row schema its `@return` contract documents, instead of a column-less `data.table`. Regression tests assert the empty parser output carries the full column set and passes its generated `assert_return_*` contract.
+
 # hyperliquid 0.2.0
 
 ## Conventions: align with the connector gold standard
