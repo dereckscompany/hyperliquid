@@ -17,6 +17,7 @@
 ^LICENSE$
 ^\.clang-format$
 ^air\.toml$
+^\.formatignore$
 ^\.Renviron$
 ^\.Renviron\.example$
 ^README\.Rmd$
