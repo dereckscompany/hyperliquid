@@ -1,0 +1,25 @@
+{
+  "status": "order",
+  "order": {
+    "order": {
+      "coin": "AERO",
+      "side": "A",
+      "limitPx": "0.33001",
+      "sz": "583.0",
+      "oid": 461291857943,
+      "timestamp": 1780809597698,
+      "triggerCondition": "N/A",
+      "isTrigger": false,
+      "triggerPx": "0.0",
+      "children": [],
+      "isPositionTpsl": false,
+      "reduceOnly": false,
+      "orderType": "Limit",
+      "origSz": "583.0",
+      "tif": "Alo",
+      "cloid": null
+    },
+    "status": "canceled",
+    "statusTimestamp": 1780809599916
+  }
+}

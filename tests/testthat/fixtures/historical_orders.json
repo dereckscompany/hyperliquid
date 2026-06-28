@@ -1,0 +1,68 @@
+[
+  {
+    "order": {
+      "coin": "STRK",
+      "side": "B",
+      "limitPx": "0.03254",
+      "sz": "12682.9",
+      "oid": 461291892194,
+      "timestamp": 1780809599506,
+      "triggerCondition": "N/A",
+      "isTrigger": false,
+      "triggerPx": "0.0",
+      "children": [],
+      "isPositionTpsl": false,
+      "reduceOnly": false,
+      "orderType": "Limit",
+      "origSz": "12682.9",
+      "tif": "Alo",
+      "cloid": null
+    },
+    "status": "canceled",
+    "statusTimestamp": 1780809599981
+  },
+  {
+    "order": {
+      "coin": "STRK",
+      "side": "B",
+      "limitPx": "0.03254",
+      "sz": "12682.9",
+      "oid": 461291892194,
+      "timestamp": 1780809599506,
+      "triggerCondition": "N/A",
+      "isTrigger": false,
+      "triggerPx": "0.0",
+      "children": [],
+      "isPositionTpsl": false,
+      "reduceOnly": false,
+      "orderType": "Limit",
+      "origSz": "12682.9",
+      "tif": "Alo",
+      "cloid": null
+    },
+    "status": "open",
+    "statusTimestamp": 1780809599506
+  },
+  {
+    "order": {
+      "coin": "IOTA",
+      "side": "B",
+      "limitPx": "0.045274",
+      "sz": "0.0",
+      "oid": 461291888494,
+      "timestamp": 1780809599202,
+      "triggerCondition": "N/A",
+      "isTrigger": false,
+      "triggerPx": "0.0",
+      "children": [],
+      "isPositionTpsl": false,
+      "reduceOnly": false,
+      "orderType": "Limit",
+      "origSz": "371.0",
+      "tif": "Ioc",
+      "cloid": null
+    },
+    "status": "filled",
+    "statusTimestamp": 1780809599202
+  }
+]

@@ -1,0 +1,25 @@
+{
+  "status": "ok",
+  "response": {
+    "type": "order",
+    "data": {
+      "statuses": [
+        {
+          "resting": {
+            "oid": 77738308
+          }
+        },
+        {
+          "filled": {
+            "totalSz": "0.02",
+            "avgPx": "1891.4",
+            "oid": 77747314
+          }
+        },
+        {
+          "error": "Order must have minimum value of $10."
+        }
+      ]
+    }
+  }
+}

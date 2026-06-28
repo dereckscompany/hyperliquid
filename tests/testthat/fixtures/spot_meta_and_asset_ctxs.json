@@ -1,0 +1,28 @@
+[
+  {
+    "universe": [],
+    "tokens": []
+  },
+  [
+    {
+      "prevDayPx": "0.08889",
+      "dayNtlVlm": "912632.1060209998",
+      "markPx": "0.090784",
+      "midPx": "0.0908055",
+      "circulatingSupply": "595295911.3807499409",
+      "coin": "PURR/USDC",
+      "totalSupply": "595295917.9035300016",
+      "dayBaseVlm": "10471112.0"
+    },
+    {
+      "prevDayPx": "9.7168",
+      "dayNtlVlm": "28631.474477",
+      "markPx": "9.6794",
+      "midPx": "9.6738",
+      "circulatingSupply": "995906.4607351",
+      "coin": "@1",
+      "totalSupply": "995906.51156126",
+      "dayBaseVlm": "2957.81"
+    }
+  ]
+]

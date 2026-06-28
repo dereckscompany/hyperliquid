@@ -1,0 +1,10 @@
+[
+  null,
+  {
+    "name": "xyz",
+    "fullName": "XYZ",
+    "deployer": "0x000000000000000000000000000000000000000a",
+    "oracleUpdater": null,
+    "feeRecipient": "0x000000000000000000000000000000000000000b"
+  }
+]
