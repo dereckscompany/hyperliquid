@@ -19,17 +19,7 @@
 parse_meta <- function(data) {
   universe <- data$universe
   if (is.null(universe) || length(universe) == 0L) {
-    # An empty perp universe still owes its caller every contracted column;
-    # return the typed zero-row schema so the column contract holds.
-    return(data.table::data.table(
-      name = character(0),
-      sz_decimals = numeric(0),
-      max_leverage = numeric(0),
-      margin_table_id = numeric(0),
-      only_isolated = logical(0),
-      is_delisted = logical(0),
-      margin_mode = character(0)
-    )[])
+    return(empty_dt_meta())
   }
   rows <- lapply(universe, function(u) {
     return(data.table::data.table(
@@ -58,7 +48,7 @@ parse_meta <- function(data) {
 parse_spot_meta_universe <- function(data) {
   universe <- data$universe
   if (is.null(universe) || length(universe) == 0L) {
-    return(data.table::data.table()[])
+    return(empty_dt_spot_meta_universe())
   }
   rows <- lapply(universe, function(u) {
     return(data.table::data.table(
@@ -84,7 +74,7 @@ parse_spot_meta_universe <- function(data) {
 parse_spot_tokens <- function(data) {
   tokens <- data$tokens
   if (is.null(tokens) || length(tokens) == 0L) {
-    return(data.table::data.table()[])
+    return(empty_dt_spot_tokens())
   }
   rows <- lapply(tokens, function(t) {
     return(data.table::data.table(
@@ -115,7 +105,7 @@ parse_meta_and_asset_ctxs <- function(data) {
   universe <- data[[1]]$universe
   ctxs <- data[[2]]
   if (is.null(universe) || length(universe) == 0L) {
-    return(data.table::data.table()[])
+    return(empty_dt_meta_and_asset_ctxs())
   }
   rows <- lapply(seq_along(universe), function(i) {
     u <- universe[[i]]
@@ -155,7 +145,7 @@ parse_meta_and_asset_ctxs <- function(data) {
 parse_spot_meta_and_asset_ctxs <- function(data) {
   ctxs <- data[[2]]
   if (is.null(ctxs) || length(ctxs) == 0L) {
-    return(data.table::data.table()[])
+    return(empty_dt_spot_meta_and_asset_ctxs())
   }
   rows <- lapply(ctxs, function(ctx) {
     return(data.table::data.table(
@@ -181,7 +171,7 @@ parse_spot_meta_and_asset_ctxs <- function(data) {
 #' @noRd
 parse_all_mids <- function(data) {
   if (is.null(data) || length(data) == 0L) {
-    return(data.table::data.table()[])
+    return(empty_dt_all_mids())
   }
   coins <- names(data)
   return(data.table::data.table(
@@ -203,15 +193,7 @@ parse_all_mids <- function(data) {
 parse_l2_book <- function(data) {
   levels <- data$levels
   if (is.null(levels) || length(levels) == 0L) {
-    # An empty book still owes its caller every contracted column; return the
-    # typed zero-row schema so the column contract holds.
-    return(data.table::data.table(
-      side = character(0),
-      level = integer(0),
-      px = numeric(0),
-      sz = numeric(0),
-      n = numeric(0)
-    )[])
+    return(empty_dt_l2_book())
   }
   side_names <- c("bid", "ask")
   rows <- list()
@@ -233,15 +215,7 @@ parse_l2_book <- function(data) {
     }
   }
   if (length(rows) == 0L) {
-    # Both sides came back empty; return the typed zero-row schema so the
-    # column contract holds.
-    return(data.table::data.table(
-      side = character(0),
-      level = integer(0),
-      px = numeric(0),
-      sz = numeric(0),
-      n = numeric(0)
-    )[])
+    return(empty_dt_l2_book())
   }
   return(data.table::rbindlist(rows)[])
 }
@@ -258,20 +232,7 @@ parse_l2_book <- function(data) {
 #' @noRd
 parse_candles <- function(data) {
   if (is.null(data) || length(data) == 0L) {
-    # A window with no candles is a routine live response; return the typed
-    # zero-row schema so the column contract still holds.
-    return(data.table::data.table(
-      datetime = ms_to_datetime(numeric(0)),
-      open = numeric(0),
-      high = numeric(0),
-      low = numeric(0),
-      close = numeric(0),
-      volume = numeric(0),
-      trades = numeric(0),
-      close_time = ms_to_datetime(numeric(0)),
-      interval = character(0),
-      coin = character(0)
-    )[])
+    return(empty_dt_candles())
   }
   rows <- lapply(data, function(c) {
     return(data.table::data.table(
@@ -301,14 +262,7 @@ parse_candles <- function(data) {
 #' @noRd
 parse_funding_history <- function(data) {
   if (is.null(data) || length(data) == 0L) {
-    # A coin/window with no funding events is a routine live response; return
-    # the typed zero-row schema so the column contract still holds.
-    return(data.table::data.table(
-      coin = character(0),
-      funding_rate = numeric(0),
-      premium = numeric(0),
-      time = ms_to_datetime(numeric(0))
-    )[])
+    return(empty_dt_funding_history())
   }
   rows <- lapply(data, function(f) {
     return(data.table::data.table(
@@ -334,7 +288,7 @@ parse_funding_history <- function(data) {
 #' @noRd
 parse_predicted_fundings <- function(data) {
   if (is.null(data) || length(data) == 0L) {
-    return(data.table::data.table()[])
+    return(empty_dt_predicted_fundings())
   }
   rows <- list()
   for (entry in data) {
@@ -353,7 +307,7 @@ parse_predicted_fundings <- function(data) {
     }
   }
   if (length(rows) == 0L) {
-    return(data.table::data.table()[])
+    return(empty_dt_predicted_fundings())
   }
   return(data.table::rbindlist(rows)[])
 }
@@ -370,7 +324,7 @@ parse_predicted_fundings <- function(data) {
 #' @noRd
 parse_perp_dexs <- function(data) {
   if (is.null(data) || length(data) == 0L) {
-    return(data.table::data.table()[])
+    return(empty_dt_perp_dexs())
   }
   rows <- list()
   for (dex in data) {
@@ -386,7 +340,7 @@ parse_perp_dexs <- function(data) {
     )
   }
   if (length(rows) == 0L) {
-    return(data.table::data.table()[])
+    return(empty_dt_perp_dexs())
   }
   return(data.table::rbindlist(rows)[])
 }
@@ -403,7 +357,7 @@ parse_perp_dexs <- function(data) {
 #' @noRd
 parse_recent_trades <- function(data) {
   if (is.null(data) || length(data) == 0L) {
-    return(data.table::data.table()[])
+    return(empty_dt_recent_trades())
   }
   rows <- lapply(data, function(tr) {
     return(data.table::data.table(
@@ -430,7 +384,7 @@ parse_recent_trades <- function(data) {
 #' @noRd
 parse_exchange_status <- function(data) {
   if (is.null(data) || length(data) == 0L) {
-    return(data.table::data.table()[])
+    return(empty_dt_exchange_status())
   }
   special <- NA_character_
   if (!is.null(data$specialStatuses)) {

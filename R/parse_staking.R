@@ -20,14 +20,7 @@
 #' @noRd
 parse_staking_summary <- function(data) {
   if (is.null(data) || length(data) == 0) {
-    # An address that never staked still owes its caller every contracted
-    # column; return the typed zero-row schema so the column contract holds.
-    return(data.table::data.table(
-      delegated = numeric(0),
-      undelegated = numeric(0),
-      total_pending_withdrawal = numeric(0),
-      n_pending_withdrawals = integer(0)
-    )[])
+    return(empty_dt_staking_summary())
   }
   return(data.table::data.table(
     delegated = num_or_na(data$delegated),
@@ -52,7 +45,7 @@ parse_staking_summary <- function(data) {
 #' @noRd
 parse_staking_delegations <- function(items) {
   if (is.null(items) || length(items) == 0) {
-    return(data.table::data.table()[])
+    return(empty_dt_staking_delegations())
   }
   rows <- lapply(items, function(d) {
     return(data.table::data.table(
@@ -78,7 +71,7 @@ parse_staking_delegations <- function(items) {
 #' @noRd
 parse_staking_rewards <- function(items) {
   if (is.null(items) || length(items) == 0) {
-    return(data.table::data.table()[])
+    return(empty_dt_staking_rewards())
   }
   rows <- lapply(items, function(r) {
     return(data.table::data.table(
@@ -110,7 +103,7 @@ parse_staking_rewards <- function(items) {
 #' @noRd
 parse_delegator_history <- function(items) {
   if (is.null(items) || length(items) == 0) {
-    return(data.table::data.table()[])
+    return(empty_dt_delegator_history())
   }
   rows <- lapply(items, function(it) {
     meta_dt <- data.table::data.table(
@@ -150,12 +143,7 @@ parse_delegator_history <- function(items) {
 #' @noRd
 parse_token_delegate <- function(data) {
   if (is.null(data) || length(data) == 0) {
-    # An empty envelope still owes its caller every contracted column; return
-    # the typed zero-row schema so the column contract holds.
-    return(data.table::data.table(
-      status = character(0),
-      response_type = character(0)
-    )[])
+    return(empty_dt_token_delegate())
   }
   return(data.table::data.table(
     status = chr_or_na(data$status),

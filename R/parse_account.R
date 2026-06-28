@@ -67,19 +67,8 @@ parse_positions <- function(data) {
   positions <- data$assetPositions
   if (is.null(positions) || length(positions) == 0L) {
     # A flat account (no open positions) is a routine live response; return the
-    # typed zero-row schema so the column contract still holds.
-    return(data.table::data.table(
-      coin = character(0),
-      szi = numeric(0),
-      entry_px = numeric(0),
-      position_value = numeric(0),
-      unrealized_pnl = numeric(0),
-      return_on_equity = numeric(0),
-      leverage_type = character(0),
-      leverage_value = numeric(0),
-      liquidation_px = numeric(0),
-      margin_used = numeric(0)
-    )[])
+    # documented zero-row schema so the column contract still holds.
+    return(empty_dt_positions())
   }
   rows <- lapply(positions, function(ap) {
     p <- ap$position
@@ -115,18 +104,8 @@ parse_positions <- function(data) {
 parse_margin_summary <- function(data) {
   if (is.null(data) || length(data) == 0L) {
     # An address that never deposited returns an empty clearinghouseState;
-    # return the typed zero-row schema so the column contract still holds.
-    return(data.table::data.table(
-      account_value = numeric(0),
-      total_ntl_pos = numeric(0),
-      total_raw_usd = numeric(0),
-      total_margin_used = numeric(0),
-      withdrawable = numeric(0),
-      cross_account_value = numeric(0),
-      cross_total_ntl_pos = numeric(0),
-      cross_total_raw_usd = numeric(0),
-      cross_total_margin_used = numeric(0)
-    )[])
+    # return the documented zero-row schema so the column contract still holds.
+    return(empty_dt_margin_summary())
   }
   ms <- data$marginSummary
   cms <- data$crossMarginSummary
@@ -155,7 +134,7 @@ parse_margin_summary <- function(data) {
 parse_spot_balances <- function(data) {
   balances <- data$balances
   if (is.null(balances) || length(balances) == 0L) {
-    return(data.table::data.table()[])
+    return(empty_dt_spot_balances())
   }
   rows <- lapply(balances, function(b) {
     return(data.table::data.table(
@@ -180,7 +159,7 @@ parse_spot_balances <- function(data) {
 #' @noRd
 parse_open_orders <- function(items) {
   if (is.null(items) || length(items) == 0L) {
-    return(data.table::data.table()[])
+    return(empty_dt_open_orders())
   }
   rows <- lapply(items, function(o) {
     return(data.table::data.table(
@@ -210,7 +189,7 @@ parse_open_orders <- function(items) {
 #' @noRd
 parse_frontend_open_orders <- function(items) {
   if (is.null(items) || length(items) == 0L) {
-    return(data.table::data.table()[])
+    return(empty_dt_frontend_open_orders())
   }
   dt <- data.table::rbindlist(lapply(items, flatten_order), fill = TRUE)
   data.table::set(dt, j = "cloid", value = NULL)
@@ -250,23 +229,8 @@ parse_frontend_open_orders <- function(items) {
 parse_user_fills <- function(items) {
   if (is.null(items) || length(items) == 0L) {
     # An account that never traded returns an empty fills array; return the
-    # typed zero-row schema so the column contract still holds.
-    return(data.table::data.table(
-      coin = character(0),
-      px = numeric(0),
-      sz = numeric(0),
-      side = character(0),
-      time = ms_to_datetime(numeric(0)),
-      start_position = numeric(0),
-      dir = character(0),
-      closed_pnl = numeric(0),
-      hash = character(0),
-      oid = numeric(0),
-      crossed = logical(0),
-      fee = numeric(0),
-      fee_token = character(0),
-      tid = numeric(0)
-    )[])
+    # documented zero-row schema so the column contract still holds.
+    return(empty_dt_user_fills())
   }
   rows <- lapply(items, function(f) {
     return(data.table::data.table(
@@ -304,7 +268,7 @@ parse_user_fills <- function(items) {
 #' @noRd
 parse_historical_orders <- function(items) {
   if (is.null(items) || length(items) == 0L) {
-    return(data.table::data.table()[])
+    return(empty_dt_historical_orders())
   }
   rows <- lapply(items, function(it) {
     core <- flatten_order(it$order)
@@ -355,7 +319,7 @@ parse_historical_orders <- function(items) {
 #' @noRd
 parse_user_funding <- function(items) {
   if (is.null(items) || length(items) == 0L) {
-    return(data.table::data.table()[])
+    return(empty_dt_user_funding())
   }
   rows <- lapply(items, function(it) {
     d <- it$delta
@@ -389,7 +353,7 @@ parse_user_funding <- function(items) {
 parse_non_funding_ledger <- function(items) {
   dt <- parse_delta_ledger(items)
   if (nrow(dt) == 0L) {
-    return(dt[])
+    return(empty_dt_non_funding_ledger())
   }
   if ("type" %in% names(dt)) {
     data.table::setnames(dt, "type", "delta_type")
@@ -424,7 +388,7 @@ parse_non_funding_ledger <- function(items) {
 #' @noRd
 parse_portfolio <- function(data) {
   if (is.null(data) || length(data) == 0L) {
-    return(data.table::data.table()[])
+    return(empty_dt_portfolio())
   }
   rows <- list()
   for (entry in data) {
@@ -445,7 +409,7 @@ parse_portfolio <- function(data) {
     }
   }
   if (length(rows) == 0L) {
-    return(data.table::data.table()[])
+    return(empty_dt_portfolio())
   }
   return(data.table::rbindlist(rows, fill = TRUE)[])
 }
@@ -461,7 +425,7 @@ parse_portfolio <- function(data) {
 #' @noRd
 parse_portfolio_volume <- function(data) {
   if (is.null(data) || length(data) == 0L) {
-    return(data.table::data.table()[])
+    return(empty_dt_portfolio_volume())
   }
   rows <- lapply(data, function(entry) {
     return(data.table::data.table(
@@ -483,7 +447,7 @@ parse_portfolio_volume <- function(data) {
 #' @noRd
 parse_user_fees <- function(data) {
   if (is.null(data) || length(data) == 0L) {
-    return(data.table::data.table()[])
+    return(empty_dt_user_fees())
   }
   return(data.table::data.table(
     user_add_rate = num_or_na(data$userAddRate),
@@ -505,7 +469,7 @@ parse_user_fees <- function(data) {
 parse_user_volume <- function(data) {
   daily <- data$dailyUserVlm
   if (is.null(daily) || length(daily) == 0L) {
-    return(data.table::data.table()[])
+    return(empty_dt_user_volume())
   }
   rows <- lapply(daily, function(d) {
     return(data.table::data.table(
@@ -527,7 +491,7 @@ parse_user_volume <- function(data) {
 #' @noRd
 parse_user_rate_limit <- function(data) {
   if (is.null(data) || length(data) == 0L) {
-    return(data.table::data.table()[])
+    return(empty_dt_user_rate_limit())
   }
   return(data.table::data.table(
     cum_vlm = num_or_na(data$cumVlm),
@@ -545,7 +509,7 @@ parse_user_rate_limit <- function(data) {
 #' @noRd
 parse_user_role <- function(data) {
   if (is.null(data) || length(data) == 0L) {
-    return(data.table::data.table()[])
+    return(empty_dt_user_role())
   }
   return(data.table::data.table(role = chr_or_na(data$role))[])
 }
@@ -564,7 +528,7 @@ parse_user_role <- function(data) {
 #' @noRd
 parse_sub_accounts <- function(items) {
   if (is.null(items) || length(items) == 0L) {
-    return(data.table::data.table()[])
+    return(empty_dt_sub_accounts())
   }
   rows <- lapply(items, function(s) {
     ch <- s$clearinghouseState
@@ -598,7 +562,7 @@ parse_sub_accounts <- function(items) {
 #' @noRd
 parse_order_status <- function(data) {
   if (is.null(data) || length(data) == 0L) {
-    return(data.table::data.table()[])
+    return(empty_dt_order_status())
   }
   inner <- data$order
   core <- flatten_order(inner$order)
@@ -646,7 +610,7 @@ parse_order_status <- function(data) {
 #' @noRd
 parse_user_vault_equities <- function(items) {
   if (is.null(items) || length(items) == 0L) {
-    return(data.table::data.table()[])
+    return(empty_dt_user_vault_equities())
   }
   rows <- lapply(items, function(v) {
     return(data.table::data.table(

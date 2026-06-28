@@ -26,7 +26,7 @@
 #' @noRd
 parse_transfer_ack <- function(body) {
   if (is.null(body) || length(body) == 0) {
-    return(data.table::data.table()[])
+    return(empty_dt_transfer_ack())
   }
   resp <- body$response
   resp_type <- NA_character_
