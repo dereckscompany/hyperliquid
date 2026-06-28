@@ -443,7 +443,7 @@ parse_recent_trades <- function(data) {
 #'
 #' @param data List; the parsed `{type:"exchangeStatus"}` response.
 #' @return A single-row [data.table::data.table] with columns `time`,
-#'   `special_statuses` (a JSON string, or `NA` when absent).
+#'   `special_statuses` (a JSON string, or `NA` when absent); zero-row when empty.
 #' @keywords internal
 #' @noRd
 parse_exchange_status <- function(data) {
