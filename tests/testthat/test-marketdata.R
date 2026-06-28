@@ -68,7 +68,15 @@ test_that("parse_meta returns the perp universe with sparse logical/string cols"
 
 test_that("parse_meta returns a zero-row data.table when empty", {
   expect_equal(nrow(hyperliquid:::parse_meta(NULL)), 0L)
-  expect_equal(nrow(hyperliquid:::parse_meta(list(universe = list()))), 0L)
+  # An empty perp universe is a valid response: the typed zero-row schema must
+  # carry every contracted column and satisfy the @return contract.
+  empty <- hyperliquid:::parse_meta(list(universe = list()))
+  expect_equal(nrow(empty), 0L)
+  expect_equal(
+    names(empty),
+    c("name", "sz_decimals", "max_leverage", "margin_table_id", "only_isolated", "is_delisted", "margin_mode")
+  )
+  expect_silent(hyperliquid:::assert_return_HyperliquidMarketData__get_meta(empty))
 })
 
 # ---- parse_spot_meta_universe ------------------------------------------------
@@ -214,7 +222,17 @@ test_that("parse_l2_book stacks bids then asks long with a 1-indexed level", {
 
 test_that("parse_l2_book returns a zero-row data.table when empty", {
   expect_equal(nrow(hyperliquid:::parse_l2_book(NULL)), 0L)
-  expect_equal(nrow(hyperliquid:::parse_l2_book(list(levels = list()))), 0L)
+  # An empty book is a valid response: the typed zero-row schema must carry
+  # every contracted column and satisfy the @return contract. Both empty
+  # branches (no levels, and both sides empty) return the same schema.
+  empty <- hyperliquid:::parse_l2_book(list(levels = list()))
+  expect_equal(nrow(empty), 0L)
+  expect_equal(names(empty), c("side", "level", "px", "sz", "n"))
+  expect_silent(hyperliquid:::assert_return_HyperliquidMarketData__get_l2_book(empty))
+  both_sides_empty <- hyperliquid:::parse_l2_book(list(levels = list(list(), list())))
+  expect_equal(nrow(both_sides_empty), 0L)
+  expect_equal(names(both_sides_empty), c("side", "level", "px", "sz", "n"))
+  expect_silent(hyperliquid:::assert_return_HyperliquidMarketData__get_l2_book(both_sides_empty))
 })
 
 # ---- parse_candles -----------------------------------------------------------

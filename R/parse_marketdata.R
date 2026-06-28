@@ -19,7 +19,17 @@
 parse_meta <- function(data) {
   universe <- data$universe
   if (is.null(universe) || length(universe) == 0L) {
-    return(data.table::data.table()[])
+    # An empty perp universe still owes its caller every contracted column;
+    # return the typed zero-row schema so the column contract holds.
+    return(data.table::data.table(
+      name = character(0),
+      sz_decimals = numeric(0),
+      max_leverage = numeric(0),
+      margin_table_id = numeric(0),
+      only_isolated = logical(0),
+      is_delisted = logical(0),
+      margin_mode = character(0)
+    )[])
   }
   rows <- lapply(universe, function(u) {
     return(data.table::data.table(
@@ -193,7 +203,15 @@ parse_all_mids <- function(data) {
 parse_l2_book <- function(data) {
   levels <- data$levels
   if (is.null(levels) || length(levels) == 0L) {
-    return(data.table::data.table()[])
+    # An empty book still owes its caller every contracted column; return the
+    # typed zero-row schema so the column contract holds.
+    return(data.table::data.table(
+      side = character(0),
+      level = integer(0),
+      px = numeric(0),
+      sz = numeric(0),
+      n = numeric(0)
+    )[])
   }
   side_names <- c("bid", "ask")
   rows <- list()
@@ -215,7 +233,15 @@ parse_l2_book <- function(data) {
     }
   }
   if (length(rows) == 0L) {
-    return(data.table::data.table()[])
+    # Both sides came back empty; return the typed zero-row schema so the
+    # column contract holds.
+    return(data.table::data.table(
+      side = character(0),
+      level = integer(0),
+      px = numeric(0),
+      sz = numeric(0),
+      n = numeric(0)
+    )[])
   }
   return(data.table::rbindlist(rows)[])
 }
