@@ -58,12 +58,15 @@ dir.create(OUT_DIR, recursive = TRUE, showWarnings = FALSE)
 if (Sys.which("git") != "") {
   probe <- file.path(OUT_DIR, "ignore-probe.json")
   ignored <- suppressWarnings(system2(
-    "git", c("check-ignore", probe),
-    stdout = TRUE, stderr = FALSE
+    "git",
+    c("check-ignore", probe),
+    stdout = TRUE,
+    stderr = FALSE
   ))
   if (length(ignored) == 0L) {
     stop(
-      "Refusing to write: ", OUT_DIR,
+      "Refusing to write: ",
+      OUT_DIR,
       " is NOT git-ignored. Aborting to avoid committing real account data."
     )
   }
@@ -88,8 +91,12 @@ candle_end_ms <- floor(now_ms)
 log_rows <- list()
 
 is_empty_body <- function(parsed) {
-  if (is.null(parsed)) return(TRUE)
-  if (length(parsed) == 0L) return(TRUE)
+  if (is.null(parsed)) {
+    return(TRUE)
+  }
+  if (length(parsed) == 0L) {
+    return(TRUE)
+  }
   return(FALSE)
 }
 
@@ -115,15 +122,25 @@ capture <- function(name, body) {
         error = function(e) NULL
       )
       list(
-        name = name, type = body$type, status = status,
-        bytes = length(body_raw), empty = is_empty_body(parsed),
-        ok = status >= 200 && status < 300, parsed = parsed
+        name = name,
+        type = body$type,
+        status = status,
+        bytes = length(body_raw),
+        empty = is_empty_body(parsed),
+        ok = status >= 200 && status < 300,
+        parsed = parsed
       )
     },
     error = function(e) {
       list(
-        name = name, type = body$type, status = NA_integer_, bytes = 0L,
-        empty = NA, ok = FALSE, parsed = NULL, err = conditionMessage(e)
+        name = name,
+        type = body$type,
+        status = NA_integer_,
+        bytes = 0L,
+        empty = NA,
+        ok = FALSE,
+        parsed = NULL,
+        err = conditionMessage(e)
       )
     }
   )
@@ -137,9 +154,11 @@ capture <- function(name, body) {
   }
   cat(sprintf(
     "%-32s type=%-28s status=%-4s bytes=%-7s %s%s\n",
-    name, result$type,
+    name,
+    result$type,
     ifelse(is.na(result$status), "ERR", result$status),
-    result$bytes, state,
+    result$bytes,
+    state,
     if (!is.null(result$err)) paste0("  <", result$err, ">") else ""
   ))
   log_rows[[name]] <<- result
@@ -156,10 +175,18 @@ capture("meta_and_asset_ctxs", list(type = "metaAndAssetCtxs"))
 capture("spot_meta_and_asset_ctxs", list(type = "spotMetaAndAssetCtxs"))
 capture("all_mids", list(type = "allMids"))
 capture("l2_book", list(type = "l2Book", coin = "BTC"))
-capture("candle_snapshot", list(type = "candleSnapshot", req = list(
-  coin = "BTC", interval = "1h",
-  startTime = candle_start_ms, endTime = candle_end_ms
-)))
+capture(
+  "candle_snapshot",
+  list(
+    type = "candleSnapshot",
+    req = list(
+      coin = "BTC",
+      interval = "1h",
+      startTime = candle_start_ms,
+      endTime = candle_end_ms
+    )
+  )
+)
 capture("funding_history", list(type = "fundingHistory", coin = "BTC", startTime = win_start_ms))
 capture("predicted_fundings", list(type = "predictedFundings"))
 capture("perp_dexs", list(type = "perpDexs"))
@@ -180,9 +207,14 @@ if (nzchar(account_address)) {
   capture("user_fills_by_time", list(type = "userFillsByTime", user = addr, startTime = win_start_ms))
   ho_res <- capture("historical_orders", list(type = "historicalOrders", user = addr))
   capture("user_funding", list(type = "userFunding", user = addr, startTime = win_start_ms))
-  capture("user_non_funding_ledger_updates", list(
-    type = "userNonFundingLedgerUpdates", user = addr, startTime = win_start_ms
-  ))
+  capture(
+    "user_non_funding_ledger_updates",
+    list(
+      type = "userNonFundingLedgerUpdates",
+      user = addr,
+      startTime = win_start_ms
+    )
+  )
   capture("portfolio", list(type = "portfolio", user = addr))
   capture("user_fees", list(type = "userFees", user = addr))
   capture("user_rate_limit", list(type = "userRateLimit", user = addr))
@@ -193,15 +225,23 @@ if (nzchar(account_address)) {
   # orderStatus needs a concrete oid -- pull one from historical orders or fills.
   pick_oid <- function(res) {
     p <- res$parsed
-    if (is.null(p) || length(p) == 0L) return(NULL)
+    if (is.null(p) || length(p) == 0L) {
+      return(NULL)
+    }
     # historicalOrders -> list of {order: {oid}, status}; userFills -> list of {oid}
     first <- p[[1]]
-    if (!is.null(first$order$oid)) return(first$order$oid)
-    if (!is.null(first$oid)) return(first$oid)
+    if (!is.null(first$order$oid)) {
+      return(first$order$oid)
+    }
+    if (!is.null(first$oid)) {
+      return(first$oid)
+    }
     return(NULL)
   }
   oid <- pick_oid(ho_res)
-  if (is.null(oid)) oid <- pick_oid(fills_res)
+  if (is.null(oid)) {
+    oid <- pick_oid(fills_res)
+  }
   if (!is.null(oid)) {
     capture("order_status", list(type = "orderStatus", user = addr, oid = oid))
   }
@@ -219,9 +259,19 @@ if (nzchar(account_address)) {
 # Summary
 # ---------------------------------------------------------------------------
 cat("\n== Summary ==\n")
-states <- vapply(log_rows, function(r) {
-  if (!isTRUE(r$ok)) "FAIL" else if (isTRUE(r$empty)) "EMPTY" else "POPULATED"
-}, character(1))
+states <- vapply(
+  log_rows,
+  function(r) {
+    if (!isTRUE(r$ok)) {
+      "FAIL"
+    } else if (isTRUE(r$empty)) {
+      "EMPTY"
+    } else {
+      "POPULATED"
+    }
+  },
+  character(1)
+)
 cat("POPULATED:", sum(states == "POPULATED"), "\n")
 cat("EMPTY    :", sum(states == "EMPTY"), "\n")
 cat("FAIL     :", sum(states == "FAIL"), "\n")

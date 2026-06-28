@@ -80,9 +80,18 @@ test_that("parse_positions returns a zero-row data.table when empty", {
   # still carry every contracted column so the @return contract holds.
   expect_equal(
     names(empty),
-    c("coin", "szi", "entry_px", "position_value", "unrealized_pnl",
-      "return_on_equity", "leverage_type", "leverage_value", "liquidation_px",
-      "margin_used")
+    c(
+      "coin",
+      "szi",
+      "entry_px",
+      "position_value",
+      "unrealized_pnl",
+      "return_on_equity",
+      "leverage_type",
+      "leverage_value",
+      "liquidation_px",
+      "margin_used"
+    )
   )
   expect_silent(hyperliquid:::assert_return_HyperliquidAccount__get_positions(empty))
   expect_equal(nrow(hyperliquid:::parse_positions(NULL)), 0L)
