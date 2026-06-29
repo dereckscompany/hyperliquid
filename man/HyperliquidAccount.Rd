@@ -180,8 +180,14 @@ Defaults to the instance's acting address.}
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-(promise<data.table>) a \link[data.table:data.table]{data.table::data.table} with \code{coin},
-\code{total}, \code{hold}, \code{entry_ntl}, or a promise thereof.
+(promise<data.table>) a \link[data.table:data.table]{data.table::data.table}, one row per spot
+balance (or a promise thereof):
+\itemize{
+\item coin (character) the token symbol.
+\item total (numeric) the total balance.
+\item hold (numeric) the held (non-withdrawable) balance.
+\item entry_ntl (numeric) the entry notional (cost basis).
+}
 }
 }
 \if{html}{\out{<hr>}}
@@ -202,8 +208,16 @@ Defaults to the instance's acting address.}
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-(promise<data.table>) a \link[data.table:data.table]{data.table::data.table} with \code{coin},
-\code{oid}, \code{side}, \code{limit_px}, \code{sz}, \code{timestamp}, or a promise thereof.
+(promise<data.table>) a \link[data.table:data.table]{data.table::data.table}, one row per
+resting order (or a promise thereof):
+\itemize{
+\item coin (character) the coin symbol.
+\item oid (numeric) the order id.
+\item side (character) the order side (\code{"buy"} or \code{"sell"}).
+\item limit_px (numeric) the limit price.
+\item sz (numeric) the remaining size.
+\item timestamp (POSIXct) the order's placement time.
+}
 }
 }
 \if{html}{\out{<hr>}}
@@ -228,10 +242,25 @@ Defaults to the instance's acting address.}
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-(promise<data.table>) a \link[data.table:data.table]{data.table::data.table} with \code{coin},
-\code{oid}, \code{side}, \code{limit_px}, \code{sz}, \code{timestamp}, \code{order_type},
-\code{is_trigger}, \code{trigger_px}, \code{trigger_condition}, \code{reduce_only}, \code{tif},
-\code{orig_sz}, \code{is_position_tpsl}, or a promise thereof.
+(promise<data.table>) a \link[data.table:data.table]{data.table::data.table}, one row per
+resting order (or a promise thereof):
+\itemize{
+\item coin (character) the coin symbol.
+\item oid (numeric) the order id.
+\item side (character) the order side (\code{"buy"} or \code{"sell"}).
+\item limit_px (numeric) the limit price.
+\item sz (numeric) the remaining size.
+\item timestamp (POSIXct) the order's placement time.
+\item order_type (character) the order type, e.g. \code{"Limit"}.
+\item is_trigger (logical) whether the order is a trigger order.
+\item trigger_px (numeric) the trigger price (\code{0} when not a trigger).
+\item trigger_condition (character) the trigger condition (\code{"N/A"} when
+not a trigger).
+\item reduce_only (logical) whether the order is reduce-only.
+\item tif (character | NA) the time-in-force, \code{NA} when not applicable.
+\item orig_sz (numeric) the original (pre-fill) size.
+\item is_position_tpsl (logical) whether the order is a position TP/SL.
+}
 }
 }
 \if{html}{\out{<hr>}}
@@ -314,11 +343,29 @@ Defaults to the instance's acting address.}
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-(promise<data.table>) a \link[data.table:data.table]{data.table::data.table} with \code{oid},
-\code{coin}, \code{side}, \code{limit_px}, \code{sz}, \code{orig_sz}, \code{order_type}, \code{tif},
-\code{reduce_only}, \code{trigger_px}, \code{trigger_condition}, \code{is_trigger},
-\code{is_position_tpsl}, \code{cloid}, \code{timestamp}, \code{status}, \code{status_timestamp},
-or a promise thereof.
+(promise<data.table>) a \link[data.table:data.table]{data.table::data.table}, one row per
+status transition (or a promise thereof):
+\itemize{
+\item oid (numeric) the order id.
+\item coin (character) the coin symbol.
+\item side (character) the order side (\code{"buy"} or \code{"sell"}).
+\item limit_px (numeric) the limit price.
+\item sz (numeric) the remaining size.
+\item orig_sz (numeric) the original (pre-fill) size.
+\item order_type (character) the order type, e.g. \code{"Limit"}.
+\item tif (character | NA) the time-in-force, \code{NA} when not applicable.
+\item reduce_only (logical) whether the order is reduce-only.
+\item trigger_px (numeric) the trigger price (\code{0} when not a trigger).
+\item trigger_condition (character) the trigger condition (\code{"N/A"} when
+not a trigger).
+\item is_trigger (logical) whether the order is a trigger order.
+\item is_position_tpsl (logical) whether the order is a position TP/SL.
+\item cloid (character | NA) the client order id, \code{NA} when none.
+\item timestamp (POSIXct) the order's placement time.
+\item status (character) the transition status, e.g. \code{"open"}, \code{"filled"},
+\code{"canceled"}.
+\item status_timestamp (POSIXct) the time of the status transition.
+}
 }
 }
 \if{html}{\out{<hr>}}
@@ -350,9 +397,17 @@ epoch-milliseconds, or \code{NULL}). Default \code{NULL} (up to now).}
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-(promise<data.table>) a \link[data.table:data.table]{data.table::data.table} with \code{time},
-\code{hash}, \code{coin}, \code{funding_rate}, \code{szi}, \code{usdc}, \code{n_samples}, or a promise
-thereof.
+(promise<data.table>) a \link[data.table:data.table]{data.table::data.table}, one row per
+funding payment (or a promise thereof):
+\itemize{
+\item time (POSIXct) the payment time.
+\item hash (character) the on-chain hash.
+\item coin (character) the coin symbol.
+\item funding_rate (numeric) the funding rate applied.
+\item szi (numeric) the signed position size at the sample.
+\item usdc (numeric) the USDC amount paid or received.
+\item n_samples (numeric) the number of samples in the payment.
+}
 }
 }
 \if{html}{\out{<hr>}}
@@ -409,8 +464,14 @@ Defaults to the instance's acting address.}
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-(promise<data.table>) a \link[data.table:data.table]{data.table::data.table} with \code{period},
-\code{metric}, \code{time}, \code{value}, or a promise thereof.
+(promise<data.table>) a \link[data.table:data.table]{data.table::data.table}, one row per
+(period, metric, point) (or a promise thereof):
+\itemize{
+\item period (character) the period, e.g. \code{"day"}, \code{"perpAllTime"}.
+\item metric (character) the metric (\code{"account_value"} or \code{"pnl"}).
+\item time (POSIXct) the sample time.
+\item value (numeric) the sampled value.
+}
 }
 }
 \if{html}{\out{<hr>}}
@@ -432,8 +493,12 @@ Defaults to the instance's acting address.}
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-(promise<data.table>) a \link[data.table:data.table]{data.table::data.table} with \code{period},
-\code{vlm}, or a promise thereof.
+(promise<data.table>) a \link[data.table:data.table]{data.table::data.table}, one row per
+period (or a promise thereof):
+\itemize{
+\item period (character) the period, e.g. \code{"day"}, \code{"perpAllTime"}.
+\item vlm (numeric) the traded volume for the period.
+}
 }
 }
 \if{html}{\out{<hr>}}
@@ -454,9 +519,13 @@ Defaults to the instance's acting address.}
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-(promise<data.table>) a single-row \link[data.table:data.table]{data.table::data.table} with
-\code{user_add_rate}, \code{user_cross_rate}, \code{active_referral_discount}, or a
-promise thereof.
+(promise<data.table>) a single-row \link[data.table:data.table]{data.table::data.table} (or a
+promise thereof):
+\itemize{
+\item user_add_rate (numeric) the maker (add-liquidity) fee rate.
+\item user_cross_rate (numeric) the taker (crossing) fee rate.
+\item active_referral_discount (numeric) the active referral discount.
+}
 }
 }
 \if{html}{\out{<hr>}}
@@ -478,8 +547,14 @@ Defaults to the instance's acting address.}
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-(promise<data.table>) a \link[data.table:data.table]{data.table::data.table} with \code{date},
-\code{exchange}, \code{user_add}, \code{user_cross}, or a promise thereof.
+(promise<data.table>) a \link[data.table:data.table]{data.table::data.table}, one row per day
+(or a promise thereof):
+\itemize{
+\item date (character) the calendar day (\code{YYYY-MM-DD}).
+\item exchange (numeric) the exchange-wide volume that day.
+\item user_add (numeric) the user's maker (add) volume that day.
+\item user_cross (numeric) the user's taker (crossing) volume that day.
+}
 }
 }
 \if{html}{\out{<hr>}}
@@ -500,8 +575,13 @@ Defaults to the instance's acting address.}
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-(promise<data.table>) a single-row \link[data.table:data.table]{data.table::data.table} with
-\code{cum_vlm}, \code{n_requests_used}, \code{n_requests_cap}, or a promise thereof.
+(promise<data.table>) a single-row \link[data.table:data.table]{data.table::data.table} (or a
+promise thereof):
+\itemize{
+\item cum_vlm (numeric) the cumulative traded volume.
+\item n_requests_used (numeric) the number of requests used.
+\item n_requests_cap (numeric) the request cap.
+}
 }
 }
 \if{html}{\out{<hr>}}
@@ -523,8 +603,12 @@ Defaults to the instance's acting address.}
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-(promise<data.table>) a single-row \link[data.table:data.table]{data.table::data.table} with
-\code{role}, or a promise thereof.
+(promise<data.table>) a single-row \link[data.table:data.table]{data.table::data.table} (or a
+promise thereof):
+\itemize{
+\item role (character) the account role, e.g. \code{"user"}, \code{"vault"},
+\code{"agent"}, \code{"subAccount"}.
+}
 }
 }
 \if{html}{\out{<hr>}}
@@ -546,10 +630,18 @@ Defaults to the instance's acting address.}
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-(promise<data.table>) a \link[data.table:data.table]{data.table::data.table} with \code{name},
-\code{sub_account_user}, \code{master}, \code{account_value}, \code{total_ntl_pos},
-\code{total_raw_usd}, \code{total_margin_used}, \code{withdrawable}, or a promise
-thereof.
+(promise<data.table>) a \link[data.table:data.table]{data.table::data.table}, one row per
+sub-account (or a promise thereof):
+\itemize{
+\item name (character) the sub-account name.
+\item sub_account_user (character) the sub-account's \verb{0x} address.
+\item master (character) the master account's \verb{0x} address.
+\item account_value (numeric) the sub-account's account value.
+\item total_ntl_pos (numeric) the total notional position.
+\item total_raw_usd (numeric) the total raw USD.
+\item total_margin_used (numeric) the total margin used.
+\item withdrawable (numeric) the withdrawable balance.
+}
 }
 }
 \if{html}{\out{<hr>}}
@@ -577,9 +669,31 @@ id, or character \verb{0x}-prefixed client order id (cloid).}
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-(promise<data.table>) a single-row \link[data.table:data.table]{data.table::data.table} with
-\code{query_status} and the order shape (\code{oid}, \code{coin}, \code{side}, ..., \code{status},
-\code{status_timestamp}), or a promise thereof.
+(promise<data.table>) a single-row \link[data.table:data.table]{data.table::data.table} (or a
+promise thereof). When the order is not found (\code{query_status} is
+\code{"unknownOid"}) every order column is \code{NA}:
+\itemize{
+\item query_status (character) the lookup status (\code{"order"} or
+\code{"unknownOid"}).
+\item oid (numeric | NA) the order id.
+\item coin (character | NA) the coin symbol.
+\item side (character | NA) the order side (\code{"buy"} or \code{"sell"}).
+\item limit_px (numeric | NA) the limit price.
+\item sz (numeric | NA) the remaining size.
+\item orig_sz (numeric | NA) the original (pre-fill) size.
+\item order_type (character | NA) the order type, e.g. \code{"Limit"}.
+\item tif (character | NA) the time-in-force.
+\item reduce_only (logical | NA) whether the order is reduce-only.
+\item trigger_px (numeric | NA) the trigger price.
+\item trigger_condition (character | NA) the trigger condition.
+\item is_trigger (logical | NA) whether the order is a trigger order.
+\item is_position_tpsl (logical | NA) whether the order is a position TP/SL.
+\item cloid (character | NA) the client order id.
+\item timestamp (POSIXct | NA) the order's placement time.
+\item status (character | NA) the order's status, e.g. \code{"open"},
+\code{"filled"}, \code{"canceled"}.
+\item status_timestamp (POSIXct | NA) the time of the status.
+}
 }
 }
 \if{html}{\out{<hr>}}
@@ -601,9 +715,13 @@ Defaults to the instance's acting address.}
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-(promise<data.table>) a \link[data.table:data.table]{data.table::data.table} with
-\code{vault_address}, \code{equity}, \code{locked_until_timestamp}, or a promise
-thereof.
+(promise<data.table>) a \link[data.table:data.table]{data.table::data.table}, one row per vault
+(or a promise thereof):
+\itemize{
+\item vault_address (character) the vault's \verb{0x} address.
+\item equity (numeric) the user's equity in the vault.
+\item locked_until_timestamp (POSIXct) when the equity unlocks.
+}
 }
 }
 \if{html}{\out{<hr>}}

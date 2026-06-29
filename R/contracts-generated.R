@@ -66,6 +66,15 @@ assert_args_HyperliquidAccount__get_spot_balances <- function(address) {
 
 assert_return_HyperliquidAccount__get_spot_balances <- function(value) {
   assert_data_table(value)
+  assert_has_columns(value, c("coin", "total", "hold", "entry_ntl"))
+  assert_character(value[["coin"]])
+  assert_no_missing_values(value[["coin"]])
+  assert_double(value[["total"]])
+  assert_no_missing_values(value[["total"]])
+  assert_double(value[["hold"]])
+  assert_no_missing_values(value[["hold"]])
+  assert_double(value[["entry_ntl"]])
+  assert_no_missing_values(value[["entry_ntl"]])
   return(value)
 }
 
@@ -76,6 +85,19 @@ assert_args_HyperliquidAccount__get_open_orders <- function(address) {
 
 assert_return_HyperliquidAccount__get_open_orders <- function(value) {
   assert_data_table(value)
+  assert_has_columns(value, c("coin", "oid", "side", "limit_px", "sz", "timestamp"))
+  assert_character(value[["coin"]])
+  assert_no_missing_values(value[["coin"]])
+  assert_double(value[["oid"]])
+  assert_no_missing_values(value[["oid"]])
+  assert_character(value[["side"]])
+  assert_no_missing_values(value[["side"]])
+  assert_double(value[["limit_px"]])
+  assert_no_missing_values(value[["limit_px"]])
+  assert_double(value[["sz"]])
+  assert_no_missing_values(value[["sz"]])
+  assert_datetime(value[["timestamp"]])
+  assert_no_missing_values(value[["timestamp"]])
   return(value)
 }
 
@@ -86,6 +108,34 @@ assert_args_HyperliquidAccount__get_frontend_open_orders <- function(address) {
 
 assert_return_HyperliquidAccount__get_frontend_open_orders <- function(value) {
   assert_data_table(value)
+  assert_has_columns(value, c("coin", "oid", "side", "limit_px", "sz", "timestamp", "order_type", "is_trigger", "trigger_px", "trigger_condition", "reduce_only", "tif", "orig_sz", "is_position_tpsl"))
+  assert_character(value[["coin"]])
+  assert_no_missing_values(value[["coin"]])
+  assert_double(value[["oid"]])
+  assert_no_missing_values(value[["oid"]])
+  assert_character(value[["side"]])
+  assert_no_missing_values(value[["side"]])
+  assert_double(value[["limit_px"]])
+  assert_no_missing_values(value[["limit_px"]])
+  assert_double(value[["sz"]])
+  assert_no_missing_values(value[["sz"]])
+  assert_datetime(value[["timestamp"]])
+  assert_no_missing_values(value[["timestamp"]])
+  assert_character(value[["order_type"]])
+  assert_no_missing_values(value[["order_type"]])
+  assert_logical(value[["is_trigger"]])
+  assert_no_missing_values(value[["is_trigger"]])
+  assert_double(value[["trigger_px"]])
+  assert_no_missing_values(value[["trigger_px"]])
+  assert_character(value[["trigger_condition"]])
+  assert_no_missing_values(value[["trigger_condition"]])
+  assert_logical(value[["reduce_only"]])
+  assert_no_missing_values(value[["reduce_only"]])
+  assert_character(value[["tif"]])
+  assert_double(value[["orig_sz"]])
+  assert_no_missing_values(value[["orig_sz"]])
+  assert_logical(value[["is_position_tpsl"]])
+  assert_no_missing_values(value[["is_position_tpsl"]])
   return(value)
 }
 
@@ -199,6 +249,39 @@ assert_args_HyperliquidAccount__get_historical_orders <- function(address) {
 
 assert_return_HyperliquidAccount__get_historical_orders <- function(value) {
   assert_data_table(value)
+  assert_has_columns(value, c("oid", "coin", "side", "limit_px", "sz", "orig_sz", "order_type", "tif", "reduce_only", "trigger_px", "trigger_condition", "is_trigger", "is_position_tpsl", "cloid", "timestamp", "status", "status_timestamp"))
+  assert_double(value[["oid"]])
+  assert_no_missing_values(value[["oid"]])
+  assert_character(value[["coin"]])
+  assert_no_missing_values(value[["coin"]])
+  assert_character(value[["side"]])
+  assert_no_missing_values(value[["side"]])
+  assert_double(value[["limit_px"]])
+  assert_no_missing_values(value[["limit_px"]])
+  assert_double(value[["sz"]])
+  assert_no_missing_values(value[["sz"]])
+  assert_double(value[["orig_sz"]])
+  assert_no_missing_values(value[["orig_sz"]])
+  assert_character(value[["order_type"]])
+  assert_no_missing_values(value[["order_type"]])
+  assert_character(value[["tif"]])
+  assert_logical(value[["reduce_only"]])
+  assert_no_missing_values(value[["reduce_only"]])
+  assert_double(value[["trigger_px"]])
+  assert_no_missing_values(value[["trigger_px"]])
+  assert_character(value[["trigger_condition"]])
+  assert_no_missing_values(value[["trigger_condition"]])
+  assert_logical(value[["is_trigger"]])
+  assert_no_missing_values(value[["is_trigger"]])
+  assert_logical(value[["is_position_tpsl"]])
+  assert_no_missing_values(value[["is_position_tpsl"]])
+  assert_character(value[["cloid"]])
+  assert_datetime(value[["timestamp"]])
+  assert_no_missing_values(value[["timestamp"]])
+  assert_character(value[["status"]])
+  assert_no_missing_values(value[["status"]])
+  assert_datetime(value[["status_timestamp"]])
+  assert_no_missing_values(value[["status_timestamp"]])
   return(value)
 }
 
@@ -233,6 +316,21 @@ assert_args_HyperliquidAccount__get_user_funding <- function(address, start, end
 
 assert_return_HyperliquidAccount__get_user_funding <- function(value) {
   assert_data_table(value)
+  assert_has_columns(value, c("time", "hash", "coin", "funding_rate", "szi", "usdc", "n_samples"))
+  assert_datetime(value[["time"]])
+  assert_no_missing_values(value[["time"]])
+  assert_character(value[["hash"]])
+  assert_no_missing_values(value[["hash"]])
+  assert_character(value[["coin"]])
+  assert_no_missing_values(value[["coin"]])
+  assert_double(value[["funding_rate"]])
+  assert_no_missing_values(value[["funding_rate"]])
+  assert_double(value[["szi"]])
+  assert_no_missing_values(value[["szi"]])
+  assert_double(value[["usdc"]])
+  assert_no_missing_values(value[["usdc"]])
+  assert_double(value[["n_samples"]])
+  assert_no_missing_values(value[["n_samples"]])
   return(value)
 }
 
@@ -277,6 +375,15 @@ assert_args_HyperliquidAccount__get_portfolio <- function(address) {
 
 assert_return_HyperliquidAccount__get_portfolio <- function(value) {
   assert_data_table(value)
+  assert_has_columns(value, c("period", "metric", "time", "value"))
+  assert_character(value[["period"]])
+  assert_no_missing_values(value[["period"]])
+  assert_character(value[["metric"]])
+  assert_no_missing_values(value[["metric"]])
+  assert_datetime(value[["time"]])
+  assert_no_missing_values(value[["time"]])
+  assert_double(value[["value"]])
+  assert_no_missing_values(value[["value"]])
   return(value)
 }
 
@@ -287,6 +394,11 @@ assert_args_HyperliquidAccount__get_portfolio_volume <- function(address) {
 
 assert_return_HyperliquidAccount__get_portfolio_volume <- function(value) {
   assert_data_table(value)
+  assert_has_columns(value, c("period", "vlm"))
+  assert_character(value[["period"]])
+  assert_no_missing_values(value[["period"]])
+  assert_double(value[["vlm"]])
+  assert_no_missing_values(value[["vlm"]])
   return(value)
 }
 
@@ -297,6 +409,13 @@ assert_args_HyperliquidAccount__get_user_fees <- function(address) {
 
 assert_return_HyperliquidAccount__get_user_fees <- function(value) {
   assert_data_table(value)
+  assert_has_columns(value, c("user_add_rate", "user_cross_rate", "active_referral_discount"))
+  assert_double(value[["user_add_rate"]])
+  assert_no_missing_values(value[["user_add_rate"]])
+  assert_double(value[["user_cross_rate"]])
+  assert_no_missing_values(value[["user_cross_rate"]])
+  assert_double(value[["active_referral_discount"]])
+  assert_no_missing_values(value[["active_referral_discount"]])
   return(value)
 }
 
@@ -307,6 +426,15 @@ assert_args_HyperliquidAccount__get_user_volume <- function(address) {
 
 assert_return_HyperliquidAccount__get_user_volume <- function(value) {
   assert_data_table(value)
+  assert_has_columns(value, c("date", "exchange", "user_add", "user_cross"))
+  assert_character(value[["date"]])
+  assert_no_missing_values(value[["date"]])
+  assert_double(value[["exchange"]])
+  assert_no_missing_values(value[["exchange"]])
+  assert_double(value[["user_add"]])
+  assert_no_missing_values(value[["user_add"]])
+  assert_double(value[["user_cross"]])
+  assert_no_missing_values(value[["user_cross"]])
   return(value)
 }
 
@@ -317,6 +445,13 @@ assert_args_HyperliquidAccount__get_user_rate_limit <- function(address) {
 
 assert_return_HyperliquidAccount__get_user_rate_limit <- function(value) {
   assert_data_table(value)
+  assert_has_columns(value, c("cum_vlm", "n_requests_used", "n_requests_cap"))
+  assert_double(value[["cum_vlm"]])
+  assert_no_missing_values(value[["cum_vlm"]])
+  assert_double(value[["n_requests_used"]])
+  assert_no_missing_values(value[["n_requests_used"]])
+  assert_double(value[["n_requests_cap"]])
+  assert_no_missing_values(value[["n_requests_cap"]])
   return(value)
 }
 
@@ -327,6 +462,9 @@ assert_args_HyperliquidAccount__get_user_role <- function(address) {
 
 assert_return_HyperliquidAccount__get_user_role <- function(value) {
   assert_data_table(value)
+  assert_has_columns(value, c("role"))
+  assert_character(value[["role"]])
+  assert_no_missing_values(value[["role"]])
   return(value)
 }
 
@@ -337,6 +475,23 @@ assert_args_HyperliquidAccount__get_sub_accounts <- function(address) {
 
 assert_return_HyperliquidAccount__get_sub_accounts <- function(value) {
   assert_data_table(value)
+  assert_has_columns(value, c("name", "sub_account_user", "master", "account_value", "total_ntl_pos", "total_raw_usd", "total_margin_used", "withdrawable"))
+  assert_character(value[["name"]])
+  assert_no_missing_values(value[["name"]])
+  assert_character(value[["sub_account_user"]])
+  assert_no_missing_values(value[["sub_account_user"]])
+  assert_character(value[["master"]])
+  assert_no_missing_values(value[["master"]])
+  assert_double(value[["account_value"]])
+  assert_no_missing_values(value[["account_value"]])
+  assert_double(value[["total_ntl_pos"]])
+  assert_no_missing_values(value[["total_ntl_pos"]])
+  assert_double(value[["total_raw_usd"]])
+  assert_no_missing_values(value[["total_raw_usd"]])
+  assert_double(value[["total_margin_used"]])
+  assert_no_missing_values(value[["total_margin_used"]])
+  assert_double(value[["withdrawable"]])
+  assert_no_missing_values(value[["withdrawable"]])
   return(value)
 }
 
@@ -356,6 +511,26 @@ assert_args_HyperliquidAccount__get_order_status <- function(address, oid_or_clo
 
 assert_return_HyperliquidAccount__get_order_status <- function(value) {
   assert_data_table(value)
+  assert_has_columns(value, c("query_status", "oid", "coin", "side", "limit_px", "sz", "orig_sz", "order_type", "tif", "reduce_only", "trigger_px", "trigger_condition", "is_trigger", "is_position_tpsl", "cloid", "timestamp", "status", "status_timestamp"))
+  assert_character(value[["query_status"]])
+  assert_no_missing_values(value[["query_status"]])
+  assert_double(value[["oid"]])
+  assert_character(value[["coin"]])
+  assert_character(value[["side"]])
+  assert_double(value[["limit_px"]])
+  assert_double(value[["sz"]])
+  assert_double(value[["orig_sz"]])
+  assert_character(value[["order_type"]])
+  assert_character(value[["tif"]])
+  assert_logical(value[["reduce_only"]])
+  assert_double(value[["trigger_px"]])
+  assert_character(value[["trigger_condition"]])
+  assert_logical(value[["is_trigger"]])
+  assert_logical(value[["is_position_tpsl"]])
+  assert_character(value[["cloid"]])
+  assert_datetime(value[["timestamp"]])
+  assert_character(value[["status"]])
+  assert_datetime(value[["status_timestamp"]])
   return(value)
 }
 
@@ -366,6 +541,13 @@ assert_args_HyperliquidAccount__get_user_vault_equities <- function(address) {
 
 assert_return_HyperliquidAccount__get_user_vault_equities <- function(value) {
   assert_data_table(value)
+  assert_has_columns(value, c("vault_address", "equity", "locked_until_timestamp"))
+  assert_character(value[["vault_address"]])
+  assert_no_missing_values(value[["vault_address"]])
+  assert_double(value[["equity"]])
+  assert_no_missing_values(value[["equity"]])
+  assert_datetime(value[["locked_until_timestamp"]])
+  assert_no_missing_values(value[["locked_until_timestamp"]])
   return(value)
 }
 
@@ -439,26 +621,84 @@ assert_return_HyperliquidMarketData__get_meta <- function(value) {
 
 assert_return_HyperliquidMarketData__get_spot_meta <- function(value) {
   assert_data_table(value)
+  assert_has_columns(value, c("name", "index", "is_canonical", "token_base", "token_quote"))
+  assert_character(value[["name"]])
+  assert_no_missing_values(value[["name"]])
+  assert_double(value[["index"]])
+  assert_no_missing_values(value[["index"]])
+  assert_logical(value[["is_canonical"]])
+  assert_no_missing_values(value[["is_canonical"]])
+  assert_double(value[["token_base"]])
+  assert_no_missing_values(value[["token_base"]])
+  assert_double(value[["token_quote"]])
+  assert_no_missing_values(value[["token_quote"]])
   return(value)
 }
 
 assert_return_HyperliquidMarketData__get_spot_tokens <- function(value) {
   assert_data_table(value)
+  assert_has_columns(value, c("name", "index", "sz_decimals", "wei_decimals", "token_id", "is_canonical"))
+  assert_character(value[["name"]])
+  assert_no_missing_values(value[["name"]])
+  assert_double(value[["index"]])
+  assert_no_missing_values(value[["index"]])
+  assert_double(value[["sz_decimals"]])
+  assert_no_missing_values(value[["sz_decimals"]])
+  assert_double(value[["wei_decimals"]])
+  assert_no_missing_values(value[["wei_decimals"]])
+  assert_character(value[["token_id"]])
+  assert_no_missing_values(value[["token_id"]])
+  assert_logical(value[["is_canonical"]])
+  assert_no_missing_values(value[["is_canonical"]])
   return(value)
 }
 
 assert_return_HyperliquidMarketData__get_meta_and_asset_ctxs <- function(value) {
   assert_data_table(value)
+  assert_has_columns(value, c("name", "sz_decimals", "max_leverage", "day_ntl_vlm", "funding", "mark_px", "mid_px", "oracle_px", "open_interest", "premium", "prev_day_px", "impact_px_bid", "impact_px_ask"))
+  assert_character(value[["name"]])
+  assert_no_missing_values(value[["name"]])
+  assert_double(value[["sz_decimals"]])
+  assert_no_missing_values(value[["sz_decimals"]])
+  assert_double(value[["max_leverage"]])
+  assert_no_missing_values(value[["max_leverage"]])
+  assert_double(value[["day_ntl_vlm"]])
+  assert_double(value[["funding"]])
+  assert_double(value[["mark_px"]])
+  assert_double(value[["mid_px"]])
+  assert_double(value[["oracle_px"]])
+  assert_double(value[["open_interest"]])
+  assert_double(value[["premium"]])
+  assert_double(value[["prev_day_px"]])
+  assert_double(value[["impact_px_bid"]])
+  assert_double(value[["impact_px_ask"]])
   return(value)
 }
 
 assert_return_HyperliquidMarketData__get_spot_meta_and_asset_ctxs <- function(value) {
   assert_data_table(value)
+  assert_has_columns(value, c("coin", "day_ntl_vlm", "mark_px", "mid_px", "prev_day_px", "circulating_supply"))
+  assert_character(value[["coin"]])
+  assert_no_missing_values(value[["coin"]])
+  assert_double(value[["day_ntl_vlm"]])
+  assert_no_missing_values(value[["day_ntl_vlm"]])
+  assert_double(value[["mark_px"]])
+  assert_no_missing_values(value[["mark_px"]])
+  assert_double(value[["mid_px"]])
+  assert_double(value[["prev_day_px"]])
+  assert_no_missing_values(value[["prev_day_px"]])
+  assert_double(value[["circulating_supply"]])
+  assert_no_missing_values(value[["circulating_supply"]])
   return(value)
 }
 
 assert_return_HyperliquidMarketData__get_all_mids <- function(value) {
   assert_data_table(value)
+  assert_has_columns(value, c("coin", "mid"))
+  assert_character(value[["coin"]])
+  assert_no_missing_values(value[["coin"]])
+  assert_double(value[["mid"]])
+  assert_no_missing_values(value[["mid"]])
   return(value)
 }
 
@@ -589,11 +829,29 @@ assert_return_HyperliquidMarketData__get_funding_history <- function(value) {
 
 assert_return_HyperliquidMarketData__get_predicted_fundings <- function(value) {
   assert_data_table(value)
+  assert_has_columns(value, c("coin", "venue", "funding_rate", "next_funding_time", "funding_interval_hours"))
+  assert_character(value[["coin"]])
+  assert_no_missing_values(value[["coin"]])
+  assert_character(value[["venue"]])
+  assert_no_missing_values(value[["venue"]])
+  assert_double(value[["funding_rate"]])
+  assert_datetime(value[["next_funding_time"]])
+  assert_double(value[["funding_interval_hours"]])
   return(value)
 }
 
 assert_return_HyperliquidMarketData__get_perp_dexs <- function(value) {
   assert_data_table(value)
+  assert_has_columns(value, c("name", "full_name", "deployer", "oracle_updater", "fee_recipient"))
+  assert_character(value[["name"]])
+  assert_no_missing_values(value[["name"]])
+  assert_character(value[["full_name"]])
+  assert_no_missing_values(value[["full_name"]])
+  assert_character(value[["deployer"]])
+  assert_no_missing_values(value[["deployer"]])
+  assert_character(value[["oracle_updater"]])
+  assert_character(value[["fee_recipient"]])
+  assert_no_missing_values(value[["fee_recipient"]])
   return(value)
 }
 
@@ -604,11 +862,34 @@ assert_args_HyperliquidMarketData__get_recent_trades <- function(coin) {
 
 assert_return_HyperliquidMarketData__get_recent_trades <- function(value) {
   assert_data_table(value)
+  assert_has_columns(value, c("coin", "side", "px", "sz", "time", "hash", "tid", "user_buyer", "user_seller"))
+  assert_character(value[["coin"]])
+  assert_no_missing_values(value[["coin"]])
+  assert_character(value[["side"]])
+  assert_no_missing_values(value[["side"]])
+  assert_double(value[["px"]])
+  assert_no_missing_values(value[["px"]])
+  assert_double(value[["sz"]])
+  assert_no_missing_values(value[["sz"]])
+  assert_datetime(value[["time"]])
+  assert_no_missing_values(value[["time"]])
+  assert_character(value[["hash"]])
+  assert_no_missing_values(value[["hash"]])
+  assert_double(value[["tid"]])
+  assert_no_missing_values(value[["tid"]])
+  assert_character(value[["user_buyer"]])
+  assert_no_missing_values(value[["user_buyer"]])
+  assert_character(value[["user_seller"]])
+  assert_no_missing_values(value[["user_seller"]])
   return(value)
 }
 
 assert_return_HyperliquidMarketData__get_exchange_status <- function(value) {
   assert_data_table(value)
+  assert_has_columns(value, c("time", "special_statuses"))
+  assert_datetime(value[["time"]])
+  assert_no_missing_values(value[["time"]])
+  assert_character(value[["special_statuses"]])
   return(value)
 }
 
@@ -637,6 +918,13 @@ assert_args_HyperliquidStaking__get_staking_delegations <- function(address) {
 
 assert_return_HyperliquidStaking__get_staking_delegations <- function(value) {
   assert_data_table(value)
+  assert_has_columns(value, c("validator", "amount", "locked_until_timestamp"))
+  assert_character(value[["validator"]])
+  assert_no_missing_values(value[["validator"]])
+  assert_double(value[["amount"]])
+  assert_no_missing_values(value[["amount"]])
+  assert_datetime(value[["locked_until_timestamp"]])
+  assert_no_missing_values(value[["locked_until_timestamp"]])
   return(value)
 }
 
@@ -647,6 +935,13 @@ assert_args_HyperliquidStaking__get_staking_rewards <- function(address) {
 
 assert_return_HyperliquidStaking__get_staking_rewards <- function(value) {
   assert_data_table(value)
+  assert_has_columns(value, c("time", "source", "total_amount"))
+  assert_datetime(value[["time"]])
+  assert_no_missing_values(value[["time"]])
+  assert_character(value[["source"]])
+  assert_no_missing_values(value[["source"]])
+  assert_double(value[["total_amount"]])
+  assert_no_missing_values(value[["total_amount"]])
   return(value)
 }
 
@@ -836,6 +1131,10 @@ assert_args_HyperliquidTrading__cancel_order <- function(name, oid) {
 
 assert_return_HyperliquidTrading__cancel_order <- function(value) {
   assert_data_table(value)
+  assert_has_columns(value, c("status", "error"))
+  assert_character(value[["status"]])
+  assert_no_missing_values(value[["status"]])
+  assert_character(value[["error"]])
   return(value)
 }
 
@@ -847,6 +1146,10 @@ assert_args_HyperliquidTrading__cancel_by_cloid <- function(name, cloid) {
 
 assert_return_HyperliquidTrading__cancel_by_cloid <- function(value) {
   assert_data_table(value)
+  assert_has_columns(value, c("status", "error"))
+  assert_character(value[["status"]])
+  assert_no_missing_values(value[["status"]])
+  assert_character(value[["error"]])
   return(value)
 }
 
@@ -857,6 +1160,10 @@ assert_args_HyperliquidTrading__bulk_cancel <- function(cancels) {
 
 assert_return_HyperliquidTrading__bulk_cancel <- function(value) {
   assert_data_table(value)
+  assert_has_columns(value, c("status", "error"))
+  assert_character(value[["status"]])
+  assert_no_missing_values(value[["status"]])
+  assert_character(value[["error"]])
   return(value)
 }
 
@@ -867,6 +1174,10 @@ assert_args_HyperliquidTrading__bulk_cancel_by_cloid <- function(cancels) {
 
 assert_return_HyperliquidTrading__bulk_cancel_by_cloid <- function(value) {
   assert_data_table(value)
+  assert_has_columns(value, c("status", "error"))
+  assert_character(value[["status"]])
+  assert_no_missing_values(value[["status"]])
+  assert_character(value[["error"]])
   return(value)
 }
 
@@ -940,6 +1251,13 @@ assert_args_HyperliquidTrading__approve_agent <- function(name) {
 
 assert_return_HyperliquidTrading__approve_agent <- function(value) {
   assert_data_table(value)
+  assert_has_columns(value, c("agent_address", "agent_key", "status"))
+  assert_character(value[["agent_address"]])
+  assert_no_missing_values(value[["agent_address"]])
+  assert_character(value[["agent_key"]])
+  assert_no_missing_values(value[["agent_key"]])
+  assert_character(value[["status"]])
+  assert_no_missing_values(value[["status"]])
   return(value)
 }
 

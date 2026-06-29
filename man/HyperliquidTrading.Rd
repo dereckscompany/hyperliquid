@@ -361,7 +361,11 @@ Cancel a single order by its order id. A thin wrapper over
 }
 \subsection{Returns}{
 (promise<data.table>) a \link[data.table:data.table]{data.table::data.table}, one row per
-cancel, or a promise thereof.
+cancel (or a promise thereof):
+\itemize{
+\item status (character) the cancel status (\code{"success"} or \code{"error"}).
+\item error (character | NA) the error message, \code{NA} on success.
+}
 }
 }
 \if{html}{\out{<hr>}}
@@ -386,7 +390,11 @@ chars).}
 }
 \subsection{Returns}{
 (promise<data.table>) a \link[data.table:data.table]{data.table::data.table}, one row per
-cancel, or a promise thereof.
+cancel (or a promise thereof):
+\itemize{
+\item status (character) the cancel status (\code{"success"} or \code{"error"}).
+\item error (character | NA) the error message, \code{NA} on success.
+}
 }
 }
 \if{html}{\out{<hr>}}
@@ -410,7 +418,11 @@ carries the oid (the wire \code{o}).
 }
 \subsection{Returns}{
 (promise<data.table>) a \link[data.table:data.table]{data.table::data.table}, one row per
-cancel, or a promise thereof.
+cancel (or a promise thereof):
+\itemize{
+\item status (character) the cancel status (\code{"success"} or \code{"error"}).
+\item error (character | NA) the error message, \code{NA} on success.
+}
 }
 }
 \if{html}{\out{<hr>}}
@@ -434,7 +446,11 @@ Cancel a batch of orders by client order id in one signed
 }
 \subsection{Returns}{
 (promise<data.table>) a \link[data.table:data.table]{data.table::data.table}, one row per
-cancel, or a promise thereof.
+cancel (or a promise thereof):
+\itemize{
+\item status (character) the cancel status (\code{"success"} or \code{"error"}).
+\item error (character | NA) the error message, \code{NA} on success.
+}
 }
 }
 \if{html}{\out{<hr>}}
@@ -544,9 +560,13 @@ name. Default \code{NULL}.}
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-(promise<data.table>) a single-row \link[data.table:data.table]{data.table::data.table} with
-\code{agent_address}, \code{agent_key} (the new hex secret), and \code{status}, or a
-promise thereof.
+(promise<data.table>) a single-row \link[data.table:data.table]{data.table::data.table} (or a
+promise thereof):
+\itemize{
+\item agent_address (character) the new agent wallet's \verb{0x} address.
+\item agent_key (character) the new agent wallet's hex secret.
+\item status (character) the action status (e.g. \code{"ok"}).
+}
 }
 }
 \if{html}{\out{<hr>}}
