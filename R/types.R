@@ -10,24 +10,27 @@
 # trade counts and order ids are `numeric`, not `integer`; the only `integer`
 # columns are the ones a parser builds with `seq_along()` (`L2Level$level`) or
 # `as.integer()` (`StakingSummary$n_pending_withdrawals`). A column is `| NA`
-# only where the value is semantically optional (an unset entry/liquidation
-# price, a not-yet-resting order id), matching the sibling tradebot-core shapes.
+# wherever the parser can emit a missing value -- either where the value is
+# semantically optional (an unset entry/liquidation price, a not-yet-resting
+# order id) or where the parser coalesces an absent field to `NA`
+# (`StakingSummary$n_pending_withdrawals`, which defaults to `NA_integer_`),
+# matching the sibling tradebot-core shapes.
 
 #' Hyperliquid return shapes
 #'
 #' @description Reusable roxyassert `@type` record shapes for the `data.table`s
-#' returned by the Hyperliquid client classes. `@genassert` emits a standalone
-#' `assert_type_<Shape>()` validator for each shape and `@exportassert` exports
-#' them (alongside this block's `assert_args_*`/`assert_return_*`), so callers
-#' and the backtester can validate any value against a Hyperliquid shape as a
-#' conformance oracle.
+#' returned by the Hyperliquid client classes. Each shape is referenced by a
+#' method's `@return` as `promise<Shape>`, so the contract roclet expands it
+#' inline into that method's generated `assert_return_*` -- no standalone
+#' `assert_type_<Shape>()` is emitted. hyperliquid is a leaf connector: nothing
+#' internal calls a per-shape validator and no downstream package validates
+#' against these shapes, so there is no `@genassert` (no callable validators to
+#' generate) and no `@exportassert` (nothing to export).
 #'
 #' Shapes: `PerpMeta`, `Candles`, `L2Level`, `Position`, `MarginSummary`,
 #' `Fill`, `OrderResult`, `FundingHistory`, `StakingSummary`, `TransferAck`.
 #'
 #' @name hyperliquid_shapes
-#' @genassert
-#' @exportassert
 #'
 #' @type PerpMeta (data.table) one row per perpetual (from `parse_meta()`):
 #' - name (character) the coin symbol.
@@ -119,7 +122,8 @@
 #' - delegated (numeric) staked balance.
 #' - undelegated (numeric) free balance.
 #' - total_pending_withdrawal (numeric) total pending withdrawal.
-#' - n_pending_withdrawals (integer) number of pending withdrawals.
+#' - n_pending_withdrawals (integer | NA) number of pending withdrawals, `NA`
+#'   when absent.
 #'
 #' @type TransferAck (data.table) the one-row action acknowledgement shared by
 #'   every `/exchange` action that returns a bare `{status, response:{type}}`

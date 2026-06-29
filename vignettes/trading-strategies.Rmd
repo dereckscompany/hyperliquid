@@ -23,9 +23,10 @@ box::use(
   hyperliquid[
     HyperliquidMarketData, HyperliquidAccount, HyperliquidTrading, get_api_keys
   ],
-  ../tests/testthat/mock_router[mock_router]
+  connectcore[local_mock_api],
+  ../tests/testthat/mock_router[.mock_routes]
 )
-options(httr2_mock = mock_router)
+local_mock_api(.mock_routes)
 
 # A throwaway, well-known test key: it signs fine, the mock ignores the
 # signature, it controls no real funds, and it never touches the network.

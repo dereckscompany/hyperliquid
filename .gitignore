@@ -3,6 +3,11 @@ deprecated/
 *.ignore
 *.ignore.*
 
+# local scratch / raw API captures (real account data -- never commit)
+local/
+# regenerable testnet captures (real testnet data; reproduce via data-raw/capture_testnet_fixtures.R)
+data-raw/testnet-captures/
+
 # build
 docs/
 *html

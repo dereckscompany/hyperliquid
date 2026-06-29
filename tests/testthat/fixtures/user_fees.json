@@ -1,0 +1,19 @@
+{
+  "dailyUserVlm": [
+    {
+      "date": "2026-05-24",
+      "userCross": "7824407.5",
+      "userAdd": "24294497.2399999984",
+      "exchange": "4662736618.3999996185"
+    },
+    {
+      "date": "2026-05-25",
+      "userCross": "8038495.5700000003",
+      "userAdd": "27655961.629999999",
+      "exchange": "3776704106.4200000763"
+    }
+  ],
+  "userCrossRate": "0.00028",
+  "userAddRate": "0.0",
+  "activeReferralDiscount": "0.0"
+}

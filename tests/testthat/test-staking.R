@@ -59,7 +59,16 @@ test_that("parse_staking_summary flattens the summary to one typed row", {
 
 test_that("parse_staking_summary returns a zero-row data.table when empty", {
   expect_equal(nrow(hyperliquid:::parse_staking_summary(NULL)), 0L)
-  expect_equal(nrow(hyperliquid:::parse_staking_summary(list())), 0L)
+  # An address that never staked is a valid response: the typed zero-row schema
+  # must carry every contracted column and satisfy the @return contract.
+  empty <- hyperliquid:::parse_staking_summary(list())
+  expect_equal(nrow(empty), 0L)
+  expect_equal(
+    names(empty),
+    c("delegated", "undelegated", "total_pending_withdrawal", "n_pending_withdrawals")
+  )
+  expect_type(empty$n_pending_withdrawals, "integer")
+  expect_silent(hyperliquid:::assert_return_HyperliquidStaking__get_staking_summary(empty))
 })
 
 # ---- parse_staking_delegations -----------------------------------------------

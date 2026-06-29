@@ -1,6 +1,6 @@
 Package: hyperliquid
 Title: API Wrapper to the Hyperliquid Exchange
-Version: 0.1.1
+Version: 0.2.1
 URL: https://dereckscompany.github.io/hyperliquid,
     https://github.com/dereckscompany/hyperliquid
 BugReports: https://github.com/dereckscompany/hyperliquid/issues
@@ -21,7 +21,7 @@ Roxygen: list(markdown = TRUE, roclets = c("namespace", "rd", "roxyassert::contr
 RoxygenNote: 7.3.3
 Imports:
     assert,
-    connectcore,
+    connectcore (>= 0.2.0),
     data.table,
     ethsign,
     gmp,
@@ -29,6 +29,7 @@ Imports:
     jsonlite,
     lubridate,
     openssl,
+    promises,
     R6,
     rlang
 Suggests:
@@ -40,16 +41,15 @@ Suggests:
     later,
     lintr,
     pkgdown,
-    promises,
     rcmdcheck,
     rmarkdown,
-    roxyassert,
+    roxyassert (>= 0.9.1),
     testthat (>= 3.0.0)
 Remotes:
     dereckscompany/assert,
-    dereckscompany/connectcore@v0.1.0,
+    dereckscompany/connectcore,
     dereckscompany/ethsign,
-    dereckscompany/roxyassert@v0.9.1
+    dereckscompany/roxyassert
 VignetteBuilder: knitr
 Config/testthat/edition: 3
 Depends: 

@@ -286,3 +286,53 @@ parse_delta_ledger <- function(items) {
   })
   return(data.table::rbindlist(rows, fill = TRUE)[])
 }
+
+# ---- Typed empty constructors ----
+#
+# A few endpoint shapes recur across more than one parser or fetcher, so their
+# zero-row schema is defined once here and reused. Single-use empty branches
+# inline their own typed zero-row schema at the branch instead -- a helper per
+# shape would not earn its keep. The schema-agnostic flattening primitives above
+# (`as_dt_row()`, `as_dt_list()`, `parse_delta_ledger()`) have no fixed column
+# set and return a bare `data.table()`.
+#
+# Each constructor closes with `[]` so the returned table prints on the first
+# call. Timestamp columns use `ms_to_datetime(numeric(0))` -- a length-0 POSIXct
+# in UTC. Every Hyperliquid timestamp is epoch milliseconds, and `ms_to_datetime()`
+# (R/utils_time.R) fixes the zone to UTC, so an empty column's class AND timezone
+# (UTC) match a populated one exactly. The same applies to the timestamp columns
+# in the parsers' inlined empty branches.
+
+#' Typed zero-row candle (OHLCV) schema. Shared by `parse_candles()` and the
+#' segmented kline fetcher (`combine_klines()` / `hyperliquid_fetch_klines()`).
+#' @keywords internal
+#' @noRd
+#' @noassert
+empty_dt_candles <- function() {
+  return(data.table::data.table(
+    datetime = ms_to_datetime(numeric(0)),
+    open = numeric(0),
+    high = numeric(0),
+    low = numeric(0),
+    close = numeric(0),
+    volume = numeric(0),
+    trades = numeric(0),
+    close_time = ms_to_datetime(numeric(0)),
+    interval = character(0),
+    coin = character(0)
+  )[])
+}
+
+#' Typed zero-row funding-history schema. Shared by `parse_funding_history()`
+#' and the paginated funding backfill (`hyperliquid_fetch_funding()`).
+#' @keywords internal
+#' @noRd
+#' @noassert
+empty_dt_funding_history <- function() {
+  return(data.table::data.table(
+    coin = character(0),
+    funding_rate = numeric(0),
+    premium = numeric(0),
+    time = ms_to_datetime(numeric(0))
+  )[])
+}

@@ -23,7 +23,7 @@
 combine_klines <- function(results_list) {
   dts <- Filter(function(x) nrow(x) > 0L, results_list)
   if (length(dts) == 0L) {
-    return(data.table::data.table()[])
+    return(empty_dt_candles())
   }
   dt <- data.table::rbindlist(dts)
   dt <- unique(dt, by = "datetime")
@@ -95,7 +95,7 @@ hyperliquid_fetch_klines <- function(
   }
 
   if (length(segments) == 0L) {
-    return(data.table::data.table()[])
+    return(empty_dt_candles())
   }
 
   fetch_segment <- function(seg) {
