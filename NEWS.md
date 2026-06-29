@@ -1,4 +1,10 @@
-# hyperliquid 0.2.1
+# hyperliquid 0.2.2
+
+## Documentation: per-column data.table shapes
+
+* Every `data.table`-returning `@return` on the public R6 connectors (`HyperliquidAccount`, `HyperliquidMarketData`, `HyperliquidStaking`, `HyperliquidTrading`) now documents its columns as nested Markdown bullets, one per column, each carrying the column's roxyassert element type (`character`, `numeric`, `logical`, `POSIXct`, ...) and a ` | NA` suffix wherever the source field may be absent. The generated `assert_return_*` contracts are regenerated to match and now enforce the documented column set, types, and missingness against the test fixtures. The two genuinely heterogeneous ledgers (`get_user_non_funding_ledger_updates()` and `get_delegator_history()`) keep their bare `(data.table)` shape, as their per-variant columns are dynamic.
+
+
 
 ## Hardening: validate fixtures and contracts against the real testnet API
 

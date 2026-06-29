@@ -293,7 +293,9 @@ HyperliquidTrading <- R6::R6Class(
     #' @param name (scalar<character>) the coin or friendly name.
     #' @param oid (scalar<numeric>) the order id to cancel.
     #' @return (promise<data.table>) a [data.table::data.table], one row per
-    #'   cancel, or a promise thereof.
+    #'   cancel (or a promise thereof):
+    #'   - status (character) the cancel status (`"success"` or `"error"`).
+    #'   - error (character | NA) the error message, `NA` on success.
     cancel_order = function(name, oid) {
       assert_args_HyperliquidTrading__cancel_order(name, oid)
       return(self$bulk_cancel(list(list(coin = name, oid = oid))))
@@ -305,7 +307,9 @@ HyperliquidTrading <- R6::R6Class(
     #' @param cloid (scalar<character>) the client order id (`0x`-prefixed 32 hex
     #'   chars).
     #' @return (promise<data.table>) a [data.table::data.table], one row per
-    #'   cancel, or a promise thereof.
+    #'   cancel (or a promise thereof):
+    #'   - status (character) the cancel status (`"success"` or `"error"`).
+    #'   - error (character | NA) the error message, `NA` on success.
     cancel_by_cloid = function(name, cloid) {
       assert_args_HyperliquidTrading__cancel_by_cloid(name, cloid)
       return(self$bulk_cancel_by_cloid(list(list(coin = name, cloid = cloid))))
@@ -317,7 +321,9 @@ HyperliquidTrading <- R6::R6Class(
     #' @param cancels (list) unnamed list of cancel specs; each a named list with
     #'   `coin` and `oid`.
     #' @return (promise<data.table>) a [data.table::data.table], one row per
-    #'   cancel, or a promise thereof.
+    #'   cancel (or a promise thereof):
+    #'   - status (character) the cancel status (`"success"` or `"error"`).
+    #'   - error (character | NA) the error message, `NA` on success.
     bulk_cancel = function(cancels) {
       assert_args_HyperliquidTrading__bulk_cancel(cancels)
       items <- lapply(cancels, function(cancel) {
@@ -336,7 +342,9 @@ HyperliquidTrading <- R6::R6Class(
     #' @param cancels (list) unnamed list of cancel specs; each a named list with
     #'   `coin` and `cloid`.
     #' @return (promise<data.table>) a [data.table::data.table], one row per
-    #'   cancel, or a promise thereof.
+    #'   cancel (or a promise thereof):
+    #'   - status (character) the cancel status (`"success"` or `"error"`).
+    #'   - error (character | NA) the error message, `NA` on success.
     bulk_cancel_by_cloid = function(cancels) {
       assert_args_HyperliquidTrading__bulk_cancel_by_cloid(cancels)
       items <- lapply(cancels, function(cancel) {
@@ -434,9 +442,11 @@ HyperliquidTrading <- R6::R6Class(
     #'   the empty string -- the EIP-712 digest is identical either way.)
     #' @param name (scalar<character> | NULL) an optional human-readable agent
     #'   name. Default `NULL`.
-    #' @return (promise<data.table>) a single-row [data.table::data.table] with
-    #'   `agent_address`, `agent_key` (the new hex secret), and `status`, or a
-    #'   promise thereof.
+    #' @return (promise<data.table>) a single-row [data.table::data.table] (or a
+    #'   promise thereof):
+    #'   - agent_address (character) the new agent wallet's `0x` address.
+    #'   - agent_key (character) the new agent wallet's hex secret.
+    #'   - status (character) the action status (e.g. `"ok"`).
     #' @importFrom openssl rand_bytes
     approve_agent = function(name = NULL) {
       assert_args_HyperliquidTrading__approve_agent(name)

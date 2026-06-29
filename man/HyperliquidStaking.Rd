@@ -133,8 +133,13 @@ Defaults to the instance's acting address.}
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-(promise<data.table>) a \link[data.table:data.table]{data.table::data.table} with \code{validator},
-\code{amount}, \code{locked_until_timestamp}, or a promise thereof.
+(promise<data.table>) a \link[data.table:data.table]{data.table::data.table}, one row per
+active delegation (or a promise thereof):
+\itemize{
+\item validator (character) the validator's \verb{0x} address.
+\item amount (numeric) the staked amount.
+\item locked_until_timestamp (POSIXct) when the delegation unlocks.
+}
 }
 }
 \if{html}{\out{<hr>}}
@@ -155,8 +160,14 @@ Defaults to the instance's acting address.}
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-(promise<data.table>) a \link[data.table:data.table]{data.table::data.table} with \code{time},
-\code{source}, \code{total_amount}, or a promise thereof.
+(promise<data.table>) a \link[data.table:data.table]{data.table::data.table}, one row per
+reward accrual (or a promise thereof):
+\itemize{
+\item time (POSIXct) the accrual time.
+\item source (character) the reward source, e.g. \code{"delegation"},
+\code{"commission"}.
+\item total_amount (numeric) the reward amount.
+}
 }
 }
 \if{html}{\out{<hr>}}

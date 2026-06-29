@@ -104,8 +104,12 @@ HyperliquidAccount <- R6::R6Class(
     #'   balance.
     #' @param address (scalar<character>) the account's `0x`-prefixed address.
     #'   Defaults to the instance's acting address.
-    #' @return (promise<data.table>) a [data.table::data.table] with `coin`,
-    #'   `total`, `hold`, `entry_ntl`, or a promise thereof.
+    #' @return (promise<data.table>) a [data.table::data.table], one row per spot
+    #'   balance (or a promise thereof):
+    #'   - coin (character) the token symbol.
+    #'   - total (numeric) the total balance.
+    #'   - hold (numeric) the held (non-withdrawable) balance.
+    #'   - entry_ntl (numeric) the entry notional (cost basis).
     get_spot_balances = function(address = private$.acting_address()) {
       assert_args_HyperliquidAccount__get_spot_balances(address)
       address <- validate_address(address)
@@ -118,8 +122,14 @@ HyperliquidAccount <- R6::R6Class(
     #' @description Retrieve the account's resting orders, one row per order.
     #' @param address (scalar<character>) the account's `0x`-prefixed address.
     #'   Defaults to the instance's acting address.
-    #' @return (promise<data.table>) a [data.table::data.table] with `coin`,
-    #'   `oid`, `side`, `limit_px`, `sz`, `timestamp`, or a promise thereof.
+    #' @return (promise<data.table>) a [data.table::data.table], one row per
+    #'   resting order (or a promise thereof):
+    #'   - coin (character) the coin symbol.
+    #'   - oid (numeric) the order id.
+    #'   - side (character) the order side (`"buy"` or `"sell"`).
+    #'   - limit_px (numeric) the limit price.
+    #'   - sz (numeric) the remaining size.
+    #'   - timestamp (POSIXct) the order's placement time.
     get_open_orders = function(address = private$.acting_address()) {
       assert_args_HyperliquidAccount__get_open_orders(address)
       address <- validate_address(address)
@@ -134,10 +144,23 @@ HyperliquidAccount <- R6::R6Class(
     #'   [get_open_orders()][HyperliquidAccount] with more columns.
     #' @param address (scalar<character>) the account's `0x`-prefixed address.
     #'   Defaults to the instance's acting address.
-    #' @return (promise<data.table>) a [data.table::data.table] with `coin`,
-    #'   `oid`, `side`, `limit_px`, `sz`, `timestamp`, `order_type`,
-    #'   `is_trigger`, `trigger_px`, `trigger_condition`, `reduce_only`, `tif`,
-    #'   `orig_sz`, `is_position_tpsl`, or a promise thereof.
+    #' @return (promise<data.table>) a [data.table::data.table], one row per
+    #'   resting order (or a promise thereof):
+    #'   - coin (character) the coin symbol.
+    #'   - oid (numeric) the order id.
+    #'   - side (character) the order side (`"buy"` or `"sell"`).
+    #'   - limit_px (numeric) the limit price.
+    #'   - sz (numeric) the remaining size.
+    #'   - timestamp (POSIXct) the order's placement time.
+    #'   - order_type (character) the order type, e.g. `"Limit"`.
+    #'   - is_trigger (logical) whether the order is a trigger order.
+    #'   - trigger_px (numeric) the trigger price (`0` when not a trigger).
+    #'   - trigger_condition (character) the trigger condition (`"N/A"` when
+    #'     not a trigger).
+    #'   - reduce_only (logical) whether the order is reduce-only.
+    #'   - tif (character | NA) the time-in-force, `NA` when not applicable.
+    #'   - orig_sz (numeric) the original (pre-fill) size.
+    #'   - is_position_tpsl (logical) whether the order is a position TP/SL.
     get_frontend_open_orders = function(address = private$.acting_address()) {
       assert_args_HyperliquidAccount__get_frontend_open_orders(address)
       address <- validate_address(address)
@@ -202,11 +225,27 @@ HyperliquidAccount <- R6::R6Class(
     #'   transition (the same `oid` recurs across its lifecycle; not deduplicated).
     #' @param address (scalar<character>) the account's `0x`-prefixed address.
     #'   Defaults to the instance's acting address.
-    #' @return (promise<data.table>) a [data.table::data.table] with `oid`,
-    #'   `coin`, `side`, `limit_px`, `sz`, `orig_sz`, `order_type`, `tif`,
-    #'   `reduce_only`, `trigger_px`, `trigger_condition`, `is_trigger`,
-    #'   `is_position_tpsl`, `cloid`, `timestamp`, `status`, `status_timestamp`,
-    #'   or a promise thereof.
+    #' @return (promise<data.table>) a [data.table::data.table], one row per
+    #'   status transition (or a promise thereof):
+    #'   - oid (numeric) the order id.
+    #'   - coin (character) the coin symbol.
+    #'   - side (character) the order side (`"buy"` or `"sell"`).
+    #'   - limit_px (numeric) the limit price.
+    #'   - sz (numeric) the remaining size.
+    #'   - orig_sz (numeric) the original (pre-fill) size.
+    #'   - order_type (character) the order type, e.g. `"Limit"`.
+    #'   - tif (character | NA) the time-in-force, `NA` when not applicable.
+    #'   - reduce_only (logical) whether the order is reduce-only.
+    #'   - trigger_px (numeric) the trigger price (`0` when not a trigger).
+    #'   - trigger_condition (character) the trigger condition (`"N/A"` when
+    #'     not a trigger).
+    #'   - is_trigger (logical) whether the order is a trigger order.
+    #'   - is_position_tpsl (logical) whether the order is a position TP/SL.
+    #'   - cloid (character | NA) the client order id, `NA` when none.
+    #'   - timestamp (POSIXct) the order's placement time.
+    #'   - status (character) the transition status, e.g. `"open"`, `"filled"`,
+    #'     `"canceled"`.
+    #'   - status_timestamp (POSIXct) the time of the status transition.
     get_historical_orders = function(address = private$.acting_address()) {
       assert_args_HyperliquidAccount__get_historical_orders(address)
       address <- validate_address(address)
@@ -224,9 +263,15 @@ HyperliquidAccount <- R6::R6Class(
     #'   epoch-milliseconds).
     #' @param end (POSIXct | numeric | NULL) range end (POSIXct, numeric
     #'   epoch-milliseconds, or `NULL`). Default `NULL` (up to now).
-    #' @return (promise<data.table>) a [data.table::data.table] with `time`,
-    #'   `hash`, `coin`, `funding_rate`, `szi`, `usdc`, `n_samples`, or a promise
-    #'   thereof.
+    #' @return (promise<data.table>) a [data.table::data.table], one row per
+    #'   funding payment (or a promise thereof):
+    #'   - time (POSIXct) the payment time.
+    #'   - hash (character) the on-chain hash.
+    #'   - coin (character) the coin symbol.
+    #'   - funding_rate (numeric) the funding rate applied.
+    #'   - szi (numeric) the signed position size at the sample.
+    #'   - usdc (numeric) the USDC amount paid or received.
+    #'   - n_samples (numeric) the number of samples in the payment.
     get_user_funding = function(address = private$.acting_address(), start, end = NULL) {
       assert_args_HyperliquidAccount__get_user_funding(address, start, end)
       address <- validate_address(address)
@@ -283,8 +328,12 @@ HyperliquidAccount <- R6::R6Class(
     #'   one row per (period, metric, point).
     #' @param address (scalar<character>) the account's `0x`-prefixed address.
     #'   Defaults to the instance's acting address.
-    #' @return (promise<data.table>) a [data.table::data.table] with `period`,
-    #'   `metric`, `time`, `value`, or a promise thereof.
+    #' @return (promise<data.table>) a [data.table::data.table], one row per
+    #'   (period, metric, point) (or a promise thereof):
+    #'   - period (character) the period, e.g. `"day"`, `"perpAllTime"`.
+    #'   - metric (character) the metric (`"account_value"` or `"pnl"`).
+    #'   - time (POSIXct) the sample time.
+    #'   - value (numeric) the sampled value.
     get_portfolio = function(address = private$.acting_address()) {
       assert_args_HyperliquidAccount__get_portfolio(address)
       address <- validate_address(address)
@@ -298,8 +347,10 @@ HyperliquidAccount <- R6::R6Class(
     #'   [get_portfolio()][HyperliquidAccount] over the same payload.
     #' @param address (scalar<character>) the account's `0x`-prefixed address.
     #'   Defaults to the instance's acting address.
-    #' @return (promise<data.table>) a [data.table::data.table] with `period`,
-    #'   `vlm`, or a promise thereof.
+    #' @return (promise<data.table>) a [data.table::data.table], one row per
+    #'   period (or a promise thereof):
+    #'   - period (character) the period, e.g. `"day"`, `"perpAllTime"`.
+    #'   - vlm (numeric) the traded volume for the period.
     get_portfolio_volume = function(address = private$.acting_address()) {
       assert_args_HyperliquidAccount__get_portfolio_volume(address)
       address <- validate_address(address)
@@ -312,9 +363,11 @@ HyperliquidAccount <- R6::R6Class(
     #' @description Retrieve the account's current fee schedule.
     #' @param address (scalar<character>) the account's `0x`-prefixed address.
     #'   Defaults to the instance's acting address.
-    #' @return (promise<data.table>) a single-row [data.table::data.table] with
-    #'   `user_add_rate`, `user_cross_rate`, `active_referral_discount`, or a
-    #'   promise thereof.
+    #' @return (promise<data.table>) a single-row [data.table::data.table] (or a
+    #'   promise thereof):
+    #'   - user_add_rate (numeric) the maker (add-liquidity) fee rate.
+    #'   - user_cross_rate (numeric) the taker (crossing) fee rate.
+    #'   - active_referral_discount (numeric) the active referral discount.
     get_user_fees = function(address = private$.acting_address()) {
       assert_args_HyperliquidAccount__get_user_fees(address)
       address <- validate_address(address)
@@ -328,8 +381,12 @@ HyperliquidAccount <- R6::R6Class(
     #'   [get_user_fees()][HyperliquidAccount] over the same payload.
     #' @param address (scalar<character>) the account's `0x`-prefixed address.
     #'   Defaults to the instance's acting address.
-    #' @return (promise<data.table>) a [data.table::data.table] with `date`,
-    #'   `exchange`, `user_add`, `user_cross`, or a promise thereof.
+    #' @return (promise<data.table>) a [data.table::data.table], one row per day
+    #'   (or a promise thereof):
+    #'   - date (character) the calendar day (`YYYY-MM-DD`).
+    #'   - exchange (numeric) the exchange-wide volume that day.
+    #'   - user_add (numeric) the user's maker (add) volume that day.
+    #'   - user_cross (numeric) the user's taker (crossing) volume that day.
     get_user_volume = function(address = private$.acting_address()) {
       assert_args_HyperliquidAccount__get_user_volume(address)
       address <- validate_address(address)
@@ -342,8 +399,11 @@ HyperliquidAccount <- R6::R6Class(
     #' @description Retrieve the account's current request rate-limit state.
     #' @param address (scalar<character>) the account's `0x`-prefixed address.
     #'   Defaults to the instance's acting address.
-    #' @return (promise<data.table>) a single-row [data.table::data.table] with
-    #'   `cum_vlm`, `n_requests_used`, `n_requests_cap`, or a promise thereof.
+    #' @return (promise<data.table>) a single-row [data.table::data.table] (or a
+    #'   promise thereof):
+    #'   - cum_vlm (numeric) the cumulative traded volume.
+    #'   - n_requests_used (numeric) the number of requests used.
+    #'   - n_requests_cap (numeric) the request cap.
     get_user_rate_limit = function(address = private$.acting_address()) {
       assert_args_HyperliquidAccount__get_user_rate_limit(address)
       address <- validate_address(address)
@@ -357,8 +417,10 @@ HyperliquidAccount <- R6::R6Class(
     #'   `"agent"`, `"subAccount"`).
     #' @param address (scalar<character>) the account's `0x`-prefixed address.
     #'   Defaults to the instance's acting address.
-    #' @return (promise<data.table>) a single-row [data.table::data.table] with
-    #'   `role`, or a promise thereof.
+    #' @return (promise<data.table>) a single-row [data.table::data.table] (or a
+    #'   promise thereof):
+    #'   - role (character) the account role, e.g. `"user"`, `"vault"`,
+    #'     `"agent"`, `"subAccount"`.
     get_user_role = function(address = private$.acting_address()) {
       assert_args_HyperliquidAccount__get_user_role(address)
       address <- validate_address(address)
@@ -372,10 +434,16 @@ HyperliquidAccount <- R6::R6Class(
     #'   when the account has none).
     #' @param address (scalar<character>) the account's `0x`-prefixed address.
     #'   Defaults to the instance's acting address.
-    #' @return (promise<data.table>) a [data.table::data.table] with `name`,
-    #'   `sub_account_user`, `master`, `account_value`, `total_ntl_pos`,
-    #'   `total_raw_usd`, `total_margin_used`, `withdrawable`, or a promise
-    #'   thereof.
+    #' @return (promise<data.table>) a [data.table::data.table], one row per
+    #'   sub-account (or a promise thereof):
+    #'   - name (character) the sub-account name.
+    #'   - sub_account_user (character) the sub-account's `0x` address.
+    #'   - master (character) the master account's `0x` address.
+    #'   - account_value (numeric) the sub-account's account value.
+    #'   - total_ntl_pos (numeric) the total notional position.
+    #'   - total_raw_usd (numeric) the total raw USD.
+    #'   - total_margin_used (numeric) the total margin used.
+    #'   - withdrawable (numeric) the withdrawable balance.
     get_sub_accounts = function(address = private$.acting_address()) {
       assert_args_HyperliquidAccount__get_sub_accounts(address)
       address <- validate_address(address)
@@ -391,9 +459,29 @@ HyperliquidAccount <- R6::R6Class(
     #'   Defaults to the instance's acting address.
     #' @param oid_or_cloid (scalar<numeric> | scalar<character>) numeric order
     #'   id, or character `0x`-prefixed client order id (cloid).
-    #' @return (promise<data.table>) a single-row [data.table::data.table] with
-    #'   `query_status` and the order shape (`oid`, `coin`, `side`, ..., `status`,
-    #'   `status_timestamp`), or a promise thereof.
+    #' @return (promise<data.table>) a single-row [data.table::data.table] (or a
+    #'   promise thereof). When the order is not found (`query_status` is
+    #'   `"unknownOid"`) every order column is `NA`:
+    #'   - query_status (character) the lookup status (`"order"` or
+    #'     `"unknownOid"`).
+    #'   - oid (numeric | NA) the order id.
+    #'   - coin (character | NA) the coin symbol.
+    #'   - side (character | NA) the order side (`"buy"` or `"sell"`).
+    #'   - limit_px (numeric | NA) the limit price.
+    #'   - sz (numeric | NA) the remaining size.
+    #'   - orig_sz (numeric | NA) the original (pre-fill) size.
+    #'   - order_type (character | NA) the order type, e.g. `"Limit"`.
+    #'   - tif (character | NA) the time-in-force.
+    #'   - reduce_only (logical | NA) whether the order is reduce-only.
+    #'   - trigger_px (numeric | NA) the trigger price.
+    #'   - trigger_condition (character | NA) the trigger condition.
+    #'   - is_trigger (logical | NA) whether the order is a trigger order.
+    #'   - is_position_tpsl (logical | NA) whether the order is a position TP/SL.
+    #'   - cloid (character | NA) the client order id.
+    #'   - timestamp (POSIXct | NA) the order's placement time.
+    #'   - status (character | NA) the order's status, e.g. `"open"`,
+    #'     `"filled"`, `"canceled"`.
+    #'   - status_timestamp (POSIXct | NA) the time of the status.
     get_order_status = function(address = private$.acting_address(), oid_or_cloid) {
       assert_args_HyperliquidAccount__get_order_status(address, oid_or_cloid)
       address <- validate_address(address)
@@ -407,9 +495,11 @@ HyperliquidAccount <- R6::R6Class(
     #'   into, one row per vault.
     #' @param address (scalar<character>) the account's `0x`-prefixed address.
     #'   Defaults to the instance's acting address.
-    #' @return (promise<data.table>) a [data.table::data.table] with
-    #'   `vault_address`, `equity`, `locked_until_timestamp`, or a promise
-    #'   thereof.
+    #' @return (promise<data.table>) a [data.table::data.table], one row per vault
+    #'   (or a promise thereof):
+    #'   - vault_address (character) the vault's `0x` address.
+    #'   - equity (numeric) the user's equity in the vault.
+    #'   - locked_until_timestamp (POSIXct) when the equity unlocks.
     get_user_vault_equities = function(address = private$.acting_address()) {
       assert_args_HyperliquidAccount__get_user_vault_equities(address)
       address <- validate_address(address)

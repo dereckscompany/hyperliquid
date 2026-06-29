@@ -1,6 +1,6 @@
 Package: hyperliquid
 Title: API Wrapper to the Hyperliquid Exchange
-Version: 0.2.1
+Version: 0.2.2
 URL: https://dereckscompany.github.io/hyperliquid,
     https://github.com/dereckscompany/hyperliquid
 BugReports: https://github.com/dereckscompany/hyperliquid/issues

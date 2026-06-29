@@ -132,9 +132,15 @@ same payload.
 }
 
 \subsection{Returns}{
-(promise<data.table>) a \link[data.table:data.table]{data.table::data.table} with columns
-\code{name}, \code{index}, \code{is_canonical}, \code{token_base}, \code{token_quote}, or a
-promise thereof.
+(promise<data.table>) a \link[data.table:data.table]{data.table::data.table}, one row per spot
+pair (or a promise thereof):
+\itemize{
+\item name (character) the spot pair symbol.
+\item index (numeric) the pair index.
+\item is_canonical (logical) whether the pair is canonical.
+\item token_base (numeric) the base token index.
+\item token_quote (numeric) the quote token index.
+}
 }
 }
 \if{html}{\out{<hr>}}
@@ -148,9 +154,16 @@ Retrieve spot exchange metadata: the token table. Sibling of
 }
 
 \subsection{Returns}{
-(promise<data.table>) a \link[data.table:data.table]{data.table::data.table} with columns
-\code{name}, \code{index}, \code{sz_decimals}, \code{wei_decimals}, \code{token_id},
-\code{is_canonical}, or a promise thereof.
+(promise<data.table>) a \link[data.table:data.table]{data.table::data.table}, one row per spot
+token (or a promise thereof):
+\itemize{
+\item name (character) the token symbol.
+\item index (numeric) the token index.
+\item sz_decimals (numeric) size decimals.
+\item wei_decimals (numeric) wei decimals.
+\item token_id (character) the on-chain token id.
+\item is_canonical (logical) whether the token is canonical.
+}
 }
 }
 \if{html}{\out{<hr>}}
@@ -165,10 +178,24 @@ one row per perp coin.
 }
 
 \subsection{Returns}{
-(promise<data.table>) a \link[data.table:data.table]{data.table::data.table} with columns
-\code{name}, \code{sz_decimals}, \code{max_leverage}, \code{day_ntl_vlm}, \code{funding},
-\code{mark_px}, \code{mid_px}, \code{oracle_px}, \code{open_interest}, \code{premium},
-\code{prev_day_px}, \code{impact_px_bid}, \code{impact_px_ask}, or a promise thereof.
+(promise<data.table>) a \link[data.table:data.table]{data.table::data.table}, one row per perp
+coin (or a promise thereof). The context columns are \code{NA} for a coin with
+no asset context:
+\itemize{
+\item name (character) the coin symbol.
+\item sz_decimals (numeric) size decimals.
+\item max_leverage (numeric) maximum leverage.
+\item day_ntl_vlm (numeric | NA) 24h notional volume.
+\item funding (numeric | NA) the current funding rate.
+\item mark_px (numeric | NA) the mark price.
+\item mid_px (numeric | NA) the mid price.
+\item oracle_px (numeric | NA) the oracle price.
+\item open_interest (numeric | NA) the open interest.
+\item premium (numeric | NA) the premium.
+\item prev_day_px (numeric | NA) the previous-day price.
+\item impact_px_bid (numeric | NA) the impact bid price.
+\item impact_px_ask (numeric | NA) the impact ask price.
+}
 }
 }
 \if{html}{\out{<hr>}}
@@ -182,9 +209,16 @@ spot coin.
 }
 
 \subsection{Returns}{
-(promise<data.table>) a \link[data.table:data.table]{data.table::data.table} with columns
-\code{coin}, \code{day_ntl_vlm}, \code{mark_px}, \code{mid_px}, \code{prev_day_px},
-\code{circulating_supply}, or a promise thereof.
+(promise<data.table>) a \link[data.table:data.table]{data.table::data.table}, one row per spot
+coin (or a promise thereof):
+\itemize{
+\item coin (character) the coin symbol.
+\item day_ntl_vlm (numeric) 24h notional volume.
+\item mark_px (numeric) the mark price.
+\item mid_px (numeric | NA) the mid price, \code{NA} when there is no book.
+\item prev_day_px (numeric) the previous-day price.
+\item circulating_supply (numeric) the circulating supply.
+}
 }
 }
 \if{html}{\out{<hr>}}
@@ -198,8 +232,12 @@ row per coin.
 }
 
 \subsection{Returns}{
-(promise<data.table>) a \link[data.table:data.table]{data.table::data.table} with columns
-\code{coin}, \code{mid}, or a promise thereof.
+(promise<data.table>) a \link[data.table:data.table]{data.table::data.table}, one row per coin
+(or a promise thereof):
+\itemize{
+\item coin (character) the coin symbol.
+\item mid (numeric) the mid price.
+}
 }
 }
 \if{html}{\out{<hr>}}
@@ -302,9 +340,16 @@ one row per (coin, venue).
 }
 
 \subsection{Returns}{
-(promise<data.table>) a \link[data.table:data.table]{data.table::data.table} with columns
-\code{coin}, \code{venue}, \code{funding_rate}, \code{next_funding_time},
-\code{funding_interval_hours}, or a promise thereof.
+(promise<data.table>) a \link[data.table:data.table]{data.table::data.table}, one row per
+(coin, venue) (or a promise thereof). A venue whose body is \code{null} yields
+\code{NA} rate fields:
+\itemize{
+\item coin (character) the coin symbol.
+\item venue (character) the venue name.
+\item funding_rate (numeric | NA) the predicted funding rate.
+\item next_funding_time (POSIXct | NA) the next funding time.
+\item funding_interval_hours (numeric | NA) the funding interval, in hours.
+}
 }
 }
 \if{html}{\out{<hr>}}
@@ -318,9 +363,16 @@ core-dex sentinel is omitted.
 }
 
 \subsection{Returns}{
-(promise<data.table>) a \link[data.table:data.table]{data.table::data.table} with columns
-\code{name}, \code{full_name}, \code{deployer}, \code{oracle_updater}, \code{fee_recipient}, or a
-promise thereof.
+(promise<data.table>) a \link[data.table:data.table]{data.table::data.table}, one row per
+builder-deployed perp dex (or a promise thereof):
+\itemize{
+\item name (character) the dex short name.
+\item full_name (character) the dex full name.
+\item deployer (character) the deployer address.
+\item oracle_updater (character | NA) the oracle-updater address, \code{NA} when
+absent.
+\item fee_recipient (character) the fee-recipient address.
+}
 }
 }
 \if{html}{\out{<hr>}}
@@ -341,9 +393,19 @@ both counterparty addresses included).
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-(promise<data.table>) a \link[data.table:data.table]{data.table::data.table} with columns
-\code{coin}, \code{side}, \code{px}, \code{sz}, \code{time}, \code{hash}, \code{tid}, \code{user_buyer},
-\code{user_seller}, or a promise thereof.
+(promise<data.table>) a \link[data.table:data.table]{data.table::data.table}, one row per trade
+(or a promise thereof):
+\itemize{
+\item coin (character) the coin symbol.
+\item side (character) the aggressor side (\code{"buy"} or \code{"sell"}).
+\item px (numeric) the trade price.
+\item sz (numeric) the trade size.
+\item time (POSIXct) the trade time.
+\item hash (character) the on-chain hash.
+\item tid (numeric) the trade id.
+\item user_buyer (character) the buyer's \verb{0x} address.
+\item user_seller (character) the seller's \verb{0x} address.
+}
 }
 }
 \if{html}{\out{<hr>}}
@@ -356,8 +418,13 @@ Retrieve the current exchange status.
 }
 
 \subsection{Returns}{
-(promise<data.table>) a single-row \link[data.table:data.table]{data.table::data.table} with
-columns \code{time}, \code{special_statuses}, or a promise thereof.
+(promise<data.table>) a single-row \link[data.table:data.table]{data.table::data.table} (or a
+promise thereof):
+\itemize{
+\item time (POSIXct) the status timestamp.
+\item special_statuses (character | NA) any special statuses as a JSON
+string, \code{NA} when absent.
+}
 }
 }
 \if{html}{\out{<hr>}}
