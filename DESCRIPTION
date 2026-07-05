@@ -1,6 +1,6 @@
 Package: hyperliquid
 Title: API Wrapper to the Hyperliquid Exchange
-Version: 0.2.1
+Version: 0.3.0
 URL: https://dereckscompany.github.io/hyperliquid,
     https://github.com/dereckscompany/hyperliquid
 BugReports: https://github.com/dereckscompany/hyperliquid/issues
@@ -21,10 +21,10 @@ Roxygen: list(markdown = TRUE, roclets = c("namespace", "rd", "roxyassert::contr
 RoxygenNote: 7.3.3
 Config/roxygen2/version: 7.3.3
 Imports:
-    assert,
-    connectcore (>= 0.2.0),
+    assert (>= 0.0.9),
+    connectcore (>= 0.3.0),
     data.table,
-    ethsign,
+    ethsign (>= 0.0.2),
     gmp,
     httr2 (>= 1.0.0),
     jsonlite,

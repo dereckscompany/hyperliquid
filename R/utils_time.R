@@ -2,21 +2,6 @@
 # Time conversion helpers. Hyperliquid timestamps are epoch milliseconds; all
 # conversions go through lubridate and are handled in UTC.
 
-#' Convert an Epoch-Milliseconds Timestamp to POSIXct
-#'
-#' @param x (numeric | NA) epoch milliseconds (the form Hyperliquid returns for
-#'   every timestamp field). `NA` passes through to `NA` (every caller feeds this
-#'   via `num_or_na()`, which emits `NA` for absent/blank fields).
-#' @return (POSIXct | NA) a vector in UTC. Use [lubridate::with_tz()] to view
-#'   elsewhere.
-#'
-#' @importFrom lubridate as_datetime
-#' @keywords internal
-#' @noRd
-ms_to_datetime <- function(x) {
-  return(lubridate::as_datetime(as.numeric(x) / 1000, tz = "UTC"))
-}
-
 #' Coerce a Datetime to Epoch Milliseconds
 #'
 #' Normalises a POSIXct, Date, or datetime-like value to UTC via
@@ -59,7 +44,7 @@ datetime_to_ms <- function(x) {
 #' @export
 time_convert_from_hyperliquid <- function(time_value) {
   assert_args_time_convert_from_hyperliquid(time_value)
-  return(assert_return_time_convert_from_hyperliquid(ms_to_datetime(time_value)))
+  return(assert_return_time_convert_from_hyperliquid(connectcore::ms_to_datetime(time_value)))
 }
 
 #' Convert a POSIXct to a Hyperliquid Timestamp

@@ -109,16 +109,16 @@ test_that("the 1-candle overlap is deduplicated and the result is ascending", {
   expect_equal(nrow(dt), 11L)
   expect_equal(data.table::uniqueN(dt$datetime), 11L)
   expect_false(is.unsorted(dt$datetime))
-  expect_equal(dt$datetime[1], ms_to_datetime(from_ms))
-  expect_equal(dt$datetime[nrow(dt)], ms_to_datetime(to_ms))
+  expect_equal(dt$datetime[1], connectcore::ms_to_datetime(from_ms))
+  expect_equal(dt$datetime[nrow(dt)], connectcore::ms_to_datetime(to_ms))
 })
 
 # ---- combine_klines ----------------------------------------------------------
 
 test_that("combine_klines dedups on datetime and sorts ascending", {
-  a <- data.table::data.table(datetime = ms_to_datetime(c(anchor_ms + hour_ms, anchor_ms)), open = c(2, 1))
+  a <- data.table::data.table(datetime = connectcore::ms_to_datetime(c(anchor_ms + hour_ms, anchor_ms)), open = c(2, 1))
   b <- data.table::data.table(
-    datetime = ms_to_datetime(c(anchor_ms + hour_ms, anchor_ms + 2 * hour_ms)),
+    datetime = connectcore::ms_to_datetime(c(anchor_ms + hour_ms, anchor_ms + 2 * hour_ms)),
     open = c(2, 3)
   )
   out <- hyperliquid:::combine_klines(list(a, b))

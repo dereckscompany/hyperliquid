@@ -53,14 +53,14 @@ parse_staking_delegations <- function(items) {
     return(data.table::data.table(
       validator = character(0),
       amount = numeric(0),
-      locked_until_timestamp = ms_to_datetime(numeric(0))
+      locked_until_timestamp = connectcore::ms_to_datetime(numeric(0))
     )[])
   }
   rows <- lapply(items, function(d) {
     return(data.table::data.table(
       validator = chr_or_na(d$validator),
       amount = num_or_na(d$amount),
-      locked_until_timestamp = ms_to_datetime(num_or_na(d$lockedUntilTimestamp))
+      locked_until_timestamp = connectcore::ms_to_datetime(num_or_na(d$lockedUntilTimestamp))
     ))
   })
   return(data.table::rbindlist(rows, fill = TRUE)[])
@@ -81,14 +81,14 @@ parse_staking_delegations <- function(items) {
 parse_staking_rewards <- function(items) {
   if (is.null(items) || length(items) == 0) {
     return(data.table::data.table(
-      time = ms_to_datetime(numeric(0)),
+      time = connectcore::ms_to_datetime(numeric(0)),
       source = character(0),
       total_amount = numeric(0)
     )[])
   }
   rows <- lapply(items, function(r) {
     return(data.table::data.table(
-      time = ms_to_datetime(num_or_na(r$time)),
+      time = connectcore::ms_to_datetime(num_or_na(r$time)),
       source = chr_or_na(r$source),
       total_amount = num_or_na(r$totalAmount)
     ))
@@ -119,14 +119,14 @@ parse_delegator_history <- function(items) {
     # Heterogeneous ledger: only the always-present lead columns are knowable
     # when empty (the per-variant fields appear with data).
     return(data.table::data.table(
-      time = ms_to_datetime(numeric(0)),
+      time = connectcore::ms_to_datetime(numeric(0)),
       hash = character(0),
       delta_type = character(0)
     )[])
   }
   rows <- lapply(items, function(it) {
     meta_dt <- data.table::data.table(
-      time = ms_to_datetime(num_or_na(it$time)),
+      time = connectcore::ms_to_datetime(num_or_na(it$time)),
       hash = chr_or_na(it$hash)
     )
     delta <- it$delta

@@ -284,14 +284,14 @@ parse_candles <- function(data) {
   }
   rows <- lapply(data, function(c) {
     return(data.table::data.table(
-      datetime = ms_to_datetime(num_or_na(c$t)),
+      datetime = connectcore::ms_to_datetime(num_or_na(c$t)),
       open = num_or_na(c$o),
       high = num_or_na(c$h),
       low = num_or_na(c$l),
       close = num_or_na(c$c),
       volume = num_or_na(c$v),
       trades = num_or_na(c$n),
-      close_time = ms_to_datetime(num_or_na(c$T)),
+      close_time = connectcore::ms_to_datetime(num_or_na(c$T)),
       interval = chr_or_na(c$i),
       coin = chr_or_na(c$s)
     ))
@@ -317,7 +317,7 @@ parse_funding_history <- function(data) {
       coin = chr_or_na(f$coin),
       funding_rate = num_or_na(f$fundingRate),
       premium = num_or_na(f$premium),
-      time = ms_to_datetime(num_or_na(f$time))
+      time = connectcore::ms_to_datetime(num_or_na(f$time))
     ))
   })
   return(data.table::rbindlist(rows)[])
@@ -346,7 +346,7 @@ parse_predicted_fundings <- function(data) {
         coin = chr_or_na(coin),
         venue = chr_or_na(venue),
         funding_rate = num_or_na(body$fundingRate),
-        next_funding_time = ms_to_datetime(num_or_na(body$nextFundingTime)),
+        next_funding_time = connectcore::ms_to_datetime(num_or_na(body$nextFundingTime)),
         funding_interval_hours = num_or_na(body$fundingIntervalHours)
       )
     }
@@ -356,7 +356,7 @@ parse_predicted_fundings <- function(data) {
       coin = character(0),
       venue = character(0),
       funding_rate = numeric(0),
-      next_funding_time = ms_to_datetime(numeric(0)),
+      next_funding_time = connectcore::ms_to_datetime(numeric(0)),
       funding_interval_hours = numeric(0)
     )[])
   }
@@ -416,7 +416,7 @@ parse_recent_trades <- function(data) {
       side = character(0),
       px = numeric(0),
       sz = numeric(0),
-      time = ms_to_datetime(numeric(0)),
+      time = connectcore::ms_to_datetime(numeric(0)),
       hash = character(0),
       tid = numeric(0),
       user_buyer = character(0),
@@ -429,7 +429,7 @@ parse_recent_trades <- function(data) {
       side = unname(coalesce_null(ORDER_SIDE_FROM_WIRE[chr_or_na(tr$side)], NA_character_)),
       px = num_or_na(tr$px),
       sz = num_or_na(tr$sz),
-      time = ms_to_datetime(num_or_na(tr$time)),
+      time = connectcore::ms_to_datetime(num_or_na(tr$time)),
       hash = chr_or_na(tr$hash),
       tid = num_or_na(tr$tid),
       user_buyer = nth_chr(tr$users, 1L),
@@ -449,7 +449,7 @@ parse_recent_trades <- function(data) {
 parse_exchange_status <- function(data) {
   if (is.null(data) || length(data) == 0L) {
     return(data.table::data.table(
-      time = ms_to_datetime(numeric(0)),
+      time = connectcore::ms_to_datetime(numeric(0)),
       special_statuses = character(0)
     )[])
   }
@@ -458,7 +458,7 @@ parse_exchange_status <- function(data) {
     special <- as.character(jsonlite::toJSON(data$specialStatuses, auto_unbox = TRUE, null = "null"))
   }
   return(data.table::data.table(
-    time = ms_to_datetime(num_or_na(data$time)),
+    time = connectcore::ms_to_datetime(num_or_na(data$time)),
     special_statuses = special
   )[])
 }

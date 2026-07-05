@@ -81,8 +81,11 @@ HyperliquidStaking <- R6::R6Class(
     #' @description Retrieve a delegator's active per-validator delegations.
     #' @param address (scalar<character>) the delegator's `0x`-prefixed address.
     #'   Defaults to the instance's acting address.
-    #' @return (promise<data.table>) a [data.table::data.table] with `validator`,
-    #'   `amount`, `locked_until_timestamp`, or a promise thereof.
+    #' @return (promise<data.table>) a [data.table::data.table], one row per
+    #'   active delegation (or a promise thereof):
+    #'   - validator (character) the validator's `0x` address.
+    #'   - amount (numeric) the staked amount.
+    #'   - locked_until_timestamp (POSIXct) when the delegation unlocks.
     get_staking_delegations = function(address = private$.acting_address()) {
       assert_args_HyperliquidStaking__get_staking_delegations(address)
       address <- validate_address(address)
@@ -97,8 +100,12 @@ HyperliquidStaking <- R6::R6Class(
     #' @description Retrieve a delegator's historic staking rewards.
     #' @param address (scalar<character>) the delegator's `0x`-prefixed address.
     #'   Defaults to the instance's acting address.
-    #' @return (promise<data.table>) a [data.table::data.table] with `time`,
-    #'   `source`, `total_amount`, or a promise thereof.
+    #' @return (promise<data.table>) a [data.table::data.table], one row per
+    #'   reward accrual (or a promise thereof):
+    #'   - time (POSIXct) the accrual time.
+    #'   - source (character) the reward source, e.g. `"delegation"`,
+    #'     `"commission"`.
+    #'   - total_amount (numeric) the reward amount.
     get_staking_rewards = function(address = private$.acting_address()) {
       assert_args_HyperliquidStaking__get_staking_rewards(address)
       address <- validate_address(address)

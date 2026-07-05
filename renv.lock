@@ -516,14 +516,14 @@
     },
     "connectcore": {
       "Package": "connectcore",
-      "Version": "0.1.0",
+      "Version": "0.3.0",
       "Source": "GitHub",
       "RemoteType": "github",
       "RemoteHost": "api.github.com",
       "RemoteUsername": "dereckscompany",
       "RemoteRepo": "connectcore",
-      "RemoteRef": "v0.1.0",
-      "RemoteSha": "2213ad8c7b56ebedf83c82226a37da50168aa2ce"
+      "RemoteRef": "v0.3.0",
+      "RemoteSha": "a0410fd349aa924f431f4df9fcbf3c4fc91612af"
     },
     "coro": {
       "Package": "coro",
@@ -1277,7 +1277,7 @@
     },
     "htmltools": {
       "Package": "htmltools",
-      "Version": "0.5.8.1",
+      "Version": "0.5.9",
       "Source": "Repository",
       "Type": "Package",
       "Title": "Tools for HTML",

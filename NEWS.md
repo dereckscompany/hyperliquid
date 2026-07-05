@@ -1,3 +1,21 @@
+# hyperliquid 0.3.0
+
+## Breaking: spelled-out argument names on the trading and account signatures
+
+* The abbreviated argument names on the public trading and account methods are spelled out fleet-wide (`CONNECTOR-CONVENTIONS.md` I.1.5): `sz` becomes `size`, `limit_px` becomes `limit_price`, `trigger_px` becomes `trigger_price`, `cloid` becomes `client_order_id`, `oid` becomes `order_id`, and `get_order_status()`'s `oid_or_cloid` becomes `order_id_or_client_order_id`. This affects `place_order()`, `market_open()`, `market_close()`, `modify_order()`, `cancel_order()`, `cancel_by_cloid()`, and `get_order_status()`. It is a clean break with no deprecation shims. The venue wire keys are unchanged: an R `size` argument is still serialised to the `sz` order field on the wire, and the returned data.tables keep their venue-native column names (`sz`, `oid`, `limit_px`, `cloid`, `trigger_px`), which are a separate vocabulary from the R argument names. The `cancel_by_cloid()`/`bulk_cancel_by_cloid()` method names and the power-user order/cancel-spec list field names (`sz`, `limit_px`, `cloid`, `oid` inside the `orders`/`modifies`/`cancels` payload maps) mirror the venue's own vocabulary and are retained.
+
+## Internal: `ms_to_datetime()` imported from connectcore
+
+* The local `ms_to_datetime()` re-implementation is dropped in favour of the canonical, length-preserving, NA-in-NA-out `connectcore::ms_to_datetime()` (connectcore >= 0.3.0), matching the fleet-wide centralisation. Behaviour is unchanged: epoch-millisecond timestamps still convert to POSIXct in UTC.
+
+## Documentation: typed nested column bullets on every data.table return
+
+* Every multi-row data.table `@return` on the market-data, account, trading, and staking clients is documented as typed nested column bullets (bare column name, composite type token, `| NA` where a column may be missing) rather than prose, closing the last documentation-consistency gap against the fleet convention.
+
+## Dependencies
+
+* `connectcore` floors at `>= 0.3.0` (for `ms_to_datetime()`); explicit Imports floors added for `assert` (`>= 0.0.9`) and `ethsign` (`>= 0.0.2`). Remotes stay bare per the ratified floors-in-Imports policy, and `renv.lock` is refreshed (connectcore 0.3.0, htmltools 0.5.9) so the CI environment restores cleanly.
+
 # hyperliquid 0.2.1
 
 ## Hardening: validate fixtures and contracts against the real testnet API

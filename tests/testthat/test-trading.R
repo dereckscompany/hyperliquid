@@ -134,8 +134,8 @@ test_that("place_order posts an order action with the canonical wire and a signa
       return(client$place_order(
         "BTC",
         is_buy = TRUE,
-        sz = 0.001,
-        limit_px = 50000,
+        size = 0.001,
+        limit_price = 50000,
         order_type = list(limit = list(tif = "Gtc"))
       ))
     },
@@ -164,10 +164,10 @@ test_that("place_order appends the cloid wire key when supplied", {
       return(client$place_order(
         "BTC",
         is_buy = TRUE,
-        sz = 0.5,
-        limit_px = 50000,
+        size = 0.5,
+        limit_price = 50000,
         order_type = list(limit = list(tif = "Alo")),
-        cloid = cloid
+        client_order_id = cloid
       ))
     },
     fixture_order_resting()
@@ -185,8 +185,8 @@ test_that("place_order encodes a trigger order type in isMarket/triggerPx/tpsl o
       return(client$place_order(
         "BTC",
         is_buy = FALSE,
-        sz = 0.01,
-        limit_px = 48000,
+        size = 0.01,
+        limit_price = 48000,
         order_type = list(trigger = list(triggerPx = 49000, isMarket = TRUE, tpsl = "sl")),
         reduce_only = TRUE
       ))
@@ -238,11 +238,11 @@ test_that("modify_order posts a batchModify with the oid and a rebuilt wire", {
   res <- mock_trade(
     function() {
       return(client$modify_order(
-        oid = 123,
+        order_id = 123,
         name = "BTC",
         is_buy = FALSE,
-        sz = 0.002,
-        limit_px = 51000,
+        size = 0.002,
+        limit_price = 51000,
         order_type = list(limit = list(tif = "Gtc"))
       ))
     },
@@ -262,7 +262,7 @@ test_that("modify_order posts a batchModify with the oid and a rebuilt wire", {
 test_that("cancel_order posts a cancel action with asset/oid items", {
   client <- new_client()
   res <- mock_trade(
-    function() client$cancel_order("BTC", oid = 555),
+    function() client$cancel_order("BTC", order_id = 555),
     fixture_cancel_success()
   )
   expect_equal(res$posted$action$type, "cancel")
@@ -355,7 +355,7 @@ test_that("update_isolated_margin allows a negative amount to remove margin", {
 test_that("market_open reads all_mids and posts an aggressive IoC order", {
   client <- new_client()
   res <- mock_trade(
-    function() client$market_open("BTC", is_buy = TRUE, sz = 0.001, slippage = 0.05),
+    function() client$market_open("BTC", is_buy = TRUE, size = 0.001, slippage = 0.05),
     fixture_order_filled(),
     mids = fixture_all_mids()
   )

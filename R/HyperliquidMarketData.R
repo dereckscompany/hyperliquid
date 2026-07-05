@@ -80,9 +80,13 @@ HyperliquidMarketData <- R6::R6Class(
     #' @description Retrieve spot exchange metadata: the spot pair universe.
     #'   Sibling of [get_spot_tokens()][HyperliquidMarketData], which parses the token table from the
     #'   same payload.
-    #' @return (promise<data.table>) a [data.table::data.table] with columns
-    #'   `name`, `index`, `is_canonical`, `token_base`, `token_quote`, or a
-    #'   promise thereof.
+    #' @return (promise<data.table>) a [data.table::data.table], one row per spot
+    #'   pair (or a promise thereof):
+    #'   - name (character) the spot pair symbol.
+    #'   - index (numeric) the pair index.
+    #'   - is_canonical (logical) whether the pair is canonical.
+    #'   - token_base (numeric) the base token index.
+    #'   - token_quote (numeric) the quote token index.
     get_spot_meta = function() {
       return(private$.info(
         list(type = "spotMeta"),
@@ -92,9 +96,14 @@ HyperliquidMarketData <- R6::R6Class(
 
     #' @description Retrieve spot exchange metadata: the token table. Sibling of
     #'   [get_spot_meta()][HyperliquidMarketData], which parses the pair universe from the same payload.
-    #' @return (promise<data.table>) a [data.table::data.table] with columns
-    #'   `name`, `index`, `sz_decimals`, `wei_decimals`, `token_id`,
-    #'   `is_canonical`, or a promise thereof.
+    #' @return (promise<data.table>) a [data.table::data.table], one row per spot
+    #'   token (or a promise thereof):
+    #'   - name (character) the token symbol.
+    #'   - index (numeric) the token index.
+    #'   - sz_decimals (numeric) size decimals.
+    #'   - wei_decimals (numeric) wei decimals.
+    #'   - token_id (character) the on-chain token id.
+    #'   - is_canonical (logical) whether the token is canonical.
     get_spot_tokens = function() {
       return(private$.info(
         list(type = "spotMeta"),
@@ -105,10 +114,22 @@ HyperliquidMarketData <- R6::R6Class(
     #' @description Retrieve the perp universe joined with per-asset contexts
     #'   (mark/mid/oracle prices, funding, open interest, impact prices) by index,
     #'   one row per perp coin.
-    #' @return (promise<data.table>) a [data.table::data.table] with columns
-    #'   `name`, `sz_decimals`, `max_leverage`, `day_ntl_vlm`, `funding`,
-    #'   `mark_px`, `mid_px`, `oracle_px`, `open_interest`, `premium`,
-    #'   `prev_day_px`, `impact_px_bid`, `impact_px_ask`, or a promise thereof.
+    #' @return (promise<data.table>) a [data.table::data.table], one row per perp
+    #'   coin (or a promise thereof). The context columns are `NA` for a coin with
+    #'   no asset context:
+    #'   - name (character) the coin symbol.
+    #'   - sz_decimals (numeric) size decimals.
+    #'   - max_leverage (numeric) maximum leverage.
+    #'   - day_ntl_vlm (numeric | NA) 24h notional volume.
+    #'   - funding (numeric | NA) the current funding rate.
+    #'   - mark_px (numeric | NA) the mark price.
+    #'   - mid_px (numeric | NA) the mid price.
+    #'   - oracle_px (numeric | NA) the oracle price.
+    #'   - open_interest (numeric | NA) the open interest.
+    #'   - premium (numeric | NA) the premium.
+    #'   - prev_day_px (numeric | NA) the previous-day price.
+    #'   - impact_px_bid (numeric | NA) the impact bid price.
+    #'   - impact_px_ask (numeric | NA) the impact ask price.
     get_meta_and_asset_ctxs = function() {
       return(private$.info(
         list(type = "metaAndAssetCtxs"),
@@ -118,9 +139,14 @@ HyperliquidMarketData <- R6::R6Class(
 
     #' @description Retrieve per-asset contexts for every spot coin, one row per
     #'   spot coin.
-    #' @return (promise<data.table>) a [data.table::data.table] with columns
-    #'   `coin`, `day_ntl_vlm`, `mark_px`, `mid_px`, `prev_day_px`,
-    #'   `circulating_supply`, or a promise thereof.
+    #' @return (promise<data.table>) a [data.table::data.table], one row per spot
+    #'   coin (or a promise thereof):
+    #'   - coin (character) the coin symbol.
+    #'   - day_ntl_vlm (numeric) 24h notional volume.
+    #'   - mark_px (numeric) the mark price.
+    #'   - mid_px (numeric | NA) the mid price, `NA` when there is no book.
+    #'   - prev_day_px (numeric) the previous-day price.
+    #'   - circulating_supply (numeric) the circulating supply.
     get_spot_meta_and_asset_ctxs = function() {
       return(private$.info(
         list(type = "spotMetaAndAssetCtxs"),
@@ -132,8 +158,10 @@ HyperliquidMarketData <- R6::R6Class(
 
     #' @description Retrieve mid prices for all actively traded coins, long: one
     #'   row per coin.
-    #' @return (promise<data.table>) a [data.table::data.table] with columns
-    #'   `coin`, `mid`, or a promise thereof.
+    #' @return (promise<data.table>) a [data.table::data.table], one row per coin
+    #'   (or a promise thereof):
+    #'   - coin (character) the coin symbol.
+    #'   - mid (numeric) the mid price.
     get_all_mids = function() {
       return(private$.info(
         list(type = "allMids"),
@@ -225,9 +253,14 @@ HyperliquidMarketData <- R6::R6Class(
 
     #' @description Retrieve predicted next-funding rates across venues, long:
     #'   one row per (coin, venue).
-    #' @return (promise<data.table>) a [data.table::data.table] with columns
-    #'   `coin`, `venue`, `funding_rate`, `next_funding_time`,
-    #'   `funding_interval_hours`, or a promise thereof.
+    #' @return (promise<data.table>) a [data.table::data.table], one row per
+    #'   (coin, venue) (or a promise thereof). A venue whose body is `null` yields
+    #'   `NA` rate fields:
+    #'   - coin (character) the coin symbol.
+    #'   - venue (character) the venue name.
+    #'   - funding_rate (numeric | NA) the predicted funding rate.
+    #'   - next_funding_time (POSIXct | NA) the next funding time.
+    #'   - funding_interval_hours (numeric | NA) the funding interval, in hours.
     get_predicted_fundings = function() {
       return(private$.info(
         list(type = "predictedFundings"),
@@ -237,9 +270,14 @@ HyperliquidMarketData <- R6::R6Class(
 
     #' @description Retrieve builder-deployed (HIP-3) perp dexes. The `null`
     #'   core-dex sentinel is omitted.
-    #' @return (promise<data.table>) a [data.table::data.table] with columns
-    #'   `name`, `full_name`, `deployer`, `oracle_updater`, `fee_recipient`, or a
-    #'   promise thereof.
+    #' @return (promise<data.table>) a [data.table::data.table], one row per
+    #'   builder-deployed perp dex (or a promise thereof):
+    #'   - name (character) the dex short name.
+    #'   - full_name (character) the dex full name.
+    #'   - deployer (character) the deployer address.
+    #'   - oracle_updater (character | NA) the oracle-updater address, `NA` when
+    #'     absent.
+    #'   - fee_recipient (character) the fee-recipient address.
     get_perp_dexs = function() {
       return(private$.info(
         list(type = "perpDexs"),
@@ -250,9 +288,17 @@ HyperliquidMarketData <- R6::R6Class(
     #' @description Retrieve the most recent trades for a coin (about 10 rows,
     #'   both counterparty addresses included).
     #' @param coin (scalar<character>) the canonical coin symbol, e.g. `"BTC"`.
-    #' @return (promise<data.table>) a [data.table::data.table] with columns
-    #'   `coin`, `side`, `px`, `sz`, `time`, `hash`, `tid`, `user_buyer`,
-    #'   `user_seller`, or a promise thereof.
+    #' @return (promise<data.table>) a [data.table::data.table], one row per trade
+    #'   (or a promise thereof):
+    #'   - coin (character) the coin symbol.
+    #'   - side (character) the aggressor side (`"buy"` or `"sell"`).
+    #'   - px (numeric) the trade price.
+    #'   - sz (numeric) the trade size.
+    #'   - time (POSIXct) the trade time.
+    #'   - hash (character) the on-chain hash.
+    #'   - tid (numeric) the trade id.
+    #'   - user_buyer (character) the buyer's `0x` address.
+    #'   - user_seller (character) the seller's `0x` address.
     get_recent_trades = function(coin) {
       assert_args_HyperliquidMarketData__get_recent_trades(coin)
       validate_coin(coin)
@@ -263,8 +309,11 @@ HyperliquidMarketData <- R6::R6Class(
     },
 
     #' @description Retrieve the current exchange status.
-    #' @return (promise<data.table>) a single-row [data.table::data.table] with
-    #'   columns `time`, `special_statuses`, or a promise thereof.
+    #' @return (promise<data.table>) a single-row [data.table::data.table] (or a
+    #'   promise thereof):
+    #'   - time (POSIXct) the status timestamp.
+    #'   - special_statuses (character | NA) any special statuses as a JSON
+    #'     string, `NA` when absent.
     get_exchange_status = function() {
       return(private$.info(
         list(type = "exchangeStatus"),
