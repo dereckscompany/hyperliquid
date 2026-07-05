@@ -47,7 +47,7 @@ flatten_order <- function(o) {
     is_trigger = lgl_or_na(o$isTrigger),
     is_position_tpsl = lgl_or_na(o$isPositionTpsl),
     cloid = chr_or_na(o$cloid),
-    timestamp = ms_to_datetime(num_or_na(o$timestamp))
+    timestamp = connectcore::ms_to_datetime(num_or_na(o$timestamp))
   ))
 }
 
@@ -191,7 +191,7 @@ parse_open_orders <- function(items) {
       side = character(0),
       limit_px = numeric(0),
       sz = numeric(0),
-      timestamp = ms_to_datetime(numeric(0))
+      timestamp = connectcore::ms_to_datetime(numeric(0))
     )[])
   }
   rows <- lapply(items, function(o) {
@@ -201,7 +201,7 @@ parse_open_orders <- function(items) {
       side = wire_side(o$side),
       limit_px = num_or_na(o$limitPx),
       sz = num_or_na(o$sz),
-      timestamp = ms_to_datetime(num_or_na(o$timestamp))
+      timestamp = connectcore::ms_to_datetime(num_or_na(o$timestamp))
     ))
   })
   return(data.table::rbindlist(rows, fill = TRUE)[])
@@ -272,7 +272,7 @@ parse_user_fills <- function(items) {
       px = numeric(0),
       sz = numeric(0),
       side = character(0),
-      time = ms_to_datetime(numeric(0)),
+      time = connectcore::ms_to_datetime(numeric(0)),
       start_position = numeric(0),
       dir = character(0),
       closed_pnl = numeric(0),
@@ -290,7 +290,7 @@ parse_user_fills <- function(items) {
       px = num_or_na(f$px),
       sz = num_or_na(f$sz),
       side = wire_side(f$side),
-      time = ms_to_datetime(num_or_na(f$time)),
+      time = connectcore::ms_to_datetime(num_or_na(f$time)),
       start_position = num_or_na(f$startPosition),
       dir = chr_or_na(f$dir),
       closed_pnl = num_or_na(f$closedPnl),
@@ -325,7 +325,7 @@ parse_historical_orders <- function(items) {
     data.table::set(
       core,
       j = "status_timestamp",
-      value = ms_to_datetime(num_or_na(it$statusTimestamp))
+      value = connectcore::ms_to_datetime(num_or_na(it$statusTimestamp))
     )
     return(core)
   })
@@ -336,7 +336,7 @@ parse_historical_orders <- function(items) {
   } else {
     core <- flatten_order(NULL)[0L]
     data.table::set(core, j = "status", value = character(0))
-    data.table::set(core, j = "status_timestamp", value = ms_to_datetime(numeric(0)))
+    data.table::set(core, j = "status_timestamp", value = connectcore::ms_to_datetime(numeric(0)))
     core
   }
   data.table::setcolorder(
@@ -378,7 +378,7 @@ parse_historical_orders <- function(items) {
 parse_user_funding <- function(items) {
   if (is.null(items) || length(items) == 0L) {
     return(data.table::data.table(
-      time = ms_to_datetime(numeric(0)),
+      time = connectcore::ms_to_datetime(numeric(0)),
       hash = character(0),
       coin = character(0),
       funding_rate = numeric(0),
@@ -390,7 +390,7 @@ parse_user_funding <- function(items) {
   rows <- lapply(items, function(it) {
     d <- it$delta
     return(data.table::data.table(
-      time = ms_to_datetime(num_or_na(it$time)),
+      time = connectcore::ms_to_datetime(num_or_na(it$time)),
       hash = chr_or_na(it$hash),
       coin = chr_or_na(d$coin),
       funding_rate = num_or_na(d$fundingRate),
@@ -422,7 +422,7 @@ parse_non_funding_ledger <- function(items) {
     # Heterogeneous ledger: only the always-present lead columns are knowable
     # when empty (the per-variant fields appear with data).
     return(data.table::data.table(
-      time = ms_to_datetime(numeric(0)),
+      time = connectcore::ms_to_datetime(numeric(0)),
       hash = character(0),
       delta_type = character(0),
       usdc = numeric(0)
@@ -472,7 +472,7 @@ parse_portfolio <- function(data) {
         rows[[length(rows) + 1L]] <- data.table::data.table(
           period = period,
           metric = spec$metric,
-          time = ms_to_datetime(nth_num(point, 1L)),
+          time = connectcore::ms_to_datetime(nth_num(point, 1L)),
           value = nth_num(point, 2L)
         )
       }
@@ -482,7 +482,7 @@ parse_portfolio <- function(data) {
     return(data.table::data.table(
       period = character(0),
       metric = character(0),
-      time = ms_to_datetime(numeric(0)),
+      time = connectcore::ms_to_datetime(numeric(0)),
       value = numeric(0)
     )[])
   }
@@ -667,7 +667,7 @@ parse_order_status <- function(data) {
     core <- flatten_order(NULL)[0L]
     data.table::set(core, j = "query_status", value = character(0))
     data.table::set(core, j = "status", value = character(0))
-    data.table::set(core, j = "status_timestamp", value = ms_to_datetime(numeric(0)))
+    data.table::set(core, j = "status_timestamp", value = connectcore::ms_to_datetime(numeric(0)))
   } else {
     inner <- data$order
     core <- flatten_order(inner$order)
@@ -676,7 +676,7 @@ parse_order_status <- function(data) {
     data.table::set(
       core,
       j = "status_timestamp",
-      value = ms_to_datetime(num_or_na(inner$statusTimestamp))
+      value = connectcore::ms_to_datetime(num_or_na(inner$statusTimestamp))
     )
   }
   data.table::setcolorder(
@@ -719,14 +719,14 @@ parse_user_vault_equities <- function(items) {
     return(data.table::data.table(
       vault_address = character(0),
       equity = numeric(0),
-      locked_until_timestamp = ms_to_datetime(numeric(0))
+      locked_until_timestamp = connectcore::ms_to_datetime(numeric(0))
     )[])
   }
   rows <- lapply(items, function(v) {
     return(data.table::data.table(
       vault_address = chr_or_na(v$vaultAddress),
       equity = num_or_na(v$equity),
-      locked_until_timestamp = ms_to_datetime(num_or_na(v$lockedUntilTimestamp))
+      locked_until_timestamp = connectcore::ms_to_datetime(num_or_na(v$lockedUntilTimestamp))
     ))
   })
   return(data.table::rbindlist(rows, fill = TRUE)[])

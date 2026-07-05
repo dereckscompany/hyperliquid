@@ -275,7 +275,7 @@ parse_delta_ledger <- function(items) {
   }
   rows <- lapply(items, function(it) {
     meta_dt <- data.table::data.table(
-      time = ms_to_datetime(num_or_na(it$time)),
+      time = connectcore::ms_to_datetime(num_or_na(it$time)),
       hash = chr_or_na(it$hash)
     )
     delta_dt <- as_dt_row(it$delta)
@@ -297,8 +297,8 @@ parse_delta_ledger <- function(items) {
 # set and return a bare `data.table()`.
 #
 # Each constructor closes with `[]` so the returned table prints on the first
-# call. Timestamp columns use `ms_to_datetime(numeric(0))` -- a length-0 POSIXct
-# in UTC. Every Hyperliquid timestamp is epoch milliseconds, and `ms_to_datetime()`
+# call. Timestamp columns use `connectcore::ms_to_datetime(numeric(0))` -- a length-0 POSIXct
+# in UTC. Every Hyperliquid timestamp is epoch milliseconds, and `connectcore::ms_to_datetime()`
 # (R/utils_time.R) fixes the zone to UTC, so an empty column's class AND timezone
 # (UTC) match a populated one exactly. The same applies to the timestamp columns
 # in the parsers' inlined empty branches.
@@ -310,14 +310,14 @@ parse_delta_ledger <- function(items) {
 #' @noassert
 empty_dt_candles <- function() {
   return(data.table::data.table(
-    datetime = ms_to_datetime(numeric(0)),
+    datetime = connectcore::ms_to_datetime(numeric(0)),
     open = numeric(0),
     high = numeric(0),
     low = numeric(0),
     close = numeric(0),
     volume = numeric(0),
     trades = numeric(0),
-    close_time = ms_to_datetime(numeric(0)),
+    close_time = connectcore::ms_to_datetime(numeric(0)),
     interval = character(0),
     coin = character(0)
   )[])
@@ -333,6 +333,6 @@ empty_dt_funding_history <- function() {
     coin = character(0),
     funding_rate = numeric(0),
     premium = numeric(0),
-    time = ms_to_datetime(numeric(0))
+    time = connectcore::ms_to_datetime(numeric(0))
   )[])
 }

@@ -205,14 +205,14 @@ trading <- HyperliquidTrading$new(keys = get_api_keys(), testnet = TRUE)
 # A short sell is just is_buy = FALSE; a long is is_buy = TRUE. (Pairs trading is
 # one of each on two markets.) Here: a small marketable BUY priced at the ask.
 trading$place_order(
-  name = "BTC", is_buy = TRUE, sz = 0.0002, limit_px = 64219,
+  name = "BTC", is_buy = TRUE, size = 0.0002, limit_price = 64219,
   order_type = list(limit = list(tif = "Gtc"))
 )
 #> status filled, avg_px 64119  -> long 0.0002 BTC
 
 # Flatten it with a reduce-only sell.
 trading$place_order(
-  name = "BTC", is_buy = FALSE, sz = 0.0002, limit_px = 63964,
+  name = "BTC", is_buy = FALSE, size = 0.0002, limit_price = 63964,
   order_type = list(limit = list(tif = "Gtc")), reduce_only = TRUE
 )
 #> status filled  -> position closed, account flat

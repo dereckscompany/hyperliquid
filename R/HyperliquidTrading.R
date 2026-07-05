@@ -51,13 +51,13 @@
 #' \dontrun{
 #' trading <- HyperliquidTrading$new()
 #' # A resting post-only bid:
-#' trading$place_order("BTC", is_buy = TRUE, sz = 0.001, limit_px = 50000,
+#' trading$place_order("BTC", is_buy = TRUE, size = 0.001, limit_price = 50000,
 #'   order_type = list(limit = list(tif = "Alo")))
 #' # Open and then close a long at market:
-#' trading$market_open("BTC", is_buy = TRUE, sz = 0.001)
+#' trading$market_open("BTC", is_buy = TRUE, size = 0.001)
 #' trading$market_close("BTC")
 #' # Cancel one order, then arm a 1-minute dead-man's switch:
-#' trading$cancel_order("BTC", oid = 123456789)
+#' trading$cancel_order("BTC", order_id = 123456789)
 #' trading$schedule_cancel(lubridate::now("UTC") + lubridate::seconds(60))
 #' }
 #'
@@ -73,15 +73,15 @@ HyperliquidTrading <- R6::R6Class(
     #'   only when you pass one explicitly.
     #' @param name (scalar<character>) the coin or friendly name, e.g. `"BTC"`.
     #' @param is_buy (scalar<logical>) `TRUE` for a bid, `FALSE` for an ask.
-    #' @param sz (scalar<numeric in ]0, Inf[>) the order size in coin units.
-    #' @param limit_px (scalar<numeric in ]0, Inf[>) the limit price.
+    #' @param size (scalar<numeric in ]0, Inf[>) the order size in coin units.
+    #' @param limit_price (scalar<numeric in ]0, Inf[>) the limit price.
     #' @param order_type (list) either
     #'   `list(limit = list(tif = "Gtc"|"Ioc"|"Alo"))` or
     #'   `list(trigger = list(triggerPx = , isMarket = , tpsl = "tp"|"sl"))`.
     #' @param reduce_only (scalar<logical>) `TRUE` to only reduce an existing
     #'   position. Default `FALSE`.
-    #' @param cloid (scalar<character> | NULL) an optional client order id from
-    #'   [new_cloid()]. Default `NULL`.
+    #' @param client_order_id (scalar<character> | NULL) an optional client order
+    #'   id from [new_cloid()]. Default `NULL`.
     #' @param builder (list?) an optional builder fee spec
     #'   `list(b = <address>, f = <tenths-of-bps>)`. Default `NULL`.
     #' @return (promise<OrderResult>) a [data.table::data.table], one row per
@@ -89,33 +89,33 @@ HyperliquidTrading <- R6::R6Class(
     place_order = function(
       name,
       is_buy,
-      sz,
-      limit_px,
+      size,
+      limit_price,
       order_type,
       reduce_only = FALSE,
-      cloid = NULL,
+      client_order_id = NULL,
       builder = NULL
     ) {
       assert_args_HyperliquidTrading__place_order(
         name,
         is_buy,
-        sz,
-        limit_px,
+        size,
+        limit_price,
         order_type,
         reduce_only,
-        cloid,
+        client_order_id,
         builder
       )
       order <- list(
         coin = name,
         is_buy = is_buy,
-        sz = sz,
-        limit_px = limit_px,
+        sz = size,
+        limit_px = limit_price,
         order_type = order_type,
         reduce_only = reduce_only
       )
-      if (!is.null(cloid)) {
-        order$cloid <- cloid
+      if (!is.null(client_order_id)) {
+        order$cloid <- client_order_id
       }
       return(self$bulk_orders(list(order), builder = builder))
     },
@@ -153,26 +153,26 @@ HyperliquidTrading <- R6::R6Class(
     #' @param name (scalar<character>) the coin or friendly name, e.g. `"BTC"`.
     #' @param is_buy (scalar<logical>) `TRUE` to open long, `FALSE` to open
     #'   short.
-    #' @param sz (scalar<numeric in ]0, Inf[>) the order size in coin units.
+    #' @param size (scalar<numeric in ]0, Inf[>) the order size in coin units.
     #' @param slippage (scalar<numeric in ]0, Inf[>) the price tolerance
     #'   fraction. Default `0.05` (5%).
-    #' @param cloid (scalar<character> | NULL) an optional client order id.
-    #'   Default `NULL`.
+    #' @param client_order_id (scalar<character> | NULL) an optional client order
+    #'   id. Default `NULL`.
     #' @param builder (list?) an optional builder fee spec. Default `NULL`.
     #' @return (promise<OrderResult>) a [data.table::data.table], one row per
     #'   status.
-    market_open = function(name, is_buy, sz, slippage = 0.05, cloid = NULL, builder = NULL) {
-      assert_args_HyperliquidTrading__market_open(name, is_buy, sz, slippage, cloid, builder)
+    market_open = function(name, is_buy, size, slippage = 0.05, client_order_id = NULL, builder = NULL) {
+      assert_args_HyperliquidTrading__market_open(name, is_buy, size, slippage, client_order_id, builder)
       validate_coin(name)
       px <- private$.slippage_price(name, is_buy, slippage)
       return(self$place_order(
         name,
         is_buy = is_buy,
-        sz = sz,
-        limit_px = px,
+        size = size,
+        limit_price = px,
         order_type = list(limit = list(tif = "Ioc")),
         reduce_only = FALSE,
-        cloid = cloid,
+        client_order_id = client_order_id,
         builder = builder
       ))
     },
@@ -182,17 +182,17 @@ HyperliquidTrading <- R6::R6Class(
     #'   immediate-or-cancel limit. Sync-preferred: it chains the position read and
     #'   a mid-price read before the write.
     #' @param name (scalar<character>) the coin or friendly name, e.g. `"BTC"`.
-    #' @param sz (scalar<numeric in ]0, Inf[> | NULL) the size to close. `NULL`
+    #' @param size (scalar<numeric in ]0, Inf[> | NULL) the size to close. `NULL`
     #'   (default) closes the whole position (`abs(szi)`).
     #' @param slippage (scalar<numeric in ]0, Inf[>) the price tolerance
     #'   fraction. Default `0.05` (5%).
-    #' @param cloid (scalar<character> | NULL) an optional client order id.
-    #'   Default `NULL`.
+    #' @param client_order_id (scalar<character> | NULL) an optional client order
+    #'   id. Default `NULL`.
     #' @return (promise<OrderResult>) a [data.table::data.table], one row per
     #'   status.
     #' @importFrom rlang abort
-    market_close = function(name, sz = NULL, slippage = 0.05, cloid = NULL) {
-      assert_args_HyperliquidTrading__market_close(name, sz, slippage, cloid)
+    market_close = function(name, size = NULL, slippage = 0.05, client_order_id = NULL) {
+      assert_args_HyperliquidTrading__market_close(name, size, slippage, client_order_id)
       validate_coin(name)
       coin <- self$name_to_coin(name)
       state <- private$.info(
@@ -208,66 +208,66 @@ HyperliquidTrading <- R6::R6Class(
         ))
       }
       is_buy <- szi < 0
-      close_sz <- coalesce_null(sz, abs(szi))
-      assert_finite_positive(close_sz, "sz")
+      close_size <- coalesce_null(size, abs(szi))
+      assert_finite_positive(close_size, "size")
       px <- private$.slippage_price(name, is_buy, slippage)
       return(self$place_order(
         name,
         is_buy = is_buy,
-        sz = close_sz,
-        limit_px = px,
+        size = close_size,
+        limit_price = px,
         order_type = list(limit = list(tif = "Ioc")),
         reduce_only = TRUE,
-        cloid = cloid
+        client_order_id = client_order_id
       ))
     },
 
     #' @description Modify a single resting order in place. A thin wrapper over
     #'   [bulk_modify()][HyperliquidTrading].
-    #' @param oid (scalar<numeric>) the resting order's id (oid).
+    #' @param order_id (scalar<numeric>) the resting order's id.
     #' @param name (scalar<character>) the coin or friendly name.
     #' @param is_buy (scalar<logical>) the (possibly new) side.
-    #' @param sz (scalar<numeric in ]0, Inf[>) the (possibly new) size.
-    #' @param limit_px (scalar<numeric in ]0, Inf[>) the (possibly new) price.
+    #' @param size (scalar<numeric in ]0, Inf[>) the (possibly new) size.
+    #' @param limit_price (scalar<numeric in ]0, Inf[>) the (possibly new) price.
     #' @param order_type (list) the order type (see
     #'   [place_order()][HyperliquidTrading]).
     #' @param reduce_only (scalar<logical>) default `FALSE`.
-    #' @param cloid (scalar<character> | NULL) an optional client order id.
-    #'   Default `NULL`.
+    #' @param client_order_id (scalar<character> | NULL) an optional client order
+    #'   id. Default `NULL`.
     #' @return (promise<OrderResult>) a [data.table::data.table], one row per
     #'   status, or a promise thereof.
     modify_order = function(
-      oid,
+      order_id,
       name,
       is_buy,
-      sz,
-      limit_px,
+      size,
+      limit_price,
       order_type,
       reduce_only = FALSE,
-      cloid = NULL
+      client_order_id = NULL
     ) {
       assert_args_HyperliquidTrading__modify_order(
-        oid,
+        order_id,
         name,
         is_buy,
-        sz,
-        limit_px,
+        size,
+        limit_price,
         order_type,
         reduce_only,
-        cloid
+        client_order_id
       )
       order <- list(
         coin = name,
         is_buy = is_buy,
-        sz = sz,
-        limit_px = limit_px,
+        sz = size,
+        limit_px = limit_price,
         order_type = order_type,
         reduce_only = reduce_only
       )
-      if (!is.null(cloid)) {
-        order$cloid <- cloid
+      if (!is.null(client_order_id)) {
+        order$cloid <- client_order_id
       }
-      return(self$bulk_modify(list(list(oid = oid, order = order))))
+      return(self$bulk_modify(list(list(oid = order_id, order = order))))
     },
 
     #' @description Modify a batch of resting orders in one signed `batchModify`
@@ -291,24 +291,28 @@ HyperliquidTrading <- R6::R6Class(
     #' @description Cancel a single order by its order id. A thin wrapper over
     #'   [bulk_cancel()][HyperliquidTrading].
     #' @param name (scalar<character>) the coin or friendly name.
-    #' @param oid (scalar<numeric>) the order id to cancel.
+    #' @param order_id (scalar<numeric>) the order id to cancel.
     #' @return (promise<data.table>) a [data.table::data.table], one row per
-    #'   cancel, or a promise thereof.
-    cancel_order = function(name, oid) {
-      assert_args_HyperliquidTrading__cancel_order(name, oid)
-      return(self$bulk_cancel(list(list(coin = name, oid = oid))))
+    #'   cancel (or a promise thereof):
+    #'   - status (character) the cancel status (`"success"` or `"error"`).
+    #'   - error (character | NA) the error message, `NA` on success.
+    cancel_order = function(name, order_id) {
+      assert_args_HyperliquidTrading__cancel_order(name, order_id)
+      return(self$bulk_cancel(list(list(coin = name, oid = order_id))))
     },
 
     #' @description Cancel a single order by its client order id. A thin wrapper
     #'   over [bulk_cancel_by_cloid()][HyperliquidTrading].
     #' @param name (scalar<character>) the coin or friendly name.
-    #' @param cloid (scalar<character>) the client order id (`0x`-prefixed 32 hex
-    #'   chars).
+    #' @param client_order_id (scalar<character>) the client order id
+    #'   (`0x`-prefixed 32 hex chars).
     #' @return (promise<data.table>) a [data.table::data.table], one row per
-    #'   cancel, or a promise thereof.
-    cancel_by_cloid = function(name, cloid) {
-      assert_args_HyperliquidTrading__cancel_by_cloid(name, cloid)
-      return(self$bulk_cancel_by_cloid(list(list(coin = name, cloid = cloid))))
+    #'   cancel (or a promise thereof):
+    #'   - status (character) the cancel status (`"success"` or `"error"`).
+    #'   - error (character | NA) the error message, `NA` on success.
+    cancel_by_cloid = function(name, client_order_id) {
+      assert_args_HyperliquidTrading__cancel_by_cloid(name, client_order_id)
+      return(self$bulk_cancel_by_cloid(list(list(coin = name, cloid = client_order_id))))
     },
 
     #' @description Cancel a batch of orders by order id in one signed `cancel`
@@ -317,7 +321,9 @@ HyperliquidTrading <- R6::R6Class(
     #' @param cancels (list) unnamed list of cancel specs; each a named list with
     #'   `coin` and `oid`.
     #' @return (promise<data.table>) a [data.table::data.table], one row per
-    #'   cancel, or a promise thereof.
+    #'   cancel (or a promise thereof):
+    #'   - status (character) the cancel status (`"success"` or `"error"`).
+    #'   - error (character | NA) the error message, `NA` on success.
     bulk_cancel = function(cancels) {
       assert_args_HyperliquidTrading__bulk_cancel(cancels)
       items <- lapply(cancels, function(cancel) {
@@ -336,7 +342,9 @@ HyperliquidTrading <- R6::R6Class(
     #' @param cancels (list) unnamed list of cancel specs; each a named list with
     #'   `coin` and `cloid`.
     #' @return (promise<data.table>) a [data.table::data.table], one row per
-    #'   cancel, or a promise thereof.
+    #'   cancel (or a promise thereof):
+    #'   - status (character) the cancel status (`"success"` or `"error"`).
+    #'   - error (character | NA) the error message, `NA` on success.
     bulk_cancel_by_cloid = function(cancels) {
       assert_args_HyperliquidTrading__bulk_cancel_by_cloid(cancels)
       items <- lapply(cancels, function(cancel) {
@@ -434,9 +442,11 @@ HyperliquidTrading <- R6::R6Class(
     #'   the empty string -- the EIP-712 digest is identical either way.)
     #' @param name (scalar<character> | NULL) an optional human-readable agent
     #'   name. Default `NULL`.
-    #' @return (promise<data.table>) a single-row [data.table::data.table] with
-    #'   `agent_address`, `agent_key` (the new hex secret), and `status`, or a
-    #'   promise thereof.
+    #' @return (promise<data.table>) a single-row [data.table::data.table] (or a
+    #'   promise thereof):
+    #'   - agent_address (character) the new agent wallet's `0x` address.
+    #'   - agent_key (character) the new agent wallet's hex secret.
+    #'   - status (character) the action status (e.g. `"ok"`).
     #' @importFrom openssl rand_bytes
     approve_agent = function(name = NULL) {
       assert_args_HyperliquidTrading__approve_agent(name)

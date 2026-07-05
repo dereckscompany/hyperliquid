@@ -64,13 +64,13 @@ and assume the chained \verb{/info} read resolves synchronously.
 \dontrun{
 trading <- HyperliquidTrading$new()
 # A resting post-only bid:
-trading$place_order("BTC", is_buy = TRUE, sz = 0.001, limit_px = 50000,
+trading$place_order("BTC", is_buy = TRUE, size = 0.001, limit_price = 50000,
   order_type = list(limit = list(tif = "Alo")))
 # Open and then close a long at market:
-trading$market_open("BTC", is_buy = TRUE, sz = 0.001)
+trading$market_open("BTC", is_buy = TRUE, size = 0.001)
 trading$market_close("BTC")
 # Cancel one order, then arm a 1-minute dead-man's switch:
-trading$cancel_order("BTC", oid = 123456789)
+trading$cancel_order("BTC", order_id = 123456789)
 trading$schedule_cancel(lubridate::now("UTC") + lubridate::seconds(60))
 }
 
@@ -121,11 +121,11 @@ only when you pass one explicitly.
 \if{html}{\out{<div class="r">}}\preformatted{HyperliquidTrading$place_order(
   name,
   is_buy,
-  sz,
-  limit_px,
+  size,
+  limit_price,
   order_type,
   reduce_only = FALSE,
-  cloid = NULL,
+  client_order_id = NULL,
   builder = NULL
 )}\if{html}{\out{</div>}}
 }
@@ -137,9 +137,9 @@ only when you pass one explicitly.
 
 \item{\code{is_buy}}{(scalar<logical>) \code{TRUE} for a bid, \code{FALSE} for an ask.}
 
-\item{\code{sz}}{(scalar<numeric in ]0, Inf[>) the order size in coin units.}
+\item{\code{size}}{(scalar<numeric in ]0, Inf[>) the order size in coin units.}
 
-\item{\code{limit_px}}{(scalar<numeric in ]0, Inf[>) the limit price.}
+\item{\code{limit_price}}{(scalar<numeric in ]0, Inf[>) the limit price.}
 
 \item{\code{order_type}}{(list) either
 \code{list(limit = list(tif = "Gtc"|"Ioc"|"Alo"))} or
@@ -148,8 +148,8 @@ only when you pass one explicitly.
 \item{\code{reduce_only}}{(scalar<logical>) \code{TRUE} to only reduce an existing
 position. Default \code{FALSE}.}
 
-\item{\code{cloid}}{(scalar<character> | NULL) an optional client order id from
-\code{\link[=new_cloid]{new_cloid()}}. Default \code{NULL}.}
+\item{\code{client_order_id}}{(scalar<character> | NULL) an optional client order
+id from \code{\link[=new_cloid]{new_cloid()}}. Default \code{NULL}.}
 
 \item{\code{builder}}{(list?) an optional builder fee spec
 \verb{list(b = <address>, f = <tenths-of-bps>)}. Default \code{NULL}.}
@@ -204,9 +204,9 @@ submit it. Sync-preferred: it chains a mid-price read before the write.
 \if{html}{\out{<div class="r">}}\preformatted{HyperliquidTrading$market_open(
   name,
   is_buy,
-  sz,
+  size,
   slippage = 0.05,
-  cloid = NULL,
+  client_order_id = NULL,
   builder = NULL
 )}\if{html}{\out{</div>}}
 }
@@ -219,13 +219,13 @@ submit it. Sync-preferred: it chains a mid-price read before the write.
 \item{\code{is_buy}}{(scalar<logical>) \code{TRUE} to open long, \code{FALSE} to open
 short.}
 
-\item{\code{sz}}{(scalar<numeric in ]0, Inf[>) the order size in coin units.}
+\item{\code{size}}{(scalar<numeric in ]0, Inf[>) the order size in coin units.}
 
 \item{\code{slippage}}{(scalar<numeric in ]0, Inf[>) the price tolerance
 fraction. Default \code{0.05} (5\%).}
 
-\item{\code{cloid}}{(scalar<character> | NULL) an optional client order id.
-Default \code{NULL}.}
+\item{\code{client_order_id}}{(scalar<character> | NULL) an optional client order
+id. Default \code{NULL}.}
 
 \item{\code{builder}}{(list?) an optional builder fee spec. Default \code{NULL}.}
 }
@@ -245,7 +245,12 @@ signed size, take the opposite side, and submit a reduce-only aggressive
 immediate-or-cancel limit. Sync-preferred: it chains the position read and
 a mid-price read before the write.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{HyperliquidTrading$market_close(name, sz = NULL, slippage = 0.05, cloid = NULL)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{HyperliquidTrading$market_close(
+  name,
+  size = NULL,
+  slippage = 0.05,
+  client_order_id = NULL
+)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -253,14 +258,14 @@ a mid-price read before the write.
 \describe{
 \item{\code{name}}{(scalar<character>) the coin or friendly name, e.g. \code{"BTC"}.}
 
-\item{\code{sz}}{(scalar<numeric in ]0, Inf[> | NULL) the size to close. \code{NULL}
+\item{\code{size}}{(scalar<numeric in ]0, Inf[> | NULL) the size to close. \code{NULL}
 (default) closes the whole position (\code{abs(szi)}).}
 
 \item{\code{slippage}}{(scalar<numeric in ]0, Inf[>) the price tolerance
 fraction. Default \code{0.05} (5\%).}
 
-\item{\code{cloid}}{(scalar<character> | NULL) an optional client order id.
-Default \code{NULL}.}
+\item{\code{client_order_id}}{(scalar<character> | NULL) an optional client order
+id. Default \code{NULL}.}
 }
 \if{html}{\out{</div>}}
 }
@@ -277,37 +282,37 @@ Modify a single resting order in place. A thin wrapper over
 \link[=HyperliquidTrading]{bulk_modify()}.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{HyperliquidTrading$modify_order(
-  oid,
+  order_id,
   name,
   is_buy,
-  sz,
-  limit_px,
+  size,
+  limit_price,
   order_type,
   reduce_only = FALSE,
-  cloid = NULL
+  client_order_id = NULL
 )}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{oid}}{(scalar<numeric>) the resting order's id (oid).}
+\item{\code{order_id}}{(scalar<numeric>) the resting order's id.}
 
 \item{\code{name}}{(scalar<character>) the coin or friendly name.}
 
 \item{\code{is_buy}}{(scalar<logical>) the (possibly new) side.}
 
-\item{\code{sz}}{(scalar<numeric in ]0, Inf[>) the (possibly new) size.}
+\item{\code{size}}{(scalar<numeric in ]0, Inf[>) the (possibly new) size.}
 
-\item{\code{limit_px}}{(scalar<numeric in ]0, Inf[>) the (possibly new) price.}
+\item{\code{limit_price}}{(scalar<numeric in ]0, Inf[>) the (possibly new) price.}
 
 \item{\code{order_type}}{(list) the order type (see
 \link[=HyperliquidTrading]{place_order()}).}
 
 \item{\code{reduce_only}}{(scalar<logical>) default \code{FALSE}.}
 
-\item{\code{cloid}}{(scalar<character> | NULL) an optional client order id.
-Default \code{NULL}.}
+\item{\code{client_order_id}}{(scalar<character> | NULL) an optional client order
+id. Default \code{NULL}.}
 }
 \if{html}{\out{</div>}}
 }
@@ -347,7 +352,7 @@ status, or a promise thereof.
 Cancel a single order by its order id. A thin wrapper over
 \link[=HyperliquidTrading]{bulk_cancel()}.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{HyperliquidTrading$cancel_order(name, oid)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{HyperliquidTrading$cancel_order(name, order_id)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -355,13 +360,17 @@ Cancel a single order by its order id. A thin wrapper over
 \describe{
 \item{\code{name}}{(scalar<character>) the coin or friendly name.}
 
-\item{\code{oid}}{(scalar<numeric>) the order id to cancel.}
+\item{\code{order_id}}{(scalar<numeric>) the order id to cancel.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
 (promise<data.table>) a \link[data.table:data.table]{data.table::data.table}, one row per
-cancel, or a promise thereof.
+cancel (or a promise thereof):
+\itemize{
+\item status (character) the cancel status (\code{"success"} or \code{"error"}).
+\item error (character | NA) the error message, \code{NA} on success.
+}
 }
 }
 \if{html}{\out{<hr>}}
@@ -371,7 +380,7 @@ cancel, or a promise thereof.
 Cancel a single order by its client order id. A thin wrapper
 over \link[=HyperliquidTrading]{bulk_cancel_by_cloid()}.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{HyperliquidTrading$cancel_by_cloid(name, cloid)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{HyperliquidTrading$cancel_by_cloid(name, client_order_id)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -379,14 +388,18 @@ over \link[=HyperliquidTrading]{bulk_cancel_by_cloid()}.
 \describe{
 \item{\code{name}}{(scalar<character>) the coin or friendly name.}
 
-\item{\code{cloid}}{(scalar<character>) the client order id (\verb{0x}-prefixed 32 hex
-chars).}
+\item{\code{client_order_id}}{(scalar<character>) the client order id
+(\verb{0x}-prefixed 32 hex chars).}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
 (promise<data.table>) a \link[data.table:data.table]{data.table::data.table}, one row per
-cancel, or a promise thereof.
+cancel (or a promise thereof):
+\itemize{
+\item status (character) the cancel status (\code{"success"} or \code{"error"}).
+\item error (character | NA) the error message, \code{NA} on success.
+}
 }
 }
 \if{html}{\out{<hr>}}
@@ -410,7 +423,11 @@ carries the oid (the wire \code{o}).
 }
 \subsection{Returns}{
 (promise<data.table>) a \link[data.table:data.table]{data.table::data.table}, one row per
-cancel, or a promise thereof.
+cancel (or a promise thereof):
+\itemize{
+\item status (character) the cancel status (\code{"success"} or \code{"error"}).
+\item error (character | NA) the error message, \code{NA} on success.
+}
 }
 }
 \if{html}{\out{<hr>}}
@@ -434,7 +451,11 @@ Cancel a batch of orders by client order id in one signed
 }
 \subsection{Returns}{
 (promise<data.table>) a \link[data.table:data.table]{data.table::data.table}, one row per
-cancel, or a promise thereof.
+cancel (or a promise thereof):
+\itemize{
+\item status (character) the cancel status (\code{"success"} or \code{"error"}).
+\item error (character | NA) the error message, \code{NA} on success.
+}
 }
 }
 \if{html}{\out{<hr>}}
@@ -544,9 +565,13 @@ name. Default \code{NULL}.}
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-(promise<data.table>) a single-row \link[data.table:data.table]{data.table::data.table} with
-\code{agent_address}, \code{agent_key} (the new hex secret), and \code{status}, or a
-promise thereof.
+(promise<data.table>) a single-row \link[data.table:data.table]{data.table::data.table} (or a
+promise thereof):
+\itemize{
+\item agent_address (character) the new agent wallet's \verb{0x} address.
+\item agent_key (character) the new agent wallet's hex secret.
+\item status (character) the action status (e.g. \code{"ok"}).
+}
 }
 }
 \if{html}{\out{<hr>}}
