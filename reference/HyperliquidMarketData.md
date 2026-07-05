@@ -51,8 +51,10 @@ coin first, use the inherited `name_to_coin()`.
 | get_recent_trades            | recentTrades         | No   |
 | get_exchange_status          | exchangeStatus       | No   |
 
-## Super class
+## Super classes
 
+[`connectcore::RestClient`](https://rdrr.io/pkg/connectcore/man/RestClient.html)
+-\>
 [`hyperliquid::HyperliquidBase`](https://dereckscompany.github.io/hyperliquid/reference/HyperliquidBase.md)
 -\> `HyperliquidMarketData`
 
@@ -128,9 +130,18 @@ get_spot_tokens(), which parses the token table from the same payload.
 #### Returns
 
 (promise\<data.table\>) a
-[data.table::data.table](https://rdrr.io/pkg/data.table/man/data.table.html)
-with columns `name`, `index`, `is_canonical`, `token_base`,
-`token_quote`, or a promise thereof.
+[data.table::data.table](https://rdrr.io/pkg/data.table/man/data.table.html),
+one row per spot pair (or a promise thereof):
+
+- name (character) the spot pair symbol.
+
+- index (numeric) the pair index.
+
+- is_canonical (logical) whether the pair is canonical.
+
+- token_base (numeric) the base token index.
+
+- token_quote (numeric) the quote token index.
 
 ------------------------------------------------------------------------
 
@@ -146,9 +157,20 @@ get_spot_meta(), which parses the pair universe from the same payload.
 #### Returns
 
 (promise\<data.table\>) a
-[data.table::data.table](https://rdrr.io/pkg/data.table/man/data.table.html)
-with columns `name`, `index`, `sz_decimals`, `wei_decimals`, `token_id`,
-`is_canonical`, or a promise thereof.
+[data.table::data.table](https://rdrr.io/pkg/data.table/man/data.table.html),
+one row per spot token (or a promise thereof):
+
+- name (character) the token symbol.
+
+- index (numeric) the token index.
+
+- sz_decimals (numeric) size decimals.
+
+- wei_decimals (numeric) wei decimals.
+
+- token_id (character) the on-chain token id.
+
+- is_canonical (logical) whether the token is canonical.
 
 ------------------------------------------------------------------------
 
@@ -165,10 +187,35 @@ index, one row per perp coin.
 #### Returns
 
 (promise\<data.table\>) a
-[data.table::data.table](https://rdrr.io/pkg/data.table/man/data.table.html)
-with columns `name`, `sz_decimals`, `max_leverage`, `day_ntl_vlm`,
-`funding`, `mark_px`, `mid_px`, `oracle_px`, `open_interest`, `premium`,
-`prev_day_px`, `impact_px_bid`, `impact_px_ask`, or a promise thereof.
+[data.table::data.table](https://rdrr.io/pkg/data.table/man/data.table.html),
+one row per perp coin (or a promise thereof). The context columns are
+`NA` for a coin with no asset context:
+
+- name (character) the coin symbol.
+
+- sz_decimals (numeric) size decimals.
+
+- max_leverage (numeric) maximum leverage.
+
+- day_ntl_vlm (numeric \| NA) 24h notional volume.
+
+- funding (numeric \| NA) the current funding rate.
+
+- mark_px (numeric \| NA) the mark price.
+
+- mid_px (numeric \| NA) the mid price.
+
+- oracle_px (numeric \| NA) the oracle price.
+
+- open_interest (numeric \| NA) the open interest.
+
+- premium (numeric \| NA) the premium.
+
+- prev_day_px (numeric \| NA) the previous-day price.
+
+- impact_px_bid (numeric \| NA) the impact bid price.
+
+- impact_px_ask (numeric \| NA) the impact ask price.
 
 ------------------------------------------------------------------------
 
@@ -183,9 +230,20 @@ Retrieve per-asset contexts for every spot coin, one row per spot coin.
 #### Returns
 
 (promise\<data.table\>) a
-[data.table::data.table](https://rdrr.io/pkg/data.table/man/data.table.html)
-with columns `coin`, `day_ntl_vlm`, `mark_px`, `mid_px`, `prev_day_px`,
-`circulating_supply`, or a promise thereof.
+[data.table::data.table](https://rdrr.io/pkg/data.table/man/data.table.html),
+one row per spot coin (or a promise thereof):
+
+- coin (character) the coin symbol.
+
+- day_ntl_vlm (numeric) 24h notional volume.
+
+- mark_px (numeric) the mark price.
+
+- mid_px (numeric \| NA) the mid price, `NA` when there is no book.
+
+- prev_day_px (numeric) the previous-day price.
+
+- circulating_supply (numeric) the circulating supply.
 
 ------------------------------------------------------------------------
 
@@ -201,8 +259,12 @@ coin.
 #### Returns
 
 (promise\<data.table\>) a
-[data.table::data.table](https://rdrr.io/pkg/data.table/man/data.table.html)
-with columns `coin`, `mid`, or a promise thereof.
+[data.table::data.table](https://rdrr.io/pkg/data.table/man/data.table.html),
+one row per coin (or a promise thereof):
+
+- coin (character) the coin symbol.
+
+- mid (numeric) the mid price.
 
 ------------------------------------------------------------------------
 
@@ -324,9 +386,19 @@ Retrieve predicted next-funding rates across venues, long: one row per
 #### Returns
 
 (promise\<data.table\>) a
-[data.table::data.table](https://rdrr.io/pkg/data.table/man/data.table.html)
-with columns `coin`, `venue`, `funding_rate`, `next_funding_time`,
-`funding_interval_hours`, or a promise thereof.
+[data.table::data.table](https://rdrr.io/pkg/data.table/man/data.table.html),
+one row per (coin, venue) (or a promise thereof). A venue whose body is
+`null` yields `NA` rate fields:
+
+- coin (character) the coin symbol.
+
+- venue (character) the venue name.
+
+- funding_rate (numeric \| NA) the predicted funding rate.
+
+- next_funding_time (POSIXct \| NA) the next funding time.
+
+- funding_interval_hours (numeric \| NA) the funding interval, in hours.
 
 ------------------------------------------------------------------------
 
@@ -342,9 +414,19 @@ sentinel is omitted.
 #### Returns
 
 (promise\<data.table\>) a
-[data.table::data.table](https://rdrr.io/pkg/data.table/man/data.table.html)
-with columns `name`, `full_name`, `deployer`, `oracle_updater`,
-`fee_recipient`, or a promise thereof.
+[data.table::data.table](https://rdrr.io/pkg/data.table/man/data.table.html),
+one row per builder-deployed perp dex (or a promise thereof):
+
+- name (character) the dex short name.
+
+- full_name (character) the dex full name.
+
+- deployer (character) the deployer address.
+
+- oracle_updater (character \| NA) the oracle-updater address, `NA` when
+  absent.
+
+- fee_recipient (character) the fee-recipient address.
 
 ------------------------------------------------------------------------
 
@@ -366,9 +448,26 @@ counterparty addresses included).
 #### Returns
 
 (promise\<data.table\>) a
-[data.table::data.table](https://rdrr.io/pkg/data.table/man/data.table.html)
-with columns `coin`, `side`, `px`, `sz`, `time`, `hash`, `tid`,
-`user_buyer`, `user_seller`, or a promise thereof.
+[data.table::data.table](https://rdrr.io/pkg/data.table/man/data.table.html),
+one row per trade (or a promise thereof):
+
+- coin (character) the coin symbol.
+
+- side (character) the aggressor side (`"buy"` or `"sell"`).
+
+- px (numeric) the trade price.
+
+- sz (numeric) the trade size.
+
+- time (POSIXct) the trade time.
+
+- hash (character) the on-chain hash.
+
+- tid (numeric) the trade id.
+
+- user_buyer (character) the buyer's `0x` address.
+
+- user_seller (character) the seller's `0x` address.
 
 ------------------------------------------------------------------------
 
@@ -384,7 +483,12 @@ Retrieve the current exchange status.
 
 (promise\<data.table\>) a single-row
 [data.table::data.table](https://rdrr.io/pkg/data.table/man/data.table.html)
-with columns `time`, `special_statuses`, or a promise thereof.
+(or a promise thereof):
+
+- time (POSIXct) the status timestamp.
+
+- special_statuses (character \| NA) any special statuses as a JSON
+  string, `NA` when absent.
 
 ------------------------------------------------------------------------
 

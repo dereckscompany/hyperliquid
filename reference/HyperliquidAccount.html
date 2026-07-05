@@ -9,7 +9,7 @@ HyperliquidAccount: User-Scoped Account Reads"></head><body>
 
     <a class="navbar-brand me-2" href="../index.html">hyperliquid</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -38,7 +38,7 @@ HyperliquidAccount: User-Scoped Account Reads"></head><body>
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>HyperliquidAccount: User-Scoped Account Reads</h1>
-      <small class="dont-index">Source: <a href="https://github.com/dereckscompany/hyperliquid/blob/v0.0.1/R/HyperliquidAccount.R" class="external-link"><code>R/HyperliquidAccount.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/dereckscompany/hyperliquid/blob/v0.3.0/R/HyperliquidAccount.R" class="external-link"><code>R/HyperliquidAccount.R</code></a></small>
       <div class="d-none name"><code>HyperliquidAccount.Rd</code></div>
     </div>
 
@@ -89,8 +89,8 @@ inspect any other account.</p>
 
     </div>
     <div class="section level2">
-    <h2 id="super-class">Super class<a class="anchor" aria-label="anchor" href="#super-class"></a></h2>
-    <p><code><a href="HyperliquidBase.html">hyperliquid::HyperliquidBase</a></code> -&gt; <code>HyperliquidAccount</code></p>
+    <h2 id="super-classes">Super classes<a class="anchor" aria-label="anchor" href="#super-classes"></a></h2>
+    <p><code><a href="https://rdrr.io/pkg/connectcore/man/RestClient.html" class="external-link">connectcore::RestClient</a></code> -&gt; <code><a href="HyperliquidBase.html">hyperliquid::HyperliquidBase</a></code> -&gt; <code>HyperliquidAccount</code></p>
     </div>
     <div class="section level2">
     <h2 id="methods">Methods<a class="anchor" aria-label="anchor" href="#methods"></a></h2>
@@ -193,9 +193,12 @@ Defaults to the instance's acting address.</p></dd>
 </div>
 <div class="section">
 <h4 id="returns-2">Returns<a class="anchor" aria-label="anchor" href="#returns-2"></a></h4>
-<p>(promise&lt;data.table&gt;) a <a href="https://rdrr.io/pkg/data.table/man/data.table.html" class="external-link">data.table::data.table</a> with <code>coin</code>,
-<code>total</code>, <code>hold</code>, <code>entry_ntl</code>, or a promise thereof.</p>
-</div>
+<p>(promise&lt;data.table&gt;) a <a href="https://rdrr.io/pkg/data.table/man/data.table.html" class="external-link">data.table::data.table</a>, one row per spot
+balance (or a promise thereof):</p><ul><li><p>coin (character) the token symbol.</p></li>
+<li><p>total (numeric) the total balance.</p></li>
+<li><p>hold (numeric) the held (non-withdrawable) balance.</p></li>
+<li><p>entry_ntl (numeric) the entry notional (cost basis).</p></li>
+</ul></div>
 
 </div><p></p><hr><a id="method-HyperliquidAccount-get_open_orders"></a><div class="section">
 <h3 id="method-get-open-orders-">Method <code>get_open_orders()</code><a class="anchor" aria-label="anchor" href="#method-get-open-orders-"></a></h3>
@@ -215,9 +218,14 @@ Defaults to the instance's acting address.</p></dd>
 </div>
 <div class="section">
 <h4 id="returns-3">Returns<a class="anchor" aria-label="anchor" href="#returns-3"></a></h4>
-<p>(promise&lt;data.table&gt;) a <a href="https://rdrr.io/pkg/data.table/man/data.table.html" class="external-link">data.table::data.table</a> with <code>coin</code>,
-<code>oid</code>, <code>side</code>, <code>limit_px</code>, <code>sz</code>, <code>timestamp</code>, or a promise thereof.</p>
-</div>
+<p>(promise&lt;data.table&gt;) a <a href="https://rdrr.io/pkg/data.table/man/data.table.html" class="external-link">data.table::data.table</a>, one row per
+resting order (or a promise thereof):</p><ul><li><p>coin (character) the coin symbol.</p></li>
+<li><p>oid (numeric) the order id.</p></li>
+<li><p>side (character) the order side (<code>"buy"</code> or <code>"sell"</code>).</p></li>
+<li><p>limit_px (numeric) the limit price.</p></li>
+<li><p>sz (numeric) the remaining size.</p></li>
+<li><p>timestamp (POSIXct) the order's placement time.</p></li>
+</ul></div>
 
 </div><p></p><hr><a id="method-HyperliquidAccount-get_frontend_open_orders"></a><div class="section">
 <h3 id="method-get-frontend-open-orders-">Method <code>get_frontend_open_orders()</code><a class="anchor" aria-label="anchor" href="#method-get-frontend-open-orders-"></a></h3>
@@ -241,11 +249,23 @@ Defaults to the instance's acting address.</p></dd>
 </div>
 <div class="section">
 <h4 id="returns-4">Returns<a class="anchor" aria-label="anchor" href="#returns-4"></a></h4>
-<p>(promise&lt;data.table&gt;) a <a href="https://rdrr.io/pkg/data.table/man/data.table.html" class="external-link">data.table::data.table</a> with <code>coin</code>,
-<code>oid</code>, <code>side</code>, <code>limit_px</code>, <code>sz</code>, <code>timestamp</code>, <code>order_type</code>,
-<code>is_trigger</code>, <code>trigger_px</code>, <code>trigger_condition</code>, <code>reduce_only</code>, <code>tif</code>,
-<code>orig_sz</code>, <code>is_position_tpsl</code>, or a promise thereof.</p>
-</div>
+<p>(promise&lt;data.table&gt;) a <a href="https://rdrr.io/pkg/data.table/man/data.table.html" class="external-link">data.table::data.table</a>, one row per
+resting order (or a promise thereof):</p><ul><li><p>coin (character) the coin symbol.</p></li>
+<li><p>oid (numeric) the order id.</p></li>
+<li><p>side (character) the order side (<code>"buy"</code> or <code>"sell"</code>).</p></li>
+<li><p>limit_px (numeric) the limit price.</p></li>
+<li><p>sz (numeric) the remaining size.</p></li>
+<li><p>timestamp (POSIXct) the order's placement time.</p></li>
+<li><p>order_type (character) the order type, e.g. <code>"Limit"</code>.</p></li>
+<li><p>is_trigger (logical) whether the order is a trigger order.</p></li>
+<li><p>trigger_px (numeric) the trigger price (<code>0</code> when not a trigger).</p></li>
+<li><p>trigger_condition (character) the trigger condition (<code>"N/A"</code> when
+not a trigger).</p></li>
+<li><p>reduce_only (logical) whether the order is reduce-only.</p></li>
+<li><p>tif (character | NA) the time-in-force, <code>NA</code> when not applicable.</p></li>
+<li><p>orig_sz (numeric) the original (pre-fill) size.</p></li>
+<li><p>is_position_tpsl (logical) whether the order is a position TP/SL.</p></li>
+</ul></div>
 
 </div><p></p><hr><a id="method-HyperliquidAccount-get_user_fills"></a><div class="section">
 <h3 id="method-get-user-fills-">Method <code>get_user_fills()</code><a class="anchor" aria-label="anchor" href="#method-get-user-fills-"></a></h3>
@@ -333,12 +353,27 @@ Defaults to the instance's acting address.</p></dd>
 </div>
 <div class="section">
 <h4 id="returns-7">Returns<a class="anchor" aria-label="anchor" href="#returns-7"></a></h4>
-<p>(promise&lt;data.table&gt;) a <a href="https://rdrr.io/pkg/data.table/man/data.table.html" class="external-link">data.table::data.table</a> with <code>oid</code>,
-<code>coin</code>, <code>side</code>, <code>limit_px</code>, <code>sz</code>, <code>orig_sz</code>, <code>order_type</code>, <code>tif</code>,
-<code>reduce_only</code>, <code>trigger_px</code>, <code>trigger_condition</code>, <code>is_trigger</code>,
-<code>is_position_tpsl</code>, <code>cloid</code>, <code>timestamp</code>, <code>status</code>, <code>status_timestamp</code>,
-or a promise thereof.</p>
-</div>
+<p>(promise&lt;data.table&gt;) a <a href="https://rdrr.io/pkg/data.table/man/data.table.html" class="external-link">data.table::data.table</a>, one row per
+status transition (or a promise thereof):</p><ul><li><p>oid (numeric) the order id.</p></li>
+<li><p>coin (character) the coin symbol.</p></li>
+<li><p>side (character) the order side (<code>"buy"</code> or <code>"sell"</code>).</p></li>
+<li><p>limit_px (numeric) the limit price.</p></li>
+<li><p>sz (numeric) the remaining size.</p></li>
+<li><p>orig_sz (numeric) the original (pre-fill) size.</p></li>
+<li><p>order_type (character) the order type, e.g. <code>"Limit"</code>.</p></li>
+<li><p>tif (character | NA) the time-in-force, <code>NA</code> when not applicable.</p></li>
+<li><p>reduce_only (logical) whether the order is reduce-only.</p></li>
+<li><p>trigger_px (numeric) the trigger price (<code>0</code> when not a trigger).</p></li>
+<li><p>trigger_condition (character) the trigger condition (<code>"N/A"</code> when
+not a trigger).</p></li>
+<li><p>is_trigger (logical) whether the order is a trigger order.</p></li>
+<li><p>is_position_tpsl (logical) whether the order is a position TP/SL.</p></li>
+<li><p>cloid (character | NA) the client order id, <code>NA</code> when none.</p></li>
+<li><p>timestamp (POSIXct) the order's placement time.</p></li>
+<li><p>status (character) the transition status, e.g. <code>"open"</code>, <code>"filled"</code>,
+<code>"canceled"</code>.</p></li>
+<li><p>status_timestamp (POSIXct) the time of the status transition.</p></li>
+</ul></div>
 
 </div><p></p><hr><a id="method-HyperliquidAccount-get_user_funding"></a><div class="section">
 <h3 id="method-get-user-funding-">Method <code>get_user_funding()</code><a class="anchor" aria-label="anchor" href="#method-get-user-funding-"></a></h3>
@@ -373,10 +408,15 @@ epoch-milliseconds, or <code>NULL</code>). Default <code>NULL</code> (up to now)
 </div>
 <div class="section">
 <h4 id="returns-8">Returns<a class="anchor" aria-label="anchor" href="#returns-8"></a></h4>
-<p>(promise&lt;data.table&gt;) a <a href="https://rdrr.io/pkg/data.table/man/data.table.html" class="external-link">data.table::data.table</a> with <code>time</code>,
-<code>hash</code>, <code>coin</code>, <code>funding_rate</code>, <code>szi</code>, <code>usdc</code>, <code>n_samples</code>, or a promise
-thereof.</p>
-</div>
+<p>(promise&lt;data.table&gt;) a <a href="https://rdrr.io/pkg/data.table/man/data.table.html" class="external-link">data.table::data.table</a>, one row per
+funding payment (or a promise thereof):</p><ul><li><p>time (POSIXct) the payment time.</p></li>
+<li><p>hash (character) the on-chain hash.</p></li>
+<li><p>coin (character) the coin symbol.</p></li>
+<li><p>funding_rate (numeric) the funding rate applied.</p></li>
+<li><p>szi (numeric) the signed position size at the sample.</p></li>
+<li><p>usdc (numeric) the USDC amount paid or received.</p></li>
+<li><p>n_samples (numeric) the number of samples in the payment.</p></li>
+</ul></div>
 
 </div><p></p><hr><a id="method-HyperliquidAccount-get_user_non_funding_ledger_updates"></a><div class="section">
 <h3 id="method-get-user-non-funding-ledger-updates-">Method <code>get_user_non_funding_ledger_updates()</code><a class="anchor" aria-label="anchor" href="#method-get-user-non-funding-ledger-updates-"></a></h3>
@@ -436,9 +476,12 @@ Defaults to the instance's acting address.</p></dd>
 </div>
 <div class="section">
 <h4 id="returns-10">Returns<a class="anchor" aria-label="anchor" href="#returns-10"></a></h4>
-<p>(promise&lt;data.table&gt;) a <a href="https://rdrr.io/pkg/data.table/man/data.table.html" class="external-link">data.table::data.table</a> with <code>period</code>,
-<code>metric</code>, <code>time</code>, <code>value</code>, or a promise thereof.</p>
-</div>
+<p>(promise&lt;data.table&gt;) a <a href="https://rdrr.io/pkg/data.table/man/data.table.html" class="external-link">data.table::data.table</a>, one row per
+(period, metric, point) (or a promise thereof):</p><ul><li><p>period (character) the period, e.g. <code>"day"</code>, <code>"perpAllTime"</code>.</p></li>
+<li><p>metric (character) the metric (<code>"account_value"</code> or <code>"pnl"</code>).</p></li>
+<li><p>time (POSIXct) the sample time.</p></li>
+<li><p>value (numeric) the sampled value.</p></li>
+</ul></div>
 
 </div><p></p><hr><a id="method-HyperliquidAccount-get_portfolio_volume"></a><div class="section">
 <h3 id="method-get-portfolio-volume-">Method <code>get_portfolio_volume()</code><a class="anchor" aria-label="anchor" href="#method-get-portfolio-volume-"></a></h3>
@@ -459,9 +502,10 @@ Defaults to the instance's acting address.</p></dd>
 </div>
 <div class="section">
 <h4 id="returns-11">Returns<a class="anchor" aria-label="anchor" href="#returns-11"></a></h4>
-<p>(promise&lt;data.table&gt;) a <a href="https://rdrr.io/pkg/data.table/man/data.table.html" class="external-link">data.table::data.table</a> with <code>period</code>,
-<code>vlm</code>, or a promise thereof.</p>
-</div>
+<p>(promise&lt;data.table&gt;) a <a href="https://rdrr.io/pkg/data.table/man/data.table.html" class="external-link">data.table::data.table</a>, one row per
+period (or a promise thereof):</p><ul><li><p>period (character) the period, e.g. <code>"day"</code>, <code>"perpAllTime"</code>.</p></li>
+<li><p>vlm (numeric) the traded volume for the period.</p></li>
+</ul></div>
 
 </div><p></p><hr><a id="method-HyperliquidAccount-get_user_fees"></a><div class="section">
 <h3 id="method-get-user-fees-">Method <code>get_user_fees()</code><a class="anchor" aria-label="anchor" href="#method-get-user-fees-"></a></h3>
@@ -481,10 +525,11 @@ Defaults to the instance's acting address.</p></dd>
 </div>
 <div class="section">
 <h4 id="returns-12">Returns<a class="anchor" aria-label="anchor" href="#returns-12"></a></h4>
-<p>(promise&lt;data.table&gt;) a single-row <a href="https://rdrr.io/pkg/data.table/man/data.table.html" class="external-link">data.table::data.table</a> with
-<code>user_add_rate</code>, <code>user_cross_rate</code>, <code>active_referral_discount</code>, or a
-promise thereof.</p>
-</div>
+<p>(promise&lt;data.table&gt;) a single-row <a href="https://rdrr.io/pkg/data.table/man/data.table.html" class="external-link">data.table::data.table</a> (or a
+promise thereof):</p><ul><li><p>user_add_rate (numeric) the maker (add-liquidity) fee rate.</p></li>
+<li><p>user_cross_rate (numeric) the taker (crossing) fee rate.</p></li>
+<li><p>active_referral_discount (numeric) the active referral discount.</p></li>
+</ul></div>
 
 </div><p></p><hr><a id="method-HyperliquidAccount-get_user_volume"></a><div class="section">
 <h3 id="method-get-user-volume-">Method <code>get_user_volume()</code><a class="anchor" aria-label="anchor" href="#method-get-user-volume-"></a></h3>
@@ -505,9 +550,12 @@ Defaults to the instance's acting address.</p></dd>
 </div>
 <div class="section">
 <h4 id="returns-13">Returns<a class="anchor" aria-label="anchor" href="#returns-13"></a></h4>
-<p>(promise&lt;data.table&gt;) a <a href="https://rdrr.io/pkg/data.table/man/data.table.html" class="external-link">data.table::data.table</a> with <code>date</code>,
-<code>exchange</code>, <code>user_add</code>, <code>user_cross</code>, or a promise thereof.</p>
-</div>
+<p>(promise&lt;data.table&gt;) a <a href="https://rdrr.io/pkg/data.table/man/data.table.html" class="external-link">data.table::data.table</a>, one row per day
+(or a promise thereof):</p><ul><li><p>date (character) the calendar day (<code>YYYY-MM-DD</code>).</p></li>
+<li><p>exchange (numeric) the exchange-wide volume that day.</p></li>
+<li><p>user_add (numeric) the user's maker (add) volume that day.</p></li>
+<li><p>user_cross (numeric) the user's taker (crossing) volume that day.</p></li>
+</ul></div>
 
 </div><p></p><hr><a id="method-HyperliquidAccount-get_user_rate_limit"></a><div class="section">
 <h3 id="method-get-user-rate-limit-">Method <code>get_user_rate_limit()</code><a class="anchor" aria-label="anchor" href="#method-get-user-rate-limit-"></a></h3>
@@ -527,9 +575,11 @@ Defaults to the instance's acting address.</p></dd>
 </div>
 <div class="section">
 <h4 id="returns-14">Returns<a class="anchor" aria-label="anchor" href="#returns-14"></a></h4>
-<p>(promise&lt;data.table&gt;) a single-row <a href="https://rdrr.io/pkg/data.table/man/data.table.html" class="external-link">data.table::data.table</a> with
-<code>cum_vlm</code>, <code>n_requests_used</code>, <code>n_requests_cap</code>, or a promise thereof.</p>
-</div>
+<p>(promise&lt;data.table&gt;) a single-row <a href="https://rdrr.io/pkg/data.table/man/data.table.html" class="external-link">data.table::data.table</a> (or a
+promise thereof):</p><ul><li><p>cum_vlm (numeric) the cumulative traded volume.</p></li>
+<li><p>n_requests_used (numeric) the number of requests used.</p></li>
+<li><p>n_requests_cap (numeric) the request cap.</p></li>
+</ul></div>
 
 </div><p></p><hr><a id="method-HyperliquidAccount-get_user_role"></a><div class="section">
 <h3 id="method-get-user-role-">Method <code>get_user_role()</code><a class="anchor" aria-label="anchor" href="#method-get-user-role-"></a></h3>
@@ -550,9 +600,10 @@ Defaults to the instance's acting address.</p></dd>
 </div>
 <div class="section">
 <h4 id="returns-15">Returns<a class="anchor" aria-label="anchor" href="#returns-15"></a></h4>
-<p>(promise&lt;data.table&gt;) a single-row <a href="https://rdrr.io/pkg/data.table/man/data.table.html" class="external-link">data.table::data.table</a> with
-<code>role</code>, or a promise thereof.</p>
-</div>
+<p>(promise&lt;data.table&gt;) a single-row <a href="https://rdrr.io/pkg/data.table/man/data.table.html" class="external-link">data.table::data.table</a> (or a
+promise thereof):</p><ul><li><p>role (character) the account role, e.g. <code>"user"</code>, <code>"vault"</code>,
+<code>"agent"</code>, <code>"subAccount"</code>.</p></li>
+</ul></div>
 
 </div><p></p><hr><a id="method-HyperliquidAccount-get_sub_accounts"></a><div class="section">
 <h3 id="method-get-sub-accounts-">Method <code>get_sub_accounts()</code><a class="anchor" aria-label="anchor" href="#method-get-sub-accounts-"></a></h3>
@@ -573,11 +624,16 @@ Defaults to the instance's acting address.</p></dd>
 </div>
 <div class="section">
 <h4 id="returns-16">Returns<a class="anchor" aria-label="anchor" href="#returns-16"></a></h4>
-<p>(promise&lt;data.table&gt;) a <a href="https://rdrr.io/pkg/data.table/man/data.table.html" class="external-link">data.table::data.table</a> with <code>name</code>,
-<code>sub_account_user</code>, <code>master</code>, <code>account_value</code>, <code>total_ntl_pos</code>,
-<code>total_raw_usd</code>, <code>total_margin_used</code>, <code>withdrawable</code>, or a promise
-thereof.</p>
-</div>
+<p>(promise&lt;data.table&gt;) a <a href="https://rdrr.io/pkg/data.table/man/data.table.html" class="external-link">data.table::data.table</a>, one row per
+sub-account (or a promise thereof):</p><ul><li><p>name (character) the sub-account name.</p></li>
+<li><p>sub_account_user (character) the sub-account's <code>0x</code> address.</p></li>
+<li><p>master (character) the master account's <code>0x</code> address.</p></li>
+<li><p>account_value (numeric) the sub-account's account value.</p></li>
+<li><p>total_ntl_pos (numeric) the total notional position.</p></li>
+<li><p>total_raw_usd (numeric) the total raw USD.</p></li>
+<li><p>total_margin_used (numeric) the total margin used.</p></li>
+<li><p>withdrawable (numeric) the withdrawable balance.</p></li>
+</ul></div>
 
 </div><p></p><hr><a id="method-HyperliquidAccount-get_order_status"></a><div class="section">
 <h3 id="method-get-order-status-">Method <code>get_order_status()</code><a class="anchor" aria-label="anchor" href="#method-get-order-status-"></a></h3>
@@ -586,7 +642,7 @@ client order id.</p><div class="section">
 <h4 id="usage-17">Usage<a class="anchor" aria-label="anchor" href="#usage-17"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">HyperliquidAccount</span><span class="op">$</span><span class="fu">get_order_status</span><span class="op">(</span></span>
 <span>  address <span class="op">=</span> <span class="va">private</span><span class="op">$</span><span class="fu">.acting_address</span><span class="op">(</span><span class="op">)</span>,</span>
-<span>  <span class="va">oid_or_cloid</span></span>
+<span>  <span class="va">order_id_or_client_order_id</span></span>
 <span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
@@ -597,19 +653,38 @@ client order id.</p><div class="section">
 Defaults to the instance's acting address.</p></dd>
 
 
-<dt><code>oid_or_cloid</code></dt>
-<dd><p>(scalar&lt;numeric&gt; | scalar&lt;character&gt;) numeric order
-id, or character <code>0x</code>-prefixed client order id (cloid).</p></dd>
+<dt><code>order_id_or_client_order_id</code></dt>
+<dd><p>(scalar&lt;numeric&gt; | scalar&lt;character&gt;)
+numeric order id, or character <code>0x</code>-prefixed client order id.</p></dd>
 
 
 </dl><p></p></div>
 </div>
 <div class="section">
 <h4 id="returns-17">Returns<a class="anchor" aria-label="anchor" href="#returns-17"></a></h4>
-<p>(promise&lt;data.table&gt;) a single-row <a href="https://rdrr.io/pkg/data.table/man/data.table.html" class="external-link">data.table::data.table</a> with
-<code>query_status</code> and the order shape (<code>oid</code>, <code>coin</code>, <code>side</code>, ..., <code>status</code>,
-<code>status_timestamp</code>), or a promise thereof.</p>
-</div>
+<p>(promise&lt;data.table&gt;) a single-row <a href="https://rdrr.io/pkg/data.table/man/data.table.html" class="external-link">data.table::data.table</a> (or a
+promise thereof). When the order is not found (<code>query_status</code> is
+<code>"unknownOid"</code>) every order column is <code>NA</code>:</p><ul><li><p>query_status (character) the lookup status (<code>"order"</code> or
+<code>"unknownOid"</code>).</p></li>
+<li><p>oid (numeric | NA) the order id.</p></li>
+<li><p>coin (character | NA) the coin symbol.</p></li>
+<li><p>side (character | NA) the order side (<code>"buy"</code> or <code>"sell"</code>).</p></li>
+<li><p>limit_px (numeric | NA) the limit price.</p></li>
+<li><p>sz (numeric | NA) the remaining size.</p></li>
+<li><p>orig_sz (numeric | NA) the original (pre-fill) size.</p></li>
+<li><p>order_type (character | NA) the order type, e.g. <code>"Limit"</code>.</p></li>
+<li><p>tif (character | NA) the time-in-force.</p></li>
+<li><p>reduce_only (logical | NA) whether the order is reduce-only.</p></li>
+<li><p>trigger_px (numeric | NA) the trigger price.</p></li>
+<li><p>trigger_condition (character | NA) the trigger condition.</p></li>
+<li><p>is_trigger (logical | NA) whether the order is a trigger order.</p></li>
+<li><p>is_position_tpsl (logical | NA) whether the order is a position TP/SL.</p></li>
+<li><p>cloid (character | NA) the client order id.</p></li>
+<li><p>timestamp (POSIXct | NA) the order's placement time.</p></li>
+<li><p>status (character | NA) the order's status, e.g. <code>"open"</code>,
+<code>"filled"</code>, <code>"canceled"</code>.</p></li>
+<li><p>status_timestamp (POSIXct | NA) the time of the status.</p></li>
+</ul></div>
 
 </div><p></p><hr><a id="method-HyperliquidAccount-get_user_vault_equities"></a><div class="section">
 <h3 id="method-get-user-vault-equities-">Method <code>get_user_vault_equities()</code><a class="anchor" aria-label="anchor" href="#method-get-user-vault-equities-"></a></h3>
@@ -630,10 +705,11 @@ Defaults to the instance's acting address.</p></dd>
 </div>
 <div class="section">
 <h4 id="returns-18">Returns<a class="anchor" aria-label="anchor" href="#returns-18"></a></h4>
-<p>(promise&lt;data.table&gt;) a <a href="https://rdrr.io/pkg/data.table/man/data.table.html" class="external-link">data.table::data.table</a> with
-<code>vault_address</code>, <code>equity</code>, <code>locked_until_timestamp</code>, or a promise
-thereof.</p>
-</div>
+<p>(promise&lt;data.table&gt;) a <a href="https://rdrr.io/pkg/data.table/man/data.table.html" class="external-link">data.table::data.table</a>, one row per vault
+(or a promise thereof):</p><ul><li><p>vault_address (character) the vault's <code>0x</code> address.</p></li>
+<li><p>equity (numeric) the user's equity in the vault.</p></li>
+<li><p>locked_until_timestamp (POSIXct) when the equity unlocks.</p></li>
+</ul></div>
 
 </div><p></p><hr><a id="method-HyperliquidAccount-clone"></a><div class="section">
 <h3 id="method-clone-">Method <code>clone()</code><a class="anchor" aria-label="anchor" href="#method-clone-"></a></h3>

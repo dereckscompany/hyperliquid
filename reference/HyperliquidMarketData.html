@@ -9,7 +9,7 @@ HyperliquidMarketData: Public Market Data Retrieval"></head><body>
 
     <a class="navbar-brand me-2" href="../index.html">hyperliquid</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -38,7 +38,7 @@ HyperliquidMarketData: Public Market Data Retrieval"></head><body>
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>HyperliquidMarketData: Public Market Data Retrieval</h1>
-      <small class="dont-index">Source: <a href="https://github.com/dereckscompany/hyperliquid/blob/v0.0.1/R/HyperliquidMarketData.R" class="external-link"><code>R/HyperliquidMarketData.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/dereckscompany/hyperliquid/blob/v0.3.0/R/HyperliquidMarketData.R" class="external-link"><code>R/HyperliquidMarketData.R</code></a></small>
       <div class="d-none name"><code>HyperliquidMarketData.Rd</code></div>
     </div>
 
@@ -82,8 +82,8 @@ the inherited <code>name_to_coin()</code>.</p>
 
     </div>
     <div class="section level2">
-    <h2 id="super-class">Super class<a class="anchor" aria-label="anchor" href="#super-class"></a></h2>
-    <p><code><a href="HyperliquidBase.html">hyperliquid::HyperliquidBase</a></code> -&gt; <code>HyperliquidMarketData</code></p>
+    <h2 id="super-classes">Super classes<a class="anchor" aria-label="anchor" href="#super-classes"></a></h2>
+    <p><code><a href="https://rdrr.io/pkg/connectcore/man/RestClient.html" class="external-link">connectcore::RestClient</a></code> -&gt; <code><a href="HyperliquidBase.html">hyperliquid::HyperliquidBase</a></code> -&gt; <code>HyperliquidMarketData</code></p>
     </div>
     <div class="section level2">
     <h2 id="methods">Methods<a class="anchor" aria-label="anchor" href="#methods"></a></h2>
@@ -136,10 +136,13 @@ same payload.</p><div class="section">
 
 <div class="section">
 <h4 id="returns-1">Returns<a class="anchor" aria-label="anchor" href="#returns-1"></a></h4>
-<p>(promise&lt;data.table&gt;) a <a href="https://rdrr.io/pkg/data.table/man/data.table.html" class="external-link">data.table::data.table</a> with columns
-<code>name</code>, <code>index</code>, <code>is_canonical</code>, <code>token_base</code>, <code>token_quote</code>, or a
-promise thereof.</p>
-</div>
+<p>(promise&lt;data.table&gt;) a <a href="https://rdrr.io/pkg/data.table/man/data.table.html" class="external-link">data.table::data.table</a>, one row per spot
+pair (or a promise thereof):</p><ul><li><p>name (character) the spot pair symbol.</p></li>
+<li><p>index (numeric) the pair index.</p></li>
+<li><p>is_canonical (logical) whether the pair is canonical.</p></li>
+<li><p>token_base (numeric) the base token index.</p></li>
+<li><p>token_quote (numeric) the quote token index.</p></li>
+</ul></div>
 
 </div><p></p><hr><a id="method-HyperliquidMarketData-get_spot_tokens"></a><div class="section">
 <h3 id="method-get-spot-tokens-">Method <code>get_spot_tokens()</code><a class="anchor" aria-label="anchor" href="#method-get-spot-tokens-"></a></h3>
@@ -151,10 +154,14 @@ get_spot_meta(), which parses the pair universe from the same payload.</p><div c
 
 <div class="section">
 <h4 id="returns-2">Returns<a class="anchor" aria-label="anchor" href="#returns-2"></a></h4>
-<p>(promise&lt;data.table&gt;) a <a href="https://rdrr.io/pkg/data.table/man/data.table.html" class="external-link">data.table::data.table</a> with columns
-<code>name</code>, <code>index</code>, <code>sz_decimals</code>, <code>wei_decimals</code>, <code>token_id</code>,
-<code>is_canonical</code>, or a promise thereof.</p>
-</div>
+<p>(promise&lt;data.table&gt;) a <a href="https://rdrr.io/pkg/data.table/man/data.table.html" class="external-link">data.table::data.table</a>, one row per spot
+token (or a promise thereof):</p><ul><li><p>name (character) the token symbol.</p></li>
+<li><p>index (numeric) the token index.</p></li>
+<li><p>sz_decimals (numeric) size decimals.</p></li>
+<li><p>wei_decimals (numeric) wei decimals.</p></li>
+<li><p>token_id (character) the on-chain token id.</p></li>
+<li><p>is_canonical (logical) whether the token is canonical.</p></li>
+</ul></div>
 
 </div><p></p><hr><a id="method-HyperliquidMarketData-get_meta_and_asset_ctxs"></a><div class="section">
 <h3 id="method-get-meta-and-asset-ctxs-">Method <code>get_meta_and_asset_ctxs()</code><a class="anchor" aria-label="anchor" href="#method-get-meta-and-asset-ctxs-"></a></h3>
@@ -167,11 +174,22 @@ one row per perp coin.</p><div class="section">
 
 <div class="section">
 <h4 id="returns-3">Returns<a class="anchor" aria-label="anchor" href="#returns-3"></a></h4>
-<p>(promise&lt;data.table&gt;) a <a href="https://rdrr.io/pkg/data.table/man/data.table.html" class="external-link">data.table::data.table</a> with columns
-<code>name</code>, <code>sz_decimals</code>, <code>max_leverage</code>, <code>day_ntl_vlm</code>, <code>funding</code>,
-<code>mark_px</code>, <code>mid_px</code>, <code>oracle_px</code>, <code>open_interest</code>, <code>premium</code>,
-<code>prev_day_px</code>, <code>impact_px_bid</code>, <code>impact_px_ask</code>, or a promise thereof.</p>
-</div>
+<p>(promise&lt;data.table&gt;) a <a href="https://rdrr.io/pkg/data.table/man/data.table.html" class="external-link">data.table::data.table</a>, one row per perp
+coin (or a promise thereof). The context columns are <code>NA</code> for a coin with
+no asset context:</p><ul><li><p>name (character) the coin symbol.</p></li>
+<li><p>sz_decimals (numeric) size decimals.</p></li>
+<li><p>max_leverage (numeric) maximum leverage.</p></li>
+<li><p>day_ntl_vlm (numeric | NA) 24h notional volume.</p></li>
+<li><p>funding (numeric | NA) the current funding rate.</p></li>
+<li><p>mark_px (numeric | NA) the mark price.</p></li>
+<li><p>mid_px (numeric | NA) the mid price.</p></li>
+<li><p>oracle_px (numeric | NA) the oracle price.</p></li>
+<li><p>open_interest (numeric | NA) the open interest.</p></li>
+<li><p>premium (numeric | NA) the premium.</p></li>
+<li><p>prev_day_px (numeric | NA) the previous-day price.</p></li>
+<li><p>impact_px_bid (numeric | NA) the impact bid price.</p></li>
+<li><p>impact_px_ask (numeric | NA) the impact ask price.</p></li>
+</ul></div>
 
 </div><p></p><hr><a id="method-HyperliquidMarketData-get_spot_meta_and_asset_ctxs"></a><div class="section">
 <h3 id="method-get-spot-meta-and-asset-ctxs-">Method <code>get_spot_meta_and_asset_ctxs()</code><a class="anchor" aria-label="anchor" href="#method-get-spot-meta-and-asset-ctxs-"></a></h3>
@@ -183,10 +201,14 @@ spot coin.</p><div class="section">
 
 <div class="section">
 <h4 id="returns-4">Returns<a class="anchor" aria-label="anchor" href="#returns-4"></a></h4>
-<p>(promise&lt;data.table&gt;) a <a href="https://rdrr.io/pkg/data.table/man/data.table.html" class="external-link">data.table::data.table</a> with columns
-<code>coin</code>, <code>day_ntl_vlm</code>, <code>mark_px</code>, <code>mid_px</code>, <code>prev_day_px</code>,
-<code>circulating_supply</code>, or a promise thereof.</p>
-</div>
+<p>(promise&lt;data.table&gt;) a <a href="https://rdrr.io/pkg/data.table/man/data.table.html" class="external-link">data.table::data.table</a>, one row per spot
+coin (or a promise thereof):</p><ul><li><p>coin (character) the coin symbol.</p></li>
+<li><p>day_ntl_vlm (numeric) 24h notional volume.</p></li>
+<li><p>mark_px (numeric) the mark price.</p></li>
+<li><p>mid_px (numeric | NA) the mid price, <code>NA</code> when there is no book.</p></li>
+<li><p>prev_day_px (numeric) the previous-day price.</p></li>
+<li><p>circulating_supply (numeric) the circulating supply.</p></li>
+</ul></div>
 
 </div><p></p><hr><a id="method-HyperliquidMarketData-get_all_mids"></a><div class="section">
 <h3 id="method-get-all-mids-">Method <code>get_all_mids()</code><a class="anchor" aria-label="anchor" href="#method-get-all-mids-"></a></h3>
@@ -198,9 +220,10 @@ row per coin.</p><div class="section">
 
 <div class="section">
 <h4 id="returns-5">Returns<a class="anchor" aria-label="anchor" href="#returns-5"></a></h4>
-<p>(promise&lt;data.table&gt;) a <a href="https://rdrr.io/pkg/data.table/man/data.table.html" class="external-link">data.table::data.table</a> with columns
-<code>coin</code>, <code>mid</code>, or a promise thereof.</p>
-</div>
+<p>(promise&lt;data.table&gt;) a <a href="https://rdrr.io/pkg/data.table/man/data.table.html" class="external-link">data.table::data.table</a>, one row per coin
+(or a promise thereof):</p><ul><li><p>coin (character) the coin symbol.</p></li>
+<li><p>mid (numeric) the mid price.</p></li>
+</ul></div>
 
 </div><p></p><hr><a id="method-HyperliquidMarketData-get_l2_book"></a><div class="section">
 <h3 id="method-get-l-book-">Method <code>get_l2_book()</code><a class="anchor" aria-label="anchor" href="#method-get-l-book-"></a></h3>
@@ -315,10 +338,14 @@ one row per (coin, venue).</p><div class="section">
 
 <div class="section">
 <h4 id="returns-9">Returns<a class="anchor" aria-label="anchor" href="#returns-9"></a></h4>
-<p>(promise&lt;data.table&gt;) a <a href="https://rdrr.io/pkg/data.table/man/data.table.html" class="external-link">data.table::data.table</a> with columns
-<code>coin</code>, <code>venue</code>, <code>funding_rate</code>, <code>next_funding_time</code>,
-<code>funding_interval_hours</code>, or a promise thereof.</p>
-</div>
+<p>(promise&lt;data.table&gt;) a <a href="https://rdrr.io/pkg/data.table/man/data.table.html" class="external-link">data.table::data.table</a>, one row per
+(coin, venue) (or a promise thereof). A venue whose body is <code>null</code> yields
+<code>NA</code> rate fields:</p><ul><li><p>coin (character) the coin symbol.</p></li>
+<li><p>venue (character) the venue name.</p></li>
+<li><p>funding_rate (numeric | NA) the predicted funding rate.</p></li>
+<li><p>next_funding_time (POSIXct | NA) the next funding time.</p></li>
+<li><p>funding_interval_hours (numeric | NA) the funding interval, in hours.</p></li>
+</ul></div>
 
 </div><p></p><hr><a id="method-HyperliquidMarketData-get_perp_dexs"></a><div class="section">
 <h3 id="method-get-perp-dexs-">Method <code>get_perp_dexs()</code><a class="anchor" aria-label="anchor" href="#method-get-perp-dexs-"></a></h3>
@@ -330,10 +357,14 @@ core-dex sentinel is omitted.</p><div class="section">
 
 <div class="section">
 <h4 id="returns-10">Returns<a class="anchor" aria-label="anchor" href="#returns-10"></a></h4>
-<p>(promise&lt;data.table&gt;) a <a href="https://rdrr.io/pkg/data.table/man/data.table.html" class="external-link">data.table::data.table</a> with columns
-<code>name</code>, <code>full_name</code>, <code>deployer</code>, <code>oracle_updater</code>, <code>fee_recipient</code>, or a
-promise thereof.</p>
-</div>
+<p>(promise&lt;data.table&gt;) a <a href="https://rdrr.io/pkg/data.table/man/data.table.html" class="external-link">data.table::data.table</a>, one row per
+builder-deployed perp dex (or a promise thereof):</p><ul><li><p>name (character) the dex short name.</p></li>
+<li><p>full_name (character) the dex full name.</p></li>
+<li><p>deployer (character) the deployer address.</p></li>
+<li><p>oracle_updater (character | NA) the oracle-updater address, <code>NA</code> when
+absent.</p></li>
+<li><p>fee_recipient (character) the fee-recipient address.</p></li>
+</ul></div>
 
 </div><p></p><hr><a id="method-HyperliquidMarketData-get_recent_trades"></a><div class="section">
 <h3 id="method-get-recent-trades-">Method <code>get_recent_trades()</code><a class="anchor" aria-label="anchor" href="#method-get-recent-trades-"></a></h3>
@@ -353,10 +384,17 @@ both counterparty addresses included).</p><div class="section">
 </div>
 <div class="section">
 <h4 id="returns-11">Returns<a class="anchor" aria-label="anchor" href="#returns-11"></a></h4>
-<p>(promise&lt;data.table&gt;) a <a href="https://rdrr.io/pkg/data.table/man/data.table.html" class="external-link">data.table::data.table</a> with columns
-<code>coin</code>, <code>side</code>, <code>px</code>, <code>sz</code>, <code>time</code>, <code>hash</code>, <code>tid</code>, <code>user_buyer</code>,
-<code>user_seller</code>, or a promise thereof.</p>
-</div>
+<p>(promise&lt;data.table&gt;) a <a href="https://rdrr.io/pkg/data.table/man/data.table.html" class="external-link">data.table::data.table</a>, one row per trade
+(or a promise thereof):</p><ul><li><p>coin (character) the coin symbol.</p></li>
+<li><p>side (character) the aggressor side (<code>"buy"</code> or <code>"sell"</code>).</p></li>
+<li><p>px (numeric) the trade price.</p></li>
+<li><p>sz (numeric) the trade size.</p></li>
+<li><p>time (POSIXct) the trade time.</p></li>
+<li><p>hash (character) the on-chain hash.</p></li>
+<li><p>tid (numeric) the trade id.</p></li>
+<li><p>user_buyer (character) the buyer's <code>0x</code> address.</p></li>
+<li><p>user_seller (character) the seller's <code>0x</code> address.</p></li>
+</ul></div>
 
 </div><p></p><hr><a id="method-HyperliquidMarketData-get_exchange_status"></a><div class="section">
 <h3 id="method-get-exchange-status-">Method <code>get_exchange_status()</code><a class="anchor" aria-label="anchor" href="#method-get-exchange-status-"></a></h3>
@@ -367,9 +405,11 @@ both counterparty addresses included).</p><div class="section">
 
 <div class="section">
 <h4 id="returns-12">Returns<a class="anchor" aria-label="anchor" href="#returns-12"></a></h4>
-<p>(promise&lt;data.table&gt;) a single-row <a href="https://rdrr.io/pkg/data.table/man/data.table.html" class="external-link">data.table::data.table</a> with
-columns <code>time</code>, <code>special_statuses</code>, or a promise thereof.</p>
-</div>
+<p>(promise&lt;data.table&gt;) a single-row <a href="https://rdrr.io/pkg/data.table/man/data.table.html" class="external-link">data.table::data.table</a> (or a
+promise thereof):</p><ul><li><p>time (POSIXct) the status timestamp.</p></li>
+<li><p>special_statuses (character | NA) any special statuses as a JSON
+string, <code>NA</code> when absent.</p></li>
+</ul></div>
 
 </div><p></p><hr><a id="method-HyperliquidMarketData-clone"></a><div class="section">
 <h3 id="method-clone-">Method <code>clone()</code><a class="anchor" aria-label="anchor" href="#method-clone-"></a></h3>

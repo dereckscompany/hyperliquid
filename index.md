@@ -28,7 +28,21 @@ mainnet.
   returns a [promise](https://rstudio.github.io/promises/); otherwise
   results are returned directly. There is a single sync/async branch
   point
-  ([`hyperliquid_build_request()`](https://dereckscompany.github.io/hyperliquid/reference/hyperliquid_build_request.md)).
+  ([`connectcore::then_or_now()`](https://rdrr.io/pkg/connectcore/man/then_or_now.html),
+  which
+  [`hyperliquid_build_request()`](https://dereckscompany.github.io/hyperliquid/reference/hyperliquid_build_request.md)
+  delegates to).
+- **Shared transport base via
+  [github.com/dereckscompany/connectcore](https://github.com/dereckscompany/connectcore).**
+  `HyperliquidBase` inherits
+  [`connectcore::RestClient`](https://rdrr.io/pkg/connectcore/man/RestClient.html)
+  for credential storage, the sync/async perform function, and the
+  overridable error seam (Hyperliquid’s two-failure-shape parser plugs
+  into `.parse_envelope()`). The connector owns no transport: because
+  Hyperliquid signs the request **body** (not the request), the
+  pre-serialised, byte-exact signed JSON is routed through connectcore’s
+  funnel as a raw body (`body_format = "raw"`), which sends it on the
+  wire verbatim.
 - **snake_case columns.** API `camelCase` fields become `snake_case`
   columns; prices and sizes are returned as numerics.
 - **Pure-R Ethereum signing via
@@ -230,8 +244,8 @@ trading <- HyperliquidTrading$new()
 order <- trading$place_order(
   "BTC",
   is_buy = TRUE,
-  sz = 0.001,
-  limit_px = 50000,
+  size = 0.001,
+  limit_price = 50000,
   order_type = list(limit = list(tif = "Gtc"))
 )
 order[]
@@ -248,7 +262,7 @@ order[]
 ``` r
 
 # Cancel a resting order by its order id
-trading$cancel_order("BTC", oid = 77738308)
+trading$cancel_order("BTC", order_id = 77738308)
 ```
 
 ``` R

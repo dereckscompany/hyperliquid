@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">hyperliquid</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -64,7 +64,7 @@
 Mezquita</h4>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/dereckscompany/hyperliquid/blob/v0.0.1/vignettes/trading-strategies.Rmd" class="external-link"><code>vignettes/trading-strategies.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/dereckscompany/hyperliquid/blob/v0.3.0/vignettes/trading-strategies.Rmd" class="external-link"><code>vignettes/trading-strategies.Rmd</code></a></small>
       <div class="d-none name"><code>trading-strategies.Rmd</code></div>
     </div>
 
@@ -156,12 +156,12 @@ IOC).</li>
 <span></span>
 <span><span class="co"># A good-til-cancelled limit BUY (a long): rest a bid at 60,000.</span></span>
 <span><span class="va">trading</span><span class="op">$</span><span class="fu">place_order</span><span class="op">(</span></span>
-<span>  name <span class="op">=</span> <span class="st">"BTC"</span>, is_buy <span class="op">=</span> <span class="cn">TRUE</span>, sz <span class="op">=</span> <span class="fl">0.001</span>, limit_px <span class="op">=</span> <span class="fl">60000</span>,</span>
+<span>  name <span class="op">=</span> <span class="st">"BTC"</span>, is_buy <span class="op">=</span> <span class="cn">TRUE</span>, size <span class="op">=</span> <span class="fl">0.001</span>, limit_price <span class="op">=</span> <span class="fl">60000</span>,</span>
 <span>  order_type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>limit <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>tif <span class="op">=</span> <span class="st">"Gtc"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Or take liquidity immediately with a market buy.</span></span>
-<span><span class="va">trading</span><span class="op">$</span><span class="fu">market_open</span><span class="op">(</span>name <span class="op">=</span> <span class="st">"BTC"</span>, is_buy <span class="op">=</span> <span class="cn">TRUE</span>, sz <span class="op">=</span> <span class="fl">0.001</span><span class="op">)</span></span></code></pre></div>
+<span><span class="va">trading</span><span class="op">$</span><span class="fu">market_open</span><span class="op">(</span>name <span class="op">=</span> <span class="st">"BTC"</span>, is_buy <span class="op">=</span> <span class="cn">TRUE</span>, size <span class="op">=</span> <span class="fl">0.001</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">#&gt;     status      oid total_sz avg_px                                 error</span></span>
 <span><span class="co">#&gt;     &lt;char&gt;    &lt;num&gt;    &lt;num&gt;  &lt;num&gt;                                &lt;char&gt;</span></span>
 <span><span class="co">#&gt; 1: resting 77738308       NA     NA                                  &lt;NA&gt;</span></span>
@@ -181,7 +181,7 @@ positioned to profit if the price falls. The only change is
 <code>is_buy = FALSE</code>.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># A market SHORT on ETH.</span></span>
-<span><span class="va">trading</span><span class="op">$</span><span class="fu">market_open</span><span class="op">(</span>name <span class="op">=</span> <span class="st">"ETH"</span>, is_buy <span class="op">=</span> <span class="cn">FALSE</span>, sz <span class="op">=</span> <span class="fl">0.05</span><span class="op">)</span></span></code></pre></div>
+<span><span class="va">trading</span><span class="op">$</span><span class="fu">market_open</span><span class="op">(</span>name <span class="op">=</span> <span class="st">"ETH"</span>, is_buy <span class="op">=</span> <span class="cn">FALSE</span>, size <span class="op">=</span> <span class="fl">0.05</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">#&gt;     status      oid total_sz avg_px                                 error</span></span>
 <span><span class="co">#&gt;     &lt;char&gt;    &lt;num&gt;    &lt;num&gt;  &lt;num&gt;                                &lt;char&gt;</span></span>
 <span><span class="co">#&gt; 1: resting 77738308       NA     NA                                  &lt;NA&gt;</span></span>
@@ -218,12 +218,12 @@ short):</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Leg 1: LONG BTC (limit).</span></span>
 <span><span class="va">trading</span><span class="op">$</span><span class="fu">place_order</span><span class="op">(</span></span>
-<span>  name <span class="op">=</span> <span class="st">"BTC"</span>, is_buy <span class="op">=</span> <span class="cn">TRUE</span>, sz <span class="op">=</span> <span class="fl">0.002</span>, limit_px <span class="op">=</span> <span class="fl">62000</span>,</span>
+<span>  name <span class="op">=</span> <span class="st">"BTC"</span>, is_buy <span class="op">=</span> <span class="cn">TRUE</span>, size <span class="op">=</span> <span class="fl">0.002</span>, limit_price <span class="op">=</span> <span class="fl">62000</span>,</span>
 <span>  order_type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>limit <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>tif <span class="op">=</span> <span class="st">"Gtc"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Leg 2: SHORT ETH (market).</span></span>
-<span><span class="va">trading</span><span class="op">$</span><span class="fu">market_open</span><span class="op">(</span>name <span class="op">=</span> <span class="st">"ETH"</span>, is_buy <span class="op">=</span> <span class="cn">FALSE</span>, sz <span class="op">=</span> <span class="fl">0.4</span><span class="op">)</span></span></code></pre></div>
+<span><span class="va">trading</span><span class="op">$</span><span class="fu">market_open</span><span class="op">(</span>name <span class="op">=</span> <span class="st">"ETH"</span>, is_buy <span class="op">=</span> <span class="cn">FALSE</span>, size <span class="op">=</span> <span class="fl">0.4</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">#&gt;     status      oid total_sz avg_px                                 error</span></span>
 <span><span class="co">#&gt;     &lt;char&gt;    &lt;num&gt;    &lt;num&gt;  &lt;num&gt;                                &lt;char&gt;</span></span>
 <span><span class="co">#&gt; 1: resting 77738308       NA     NA                                  &lt;NA&gt;</span></span>
@@ -262,7 +262,7 @@ can only <em>close</em> the position.</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Stop-loss on the BTC long: if BTC trades down to 60,000, market-sell to exit.</span></span>
 <span><span class="va">trading</span><span class="op">$</span><span class="fu">place_order</span><span class="op">(</span></span>
-<span>  name <span class="op">=</span> <span class="st">"BTC"</span>, is_buy <span class="op">=</span> <span class="cn">FALSE</span>, sz <span class="op">=</span> <span class="fl">0.002</span>, limit_px <span class="op">=</span> <span class="fl">60000</span>,</span>
+<span>  name <span class="op">=</span> <span class="st">"BTC"</span>, is_buy <span class="op">=</span> <span class="cn">FALSE</span>, size <span class="op">=</span> <span class="fl">0.002</span>, limit_price <span class="op">=</span> <span class="fl">60000</span>,</span>
 <span>  order_type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>trigger <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>isMarket <span class="op">=</span> <span class="cn">TRUE</span>, triggerPx <span class="op">=</span> <span class="fl">60000</span>, tpsl <span class="op">=</span> <span class="st">"sl"</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>  reduce_only <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
@@ -295,8 +295,8 @@ open position).</p>
 <span><span class="co">#&gt; 2:          0</span></span>
 <span><span class="co">#&gt;                                                                  hash</span></span>
 <span><span class="co">#&gt;                                                                &lt;char&gt;</span></span>
-<span><span class="co">#&gt; 1: 0x0d3fdb3600e5d56a0eb9043d26c359020299001b9be8f43cb1088688bfe9af54</span></span>
-<span><span class="co">#&gt; 2: 0xb35e4a190053fac6b4d8043d26c35302054600fe9b5719985726f56bbf57d4b1</span></span>
+<span><span class="co">#&gt; 1: 0x0000000000000000000000000000000000000000000000000000000000000001</span></span>
+<span><span class="co">#&gt; 2: 0x0000000000000000000000000000000000000000000000000000000000000002</span></span>
 <span><span class="co">#&gt;             oid crossed   fee fee_token          tid</span></span>
 <span><span class="co">#&gt;           &lt;num&gt;  &lt;lgcl&gt; &lt;num&gt;    &lt;char&gt;        &lt;num&gt;</span></span>
 <span><span class="co">#&gt; 1: 461291888494    TRUE     0      USDC 4.500545e+14</span></span>

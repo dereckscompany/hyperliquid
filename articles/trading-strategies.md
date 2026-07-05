@@ -75,12 +75,12 @@ trading <- HyperliquidTrading$new(keys = KEYS)
 
 # A good-til-cancelled limit BUY (a long): rest a bid at 60,000.
 trading$place_order(
-  name = "BTC", is_buy = TRUE, sz = 0.001, limit_px = 60000,
+  name = "BTC", is_buy = TRUE, size = 0.001, limit_price = 60000,
   order_type = list(limit = list(tif = "Gtc"))
 )
 
 # Or take liquidity immediately with a market buy.
-trading$market_open(name = "BTC", is_buy = TRUE, sz = 0.001)
+trading$market_open(name = "BTC", is_buy = TRUE, size = 0.001)
 ```
 
     #>     status      oid total_sz avg_px                                 error
@@ -102,7 +102,7 @@ to profit if the price falls. The only change is `is_buy = FALSE`.
 ``` r
 
 # A market SHORT on ETH.
-trading$market_open(name = "ETH", is_buy = FALSE, sz = 0.05)
+trading$market_open(name = "ETH", is_buy = FALSE, size = 0.05)
 ```
 
     #>     status      oid total_sz avg_px                                 error
@@ -143,12 +143,12 @@ prefer (here: a resting limit on the long, a market fill on the short):
 
 # Leg 1: LONG BTC (limit).
 trading$place_order(
-  name = "BTC", is_buy = TRUE, sz = 0.002, limit_px = 62000,
+  name = "BTC", is_buy = TRUE, size = 0.002, limit_price = 62000,
   order_type = list(limit = list(tif = "Gtc"))
 )
 
 # Leg 2: SHORT ETH (market).
-trading$market_open(name = "ETH", is_buy = FALSE, sz = 0.4)
+trading$market_open(name = "ETH", is_buy = FALSE, size = 0.4)
 ```
 
     #>     status      oid total_sz avg_px                                 error
@@ -193,7 +193,7 @@ so it can only *close* the position.
 
 # Stop-loss on the BTC long: if BTC trades down to 60,000, market-sell to exit.
 trading$place_order(
-  name = "BTC", is_buy = FALSE, sz = 0.002, limit_px = 60000,
+  name = "BTC", is_buy = FALSE, size = 0.002, limit_price = 60000,
   order_type = list(trigger = list(isMarket = TRUE, triggerPx = 60000, tpsl = "sl")),
   reduce_only = TRUE
 )
@@ -230,8 +230,8 @@ trading$market_close(name = "ETH")
     #> 2:          0
     #>                                                                  hash
     #>                                                                <char>
-    #> 1: 0x0d3fdb3600e5d56a0eb9043d26c359020299001b9be8f43cb1088688bfe9af54
-    #> 2: 0xb35e4a190053fac6b4d8043d26c35302054600fe9b5719985726f56bbf57d4b1
+    #> 1: 0x0000000000000000000000000000000000000000000000000000000000000001
+    #> 2: 0x0000000000000000000000000000000000000000000000000000000000000002
     #>             oid crossed   fee fee_token          tid
     #>           <num>  <lgcl> <num>    <char>        <num>
     #> 1: 461291888494    TRUE     0      USDC 4.500545e+14

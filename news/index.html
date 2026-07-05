@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">hyperliquid</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -36,9 +36,79 @@
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Changelog</h1>
-      <small>Source: <a href="https://github.com/dereckscompany/hyperliquid/blob/v0.0.1/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
+      <small>Source: <a href="https://github.com/dereckscompany/hyperliquid/blob/v0.3.0/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.3.0" id="hyperliquid-030">hyperliquid 0.3.0<a class="anchor" aria-label="anchor" href="#hyperliquid-030"></a></h2>
+<div class="section level3">
+<h3 id="breaking-spelled-out-argument-names-on-the-trading-and-account-signatures-0-3-0">Breaking: spelled-out argument names on the trading and account signatures<a class="anchor" aria-label="anchor" href="#breaking-spelled-out-argument-names-on-the-trading-and-account-signatures-0-3-0"></a></h3>
+<ul><li>The abbreviated argument names on the public trading and account methods are spelled out fleet-wide (<code>CONNECTOR-CONVENTIONS.md</code> I.1.5): <code>sz</code> becomes <code>size</code>, <code>limit_px</code> becomes <code>limit_price</code>, <code>trigger_px</code> becomes <code>trigger_price</code>, <code>cloid</code> becomes <code>client_order_id</code>, <code>oid</code> becomes <code>order_id</code>, and <code>get_order_status()</code>’s <code>oid_or_cloid</code> becomes <code>order_id_or_client_order_id</code>. This affects <code>place_order()</code>, <code>market_open()</code>, <code>market_close()</code>, <code>modify_order()</code>, <code>cancel_order()</code>, <code>cancel_by_cloid()</code>, and <code>get_order_status()</code>. It is a clean break with no deprecation shims. The venue wire keys are unchanged: an R <code>size</code> argument is still serialised to the <code>sz</code> order field on the wire, and the returned data.tables keep their venue-native column names (<code>sz</code>, <code>oid</code>, <code>limit_px</code>, <code>cloid</code>, <code>trigger_px</code>), which are a separate vocabulary from the R argument names. The <code>cancel_by_cloid()</code>/<code>bulk_cancel_by_cloid()</code> method names and the power-user order/cancel-spec list field names (<code>sz</code>, <code>limit_px</code>, <code>cloid</code>, <code>oid</code> inside the <code>orders</code>/<code>modifies</code>/<code>cancels</code> payload maps) mirror the venue’s own vocabulary and are retained.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="internal-ms_to_datetime-imported-from-connectcore-0-3-0">Internal: <code>ms_to_datetime()</code> imported from connectcore<a class="anchor" aria-label="anchor" href="#internal-ms_to_datetime-imported-from-connectcore-0-3-0"></a></h3>
+<ul><li>The local <code>ms_to_datetime()</code> re-implementation is dropped in favour of the canonical, length-preserving, NA-in-NA-out <code><a href="https://rdrr.io/pkg/connectcore/man/ms_to_datetime.html" class="external-link">connectcore::ms_to_datetime()</a></code> (connectcore &gt;= 0.3.0), matching the fleet-wide centralisation. Behaviour is unchanged: epoch-millisecond timestamps still convert to POSIXct in UTC.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="documentation-typed-nested-column-bullets-on-every-datatable-return-0-3-0">Documentation: typed nested column bullets on every data.table return<a class="anchor" aria-label="anchor" href="#documentation-typed-nested-column-bullets-on-every-datatable-return-0-3-0"></a></h3>
+<ul><li>Every multi-row data.table <code>@return</code> on the market-data, account, trading, and staking clients is documented as typed nested column bullets (bare column name, composite type token, <code>| NA</code> where a column may be missing) rather than prose, closing the last documentation-consistency gap against the fleet convention.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="dependencies-0-3-0">Dependencies<a class="anchor" aria-label="anchor" href="#dependencies-0-3-0"></a></h3>
+<ul><li>
+<code>connectcore</code> floors at <code>&gt;= 0.3.0</code> (for <code>ms_to_datetime()</code>); explicit Imports floors added for <code>assert</code> (<code>&gt;= 0.0.9</code>) and <code>ethsign</code> (<code>&gt;= 0.0.2</code>). Remotes stay bare per the ratified floors-in-Imports policy, and <code>renv.lock</code> is refreshed (connectcore 0.3.0, htmltools 0.5.9) so the CI environment restores cleanly.</li>
+</ul></div>
+</div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.2.1" id="hyperliquid-021">hyperliquid 0.2.1<a class="anchor" aria-label="anchor" href="#hyperliquid-021"></a></h2>
+<div class="section level3">
+<h3 id="hardening-validate-fixtures-and-contracts-against-the-real-testnet-api-0-2-1">Hardening: validate fixtures and contracts against the real testnet API<a class="anchor" aria-label="anchor" href="#hardening-validate-fixtures-and-contracts-against-the-real-testnet-api-0-2-1"></a></h3>
+<ul><li>Added <code>dev/capture-hyperliquid.R</code>, a read-only capture harness that hits the real Hyperliquid API and writes each raw <code>/info</code> response verbatim to the git-ignored <code>local/raw-data/hyperliquid/</code>. Hyperliquid is body-routed, so reads are <code>POST /info</code> discriminated by <code>body$type</code>; the harness issues only those reads (it never touches the signed-write <code>/exchange</code> endpoint, never signs anything, and uses only the public account address), then summarises each endpoint as POPULATED / EMPTY / FAIL. All 32 read endpoints were captured against testnet with zero failures, and every committed fixture’s structure was validated against its live counterpart: the parsers parse the real responses cleanly, and the only divergences are additive API fields (e.g. <code>marginTables</code>, <code>feeSchedule</code>, <code>isDelisted</code>) that no parser consumes, so no fixture enrichment was required.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="fixes-empty-collection-responses-violated-their-own-column-contracts-0-2-1">Fixes: empty-collection responses violated their own column contracts<a class="anchor" aria-label="anchor" href="#fixes-empty-collection-responses-violated-their-own-column-contracts-0-2-1"></a></h3>
+<ul><li>
+<code>get_positions()</code> raised a contract error on a <strong>flat account</strong> (no open positions). The live capture reproduced this: <code>parse_positions()</code> returned a bare zero-column <code>data.table</code> on an empty <code>assetPositions</code>, but the <code>@return</code> contract requires the ten position columns. The empty branch now returns the typed zero-row schema (a zero-row typed column satisfies <code>assert_no_missing_values</code>), so a flat account parses cleanly. The synthetic fixture hid the bug because it always carried two open positions.</li>
+<li>The same empty-collection defect was fixed in <code>parse_margin_summary()</code> (an address that never deposited), <code>parse_user_fills()</code> / <code>get_user_fills()</code> / <code>get_user_fills_by_time()</code> (an account that never traded), <code>parse_funding_history()</code> (a coin/window with no funding events), and <code>parse_candles()</code> (an empty candle window): each empty branch now returns the typed zero-row schema its <code>@return</code> contract documents, instead of a column-less <code>data.table</code>. Regression tests assert the empty parser output carries the full column set and passes its generated <code>assert_return_*</code> contract.</li>
+<li>A completeness pass over every parser caught four more strict-contract endpoints with the identical defect, fixed the same way: <code>parse_meta()</code> (an empty perp universe), <code>parse_l2_book()</code> (an empty order-book side), <code>parse_staking_summary()</code> (an address that never staked), and <code>parse_token_delegate()</code> (an empty delegate envelope) now each return their documented typed zero-row schema instead of a column-less <code>data.table</code>, with regression tests on all four.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="convention-every-empty-branch-returns-a-typed-zero-row-table-0-2-1">Convention: every empty branch returns a typed zero-row table<a class="anchor" aria-label="anchor" href="#convention-every-empty-branch-returns-a-typed-zero-row-table-0-2-1"></a></h3>
+<ul><li>Every endpoint parser’s empty branch now returns its typed zero-row schema (all columns present, correctly typed), never a column-less <code>data.table()</code>. This extends the typed-empty guarantee beyond the strict-contract endpoints to the ones whose <code>@return</code> did not strictly require columns (<code>get_spot_balances()</code>, <code>get_open_orders()</code>, <code>get_recent_trades()</code>, the portfolio / fees / sub-account / staking reads, …): an empty live response now returns a stable, fully-typed table everywhere. Each empty closes with <code>[]</code> so it prints on the first call, and timestamp columns use the same <code>ms_to_datetime()</code> coercion the parsers apply so an empty column’s class and tz match a populated one.</li>
+<li>Most shapes are used in a single parser, so they are inlined at the branch rather than wrapped in a helper. Only the two shapes genuinely reused across more than one function are extracted as <code>empty_dt_*</code> constructors in <code>R/helpers_parse.R</code>: <code>empty_dt_candles()</code> (the candle parser plus both kline fetchers) and <code>empty_dt_funding_history()</code> (the funding parser plus the funding backfill). The three order parsers (<code>frontendOpenOrders</code>, <code>historicalOrders</code>, <code>orderStatus</code>) build their empty from the existing <code>flatten_order()</code> helper rather than restating the order columns, and the parsers that had two empty branches now have one (the pre-loop null check was redundant — a loop over <code>NULL</code> yields no rows). The schema-agnostic flattening primitives (<code>as_dt_row()</code>, <code>as_dt_list()</code>, <code>parse_delta_ledger()</code>) have no fixed column set and keep their bare empty; the discriminated-ledger parsers contribute only their always-present lead columns. A <code>test-empty-constructors.R</code> guard exercises every parser’s empty branch and asserts none is column-less.</li>
+</ul></div>
+</div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.2.0" id="hyperliquid-020">hyperliquid 0.2.0<a class="anchor" aria-label="anchor" href="#hyperliquid-020"></a></h2>
+<div class="section level3">
+<h3 id="conventions-align-with-the-connector-gold-standard-0-2-0">Conventions: align with the connector gold standard<a class="anchor" aria-label="anchor" href="#conventions-align-with-the-connector-gold-standard-0-2-0"></a></h3>
+<ul><li>
+<code>StakingSummary$n_pending_withdrawals</code> is now typed <code>integer | NA</code>. The parser coalesces an absent <code>nPendingWithdrawals</code> field to <code>NA_integer_</code>, so the column’s contract must admit <code>NA</code>; without it <code>assert_no_missing_values</code> would reject the parser’s own output on a real response that omits the field.</li>
+<li>The <code>hyperliquid_shapes</code> block no longer carries <code>@genassert</code>/<code>@exportassert</code>. hyperliquid is a leaf connector: nothing internal calls a per-shape <code>assert_type_*()</code> validator and no downstream package validates against these shapes, so the ten exported <code>assert_type_*</code> validators are dropped and the <code>NAMESPACE</code> now exports zero <code>assert_*</code> symbols. Each shape is still enforced at the public boundary, expanded inline into each method’s generated <code>assert_return_*</code>.</li>
+<li>
+<code>DESCRIPTION</code> now pins minimum versions in <code>Imports</code>/<code>Suggests</code> (<code>connectcore (&gt;= 0.1.0)</code>, <code>roxyassert (&gt;= 0.9.1)</code>) and the <code>Remotes</code> entries are source-only (the <code>@v0.1.0</code>/<code>@v0.9.1</code> refs are stripped), so the version floor is expressed once in the dependency fields rather than pinned to a moving tag.</li>
+</ul></div>
+</div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.1.1" id="hyperliquid-011">hyperliquid 0.1.1<a class="anchor" aria-label="anchor" href="#hyperliquid-011"></a></h2>
+<div class="section level3">
+<h3 id="transport-route-the-body-through-connectcores-raw-body-funnel-0-1-1">Transport: route the body through connectcore’s raw-body funnel<a class="anchor" aria-label="anchor" href="#transport-route-the-body-through-connectcores-raw-body-funnel-0-1-1"></a></h3>
+<ul><li>The connector now owns <strong>no transport</strong>. <code><a href="../reference/hyperliquid_build_request.html">hyperliquid_build_request()</a></code> is reduced to a thin serialise-and-delegate helper: it pre-serialises the (already body-signed) payload with <code>jsonlite::toJSON(..., auto_unbox = TRUE, null = "null")</code> and routes it through <code><a href="https://rdrr.io/pkg/connectcore/man/build_request.html" class="external-link">connectcore::build_request()</a></code> with <code>body_format = "raw"</code>, which sends the bytes verbatim via <code><a href="https://httr2.r-lib.org/reference/req_body.html" class="external-link">httr2::req_body_raw()</a></code>. The hand-rolled <code>httr2</code> request builder (<code>request()</code> / <code>req_url_path_append()</code> / <code>req_method()</code> / <code>req_body_raw()</code> / <code>req_timeout()</code> / <code>req_user_agent()</code> / <code>req_error()</code>) is removed. connectcore v0.1.0’s <code>body_format = "raw"</code> makes this possible: it performs no <code>NULL</code>-pruning, no pretty-printing, and no re-encoding, and its <code>.sign</code> seam runs after the body is set — so the exact signed bytes reach the wire.</li>
+<li>This is an internal refactor with <strong>zero behaviour change</strong>: the wire bytes (especially the signed <code>/exchange</code> body) are byte-identical to before, including <code>vaultAddress</code>/<code>expiresAfter</code> serialised as JSON <code>null</code>. The signing vectors and the mock-router body assertions remain green.</li>
+</ul></div>
+</div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.1.0" id="hyperliquid-010">hyperliquid 0.1.0<a class="anchor" aria-label="anchor" href="#hyperliquid-010"></a></h2>
+<div class="section level3">
+<h3 id="transport-migrate-to-connectcore-0-1-0">Transport: migrate to connectcore<a class="anchor" aria-label="anchor" href="#transport-migrate-to-connectcore-0-1-0"></a></h3>
+<ul><li>
+<code>HyperliquidBase</code> now <strong>inherits <code><a href="https://rdrr.io/pkg/connectcore/man/RestClient.html" class="external-link">connectcore::RestClient</a></code></strong>, the shared transport base, for credential storage, the sync/async perform function, and the overridable <code>.parse_envelope()</code> error seam. The Hyperliquid two-failure-shape parser (<code>/info</code> HTTP 422 text, <code>/exchange</code> 200 <code>{status:"err"}</code>) is wired as the <code>.parse_envelope()</code> override. The <code>.sign()</code> request seam is left at its no-op default: Hyperliquid signs the <strong>body</strong> (a wallet signature embedded as a <code>signature</code> field), not the HTTP request.</li>
+<li>The duplicated <code>then_or_now()</code> (the single sync/async branch point) and <code>next_nonce()</code> (the monotonic epoch-millisecond nonce) now come from connectcore; the local copies were removed.</li>
+<li>
+<code><a href="../reference/hyperliquid_build_request.html">hyperliquid_build_request()</a></code> stays Hyperliquid-specific — the body-signed wire contract requires the exact signed JSON on the wire (including <code>vaultAddress</code>/<code>expiresAfter</code> as JSON <code>null</code>), so it keeps <code>req_body_raw()</code> rather than connectcore’s request funnel — but it now delegates its sync/async branch to <code><a href="https://rdrr.io/pkg/connectcore/man/then_or_now.html" class="external-link">connectcore::then_or_now()</a></code> and accepts an overridable <code>parse_envelope</code> seam.</li>
+<li>No public API change: every exported class, method, signature, and return shape is unchanged, and the full test suite passes.</li>
+</ul></div>
+</div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.0.1" id="hyperliquid-001">hyperliquid 0.0.1<a class="anchor" aria-label="anchor" href="#hyperliquid-001"></a></h2>
 <p>Initial release: an R wrapper for the Hyperliquid decentralised exchange, covering perpetual and spot trading across both synchronous and asynchronous (promise-based) operations, with Ethereum wallet signing for the <code>/exchange</code> endpoint computed in pure R.</p>

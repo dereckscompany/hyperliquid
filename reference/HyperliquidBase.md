@@ -12,6 +12,23 @@ funnel
 ([`hyperliquid_build_request()`](https://dereckscompany.github.io/hyperliquid/reference/hyperliquid_build_request.md)),
 and lazy exchange-metadata caching.
 
+It **inherits
+[connectcore::RestClient](https://rdrr.io/pkg/connectcore/man/RestClient.html)**,
+the shared transport base, for the credential storage, sync/async
+perform function, and the overridable `.parse_envelope()` error seam —
+which it overrides with Hyperliquid's two-failure-shape parser
+(`parse_hyperliquid_response()`). The `.sign()` seam is left at its
+no-op default: Hyperliquid does not sign the HTTP request but the
+**body** (a wallet signature embedded as a `signature` field, built and
+attached by `.submit_l1()` / `.submit_user()` before the funnel), so
+request signing does not apply. The body-signed wire contract is
+honoured by routing the pre-serialised, byte-exact JSON through
+connectcore's shared funnel as a **raw body** (`body_format = "raw"`),
+so the connector owns no transport: the request build, perform,
+sync/async branch, and monotonic nonce all come from connectcore. Only
+the body serialisation and error envelope stay Hyperliquid-specific
+([`hyperliquid_build_request()`](https://dereckscompany.github.io/hyperliquid/reference/hyperliquid_build_request.md)).
+
 ### Sync vs Async
 
 The `async` parameter controls execution mode for all API methods:
@@ -50,24 +67,31 @@ define public methods that delegate to `private$.info()` (reads) or
 
 ## Fields
 
-All fields are private:
+All fields are private. `.keys`, `.is_async`, and `.perform` are
+inherited from
+[connectcore::RestClient](https://rdrr.io/pkg/connectcore/man/RestClient.html);
+the rest are Hyperliquid-specific:
 
 - `.keys`: List; wallet credentials from
-  [`get_api_keys()`](https://dereckscompany.github.io/hyperliquid/reference/get_api_keys.md).
+  [`get_api_keys()`](https://dereckscompany.github.io/hyperliquid/reference/get_api_keys.md)
+  (inherited).
 
 - `.signer`:
   [ethsign::EthSigner](https://dereckscompany.github.io/ethsign/reference/EthSigner.html)
   or `NULL`; the wallet signer built from the key (used to sign
   /exchange actions), or `NULL` when no key is set.
 
-- `.base_url`: Character; REST base URL for the selected network.
+- `.base_url`: Character; REST base URL for the selected network
+  (inherited).
 
-- `.is_async`: Logical; whether the instance is in async mode.
+- `.is_async`: Logical; whether the instance is in async mode
+  (inherited).
 
 - `.perform`: Function;
   [httr2::req_perform](https://httr2.r-lib.org/reference/req_perform.html)
   or
-  [httr2::req_perform_promise](https://httr2.r-lib.org/reference/req_perform_promise.html).
+  [httr2::req_perform_promise](https://httr2.r-lib.org/reference/req_perform_promise.html)
+  (inherited).
 
 - `.testnet`: Logical; whether the instance targets testnet.
 
@@ -78,17 +102,18 @@ All fields are private:
 
 - `.meta_cache`: List or `NULL`; cached asset-lookup tables (lazy).
 
+## Super class
+
+[`connectcore::RestClient`](https://rdrr.io/pkg/connectcore/man/RestClient.html)
+-\> `HyperliquidBase`
+
 ## Active bindings
-
-- `is_async`:
-
-  Logical; read-only flag indicating whether this instance operates in
-  async mode.
 
 - `testnet`:
 
   Logical; read-only flag indicating whether this instance targets
-  testnet.
+  testnet. (`is_async` is inherited from
+  [connectcore::RestClient](https://rdrr.io/pkg/connectcore/man/RestClient.html).)
 
 ## Methods
 

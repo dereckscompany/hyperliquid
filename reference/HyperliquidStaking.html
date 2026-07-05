@@ -9,7 +9,7 @@ HyperliquidStaking: Native-Token Staking and Delegation"></head><body>
 
     <a class="navbar-brand me-2" href="../index.html">hyperliquid</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -38,7 +38,7 @@ HyperliquidStaking: Native-Token Staking and Delegation"></head><body>
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>HyperliquidStaking: Native-Token Staking and Delegation</h1>
-      <small class="dont-index">Source: <a href="https://github.com/dereckscompany/hyperliquid/blob/v0.0.1/R/HyperliquidStaking.R" class="external-link"><code>R/HyperliquidStaking.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/dereckscompany/hyperliquid/blob/v0.3.0/R/HyperliquidStaking.R" class="external-link"><code>R/HyperliquidStaking.R</code></a></small>
       <div class="d-none name"><code>HyperliquidStaking.Rd</code></div>
     </div>
 
@@ -90,8 +90,8 @@ explicitly to inspect any other delegator.</p>
 
     </div>
     <div class="section level2">
-    <h2 id="super-class">Super class<a class="anchor" aria-label="anchor" href="#super-class"></a></h2>
-    <p><code><a href="HyperliquidBase.html">hyperliquid::HyperliquidBase</a></code> -&gt; <code>HyperliquidStaking</code></p>
+    <h2 id="super-classes">Super classes<a class="anchor" aria-label="anchor" href="#super-classes"></a></h2>
+    <p><code><a href="https://rdrr.io/pkg/connectcore/man/RestClient.html" class="external-link">connectcore::RestClient</a></code> -&gt; <code><a href="HyperliquidBase.html">hyperliquid::HyperliquidBase</a></code> -&gt; <code>HyperliquidStaking</code></p>
     </div>
     <div class="section level2">
     <h2 id="methods">Methods<a class="anchor" aria-label="anchor" href="#methods"></a></h2>
@@ -153,9 +153,11 @@ Defaults to the instance's acting address.</p></dd>
 </div>
 <div class="section">
 <h4 id="returns-1">Returns<a class="anchor" aria-label="anchor" href="#returns-1"></a></h4>
-<p>(promise&lt;data.table&gt;) a <a href="https://rdrr.io/pkg/data.table/man/data.table.html" class="external-link">data.table::data.table</a> with <code>validator</code>,
-<code>amount</code>, <code>locked_until_timestamp</code>, or a promise thereof.</p>
-</div>
+<p>(promise&lt;data.table&gt;) a <a href="https://rdrr.io/pkg/data.table/man/data.table.html" class="external-link">data.table::data.table</a>, one row per
+active delegation (or a promise thereof):</p><ul><li><p>validator (character) the validator's <code>0x</code> address.</p></li>
+<li><p>amount (numeric) the staked amount.</p></li>
+<li><p>locked_until_timestamp (POSIXct) when the delegation unlocks.</p></li>
+</ul></div>
 
 </div><p></p><hr><a id="method-HyperliquidStaking-get_staking_rewards"></a><div class="section">
 <h3 id="method-get-staking-rewards-">Method <code>get_staking_rewards()</code><a class="anchor" aria-label="anchor" href="#method-get-staking-rewards-"></a></h3>
@@ -175,9 +177,12 @@ Defaults to the instance's acting address.</p></dd>
 </div>
 <div class="section">
 <h4 id="returns-2">Returns<a class="anchor" aria-label="anchor" href="#returns-2"></a></h4>
-<p>(promise&lt;data.table&gt;) a <a href="https://rdrr.io/pkg/data.table/man/data.table.html" class="external-link">data.table::data.table</a> with <code>time</code>,
-<code>source</code>, <code>total_amount</code>, or a promise thereof.</p>
-</div>
+<p>(promise&lt;data.table&gt;) a <a href="https://rdrr.io/pkg/data.table/man/data.table.html" class="external-link">data.table::data.table</a>, one row per
+reward accrual (or a promise thereof):</p><ul><li><p>time (POSIXct) the accrual time.</p></li>
+<li><p>source (character) the reward source, e.g. <code>"delegation"</code>,
+<code>"commission"</code>.</p></li>
+<li><p>total_amount (numeric) the reward amount.</p></li>
+</ul></div>
 
 </div><p></p><hr><a id="method-HyperliquidStaking-get_delegator_history"></a><div class="section">
 <h3 id="method-get-delegator-history-">Method <code>get_delegator_history()</code><a class="anchor" aria-label="anchor" href="#method-get-delegator-history-"></a></h3>

@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">hyperliquid</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -64,7 +64,7 @@
 Mezquita</h4>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/dereckscompany/hyperliquid/blob/v0.0.1/vignettes/live-testnet-walkthrough.Rmd" class="external-link"><code>vignettes/live-testnet-walkthrough.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/dereckscompany/hyperliquid/blob/v0.3.0/vignettes/live-testnet-walkthrough.Rmd" class="external-link"><code>vignettes/live-testnet-walkthrough.Rmd</code></a></small>
       <div class="d-none name"><code>live-testnet-walkthrough.Rmd</code></div>
     </div>
 
@@ -297,14 +297,14 @@ precise limit order at the current book instead:</p>
 <span><span class="co"># A short sell is just is_buy = FALSE; a long is is_buy = TRUE. (Pairs trading is</span></span>
 <span><span class="co"># one of each on two markets.) Here: a small marketable BUY priced at the ask.</span></span>
 <span><span class="va">trading</span><span class="op">$</span><span class="fu">place_order</span><span class="op">(</span></span>
-<span>  name <span class="op">=</span> <span class="st">"BTC"</span>, is_buy <span class="op">=</span> <span class="cn">TRUE</span>, sz <span class="op">=</span> <span class="fl">0.0002</span>, limit_px <span class="op">=</span> <span class="fl">64219</span>,</span>
+<span>  name <span class="op">=</span> <span class="st">"BTC"</span>, is_buy <span class="op">=</span> <span class="cn">TRUE</span>, size <span class="op">=</span> <span class="fl">0.0002</span>, limit_price <span class="op">=</span> <span class="fl">64219</span>,</span>
 <span>  order_type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>limit <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>tif <span class="op">=</span> <span class="st">"Gtc"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt; status filled, avg_px 64119  -&gt; long 0.0002 BTC</span></span>
 <span></span>
 <span><span class="co"># Flatten it with a reduce-only sell.</span></span>
 <span><span class="va">trading</span><span class="op">$</span><span class="fu">place_order</span><span class="op">(</span></span>
-<span>  name <span class="op">=</span> <span class="st">"BTC"</span>, is_buy <span class="op">=</span> <span class="cn">FALSE</span>, sz <span class="op">=</span> <span class="fl">0.0002</span>, limit_px <span class="op">=</span> <span class="fl">63964</span>,</span>
+<span>  name <span class="op">=</span> <span class="st">"BTC"</span>, is_buy <span class="op">=</span> <span class="cn">FALSE</span>, size <span class="op">=</span> <span class="fl">0.0002</span>, limit_price <span class="op">=</span> <span class="fl">63964</span>,</span>
 <span>  order_type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>limit <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>tif <span class="op">=</span> <span class="st">"Gtc"</span><span class="op">)</span><span class="op">)</span>, reduce_only <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt; status filled  -&gt; position closed, account flat</span></span></code></pre></div>

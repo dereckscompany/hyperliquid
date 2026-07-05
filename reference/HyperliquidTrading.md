@@ -56,8 +56,10 @@ read resolves synchronously.
 | approve_agent          | approveAgent         | Yes  |
 | approve_builder_fee    | approveBuilderFee    | Yes  |
 
-## Super class
+## Super classes
 
+[`connectcore::RestClient`](https://rdrr.io/pkg/connectcore/man/RestClient.html)
+-\>
 [`hyperliquid::HyperliquidBase`](https://dereckscompany.github.io/hyperliquid/reference/HyperliquidBase.md)
 -\> `HyperliquidTrading`
 
@@ -118,11 +120,11 @@ pass one explicitly.
     HyperliquidTrading$place_order(
       name,
       is_buy,
-      sz,
-      limit_px,
+      size,
+      limit_price,
       order_type,
       reduce_only = FALSE,
-      cloid = NULL,
+      client_order_id = NULL,
       builder = NULL
     )
 
@@ -136,11 +138,11 @@ pass one explicitly.
 
   (scalar\<logical\>) `TRUE` for a bid, `FALSE` for an ask.
 
-- `sz`:
+- `size`:
 
   (scalar\<numeric in \]0, Inf\[\>) the order size in coin units.
 
-- `limit_px`:
+- `limit_price`:
 
   (scalar\<numeric in \]0, Inf\[\>) the limit price.
 
@@ -154,7 +156,7 @@ pass one explicitly.
   (scalar\<logical\>) `TRUE` to only reduce an existing position.
   Default `FALSE`.
 
-- `cloid`:
+- `client_order_id`:
 
   (scalar\<character\> \| NULL) an optional client order id from
   [`new_cloid()`](https://dereckscompany.github.io/hyperliquid/reference/new_cloid.md).
@@ -221,9 +223,9 @@ Sync-preferred: it chains a mid-price read before the write.
     HyperliquidTrading$market_open(
       name,
       is_buy,
-      sz,
+      size,
       slippage = 0.05,
-      cloid = NULL,
+      client_order_id = NULL,
       builder = NULL
     )
 
@@ -237,7 +239,7 @@ Sync-preferred: it chains a mid-price read before the write.
 
   (scalar\<logical\>) `TRUE` to open long, `FALSE` to open short.
 
-- `sz`:
+- `size`:
 
   (scalar\<numeric in \]0, Inf\[\>) the order size in coin units.
 
@@ -246,7 +248,7 @@ Sync-preferred: it chains a mid-price read before the write.
   (scalar\<numeric in \]0, Inf\[\>) the price tolerance fraction.
   Default `0.05` (5%).
 
-- `cloid`:
+- `client_order_id`:
 
   (scalar\<character\> \| NULL) an optional client order id. Default
   `NULL`.
@@ -272,7 +274,12 @@ and a mid-price read before the write.
 
 #### Usage
 
-    HyperliquidTrading$market_close(name, sz = NULL, slippage = 0.05, cloid = NULL)
+    HyperliquidTrading$market_close(
+      name,
+      size = NULL,
+      slippage = 0.05,
+      client_order_id = NULL
+    )
 
 #### Arguments
 
@@ -280,7 +287,7 @@ and a mid-price read before the write.
 
   (scalar\<character\>) the coin or friendly name, e.g. `"BTC"`.
 
-- `sz`:
+- `size`:
 
   (scalar\<numeric in \]0, Inf\[\> \| NULL) the size to close. `NULL`
   (default) closes the whole position (`abs(szi)`).
@@ -290,7 +297,7 @@ and a mid-price read before the write.
   (scalar\<numeric in \]0, Inf\[\>) the price tolerance fraction.
   Default `0.05` (5%).
 
-- `cloid`:
+- `client_order_id`:
 
   (scalar\<character\> \| NULL) an optional client order id. Default
   `NULL`.
@@ -311,21 +318,21 @@ bulk_modify().
 #### Usage
 
     HyperliquidTrading$modify_order(
-      oid,
+      order_id,
       name,
       is_buy,
-      sz,
-      limit_px,
+      size,
+      limit_price,
       order_type,
       reduce_only = FALSE,
-      cloid = NULL
+      client_order_id = NULL
     )
 
 #### Arguments
 
-- `oid`:
+- `order_id`:
 
-  (scalar\<numeric\>) the resting order's id (oid).
+  (scalar\<numeric\>) the resting order's id.
 
 - `name`:
 
@@ -335,11 +342,11 @@ bulk_modify().
 
   (scalar\<logical\>) the (possibly new) side.
 
-- `sz`:
+- `size`:
 
   (scalar\<numeric in \]0, Inf\[\>) the (possibly new) size.
 
-- `limit_px`:
+- `limit_price`:
 
   (scalar\<numeric in \]0, Inf\[\>) the (possibly new) price.
 
@@ -351,7 +358,7 @@ bulk_modify().
 
   (scalar\<logical\>) default `FALSE`.
 
-- `cloid`:
+- `client_order_id`:
 
   (scalar\<character\> \| NULL) an optional client order id. Default
   `NULL`.
@@ -394,7 +401,7 @@ bulk_cancel().
 
 #### Usage
 
-    HyperliquidTrading$cancel_order(name, oid)
+    HyperliquidTrading$cancel_order(name, order_id)
 
 #### Arguments
 
@@ -402,7 +409,7 @@ bulk_cancel().
 
   (scalar\<character\>) the coin or friendly name.
 
-- `oid`:
+- `order_id`:
 
   (scalar\<numeric\>) the order id to cancel.
 
@@ -410,7 +417,11 @@ bulk_cancel().
 
 (promise\<data.table\>) a
 [data.table::data.table](https://rdrr.io/pkg/data.table/man/data.table.html),
-one row per cancel, or a promise thereof.
+one row per cancel (or a promise thereof):
+
+- status (character) the cancel status (`"success"` or `"error"`).
+
+- error (character \| NA) the error message, `NA` on success.
 
 ------------------------------------------------------------------------
 
@@ -421,7 +432,7 @@ bulk_cancel_by_cloid().
 
 #### Usage
 
-    HyperliquidTrading$cancel_by_cloid(name, cloid)
+    HyperliquidTrading$cancel_by_cloid(name, client_order_id)
 
 #### Arguments
 
@@ -429,7 +440,7 @@ bulk_cancel_by_cloid().
 
   (scalar\<character\>) the coin or friendly name.
 
-- `cloid`:
+- `client_order_id`:
 
   (scalar\<character\>) the client order id (`0x`-prefixed 32 hex
   chars).
@@ -438,7 +449,11 @@ bulk_cancel_by_cloid().
 
 (promise\<data.table\>) a
 [data.table::data.table](https://rdrr.io/pkg/data.table/man/data.table.html),
-one row per cancel, or a promise thereof.
+one row per cancel (or a promise thereof):
+
+- status (character) the cancel status (`"success"` or `"error"`).
+
+- error (character \| NA) the error message, `NA` on success.
 
 ------------------------------------------------------------------------
 
@@ -463,7 +478,11 @@ oid (the wire `o`).
 
 (promise\<data.table\>) a
 [data.table::data.table](https://rdrr.io/pkg/data.table/man/data.table.html),
-one row per cancel, or a promise thereof.
+one row per cancel (or a promise thereof):
+
+- status (character) the cancel status (`"success"` or `"error"`).
+
+- error (character \| NA) the error message, `NA` on success.
 
 ------------------------------------------------------------------------
 
@@ -488,7 +507,11 @@ Cancel a batch of orders by client order id in one signed
 
 (promise\<data.table\>) a
 [data.table::data.table](https://rdrr.io/pkg/data.table/man/data.table.html),
-one row per cancel, or a promise thereof.
+one row per cancel (or a promise thereof):
+
+- status (character) the cancel status (`"success"` or `"error"`).
+
+- error (character \| NA) the error message, `NA` on success.
 
 ------------------------------------------------------------------------
 
@@ -607,8 +630,13 @@ to the empty string – the EIP-712 digest is identical either way.)
 
 (promise\<data.table\>) a single-row
 [data.table::data.table](https://rdrr.io/pkg/data.table/man/data.table.html)
-with `agent_address`, `agent_key` (the new hex secret), and `status`, or
-a promise thereof.
+(or a promise thereof):
+
+- agent_address (character) the new agent wallet's `0x` address.
+
+- agent_key (character) the new agent wallet's hex secret.
+
+- status (character) the action status (e.g. `"ok"`).
 
 ------------------------------------------------------------------------
 
@@ -660,13 +688,13 @@ The objects of this class are cloneable with this method.
 if (FALSE) { # \dontrun{
 trading <- HyperliquidTrading$new()
 # A resting post-only bid:
-trading$place_order("BTC", is_buy = TRUE, sz = 0.001, limit_px = 50000,
+trading$place_order("BTC", is_buy = TRUE, size = 0.001, limit_price = 50000,
   order_type = list(limit = list(tif = "Alo")))
 # Open and then close a long at market:
-trading$market_open("BTC", is_buy = TRUE, sz = 0.001)
+trading$market_open("BTC", is_buy = TRUE, size = 0.001)
 trading$market_close("BTC")
 # Cancel one order, then arm a 1-minute dead-man's switch:
-trading$cancel_order("BTC", oid = 123456789)
+trading$cancel_order("BTC", order_id = 123456789)
 trading$schedule_cancel(lubridate::now("UTC") + lubridate::seconds(60))
 } # }
 ```

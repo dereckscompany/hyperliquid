@@ -1,11 +1,10 @@
 # Build and Execute a Hyperliquid API Request
 
-Constructs an
-[httr2::request](https://httr2.r-lib.org/reference/request.html) for one
-of Hyperliquid's two POST endpoints (`/info` or `/exchange`), serialises
-`body` as JSON, performs it via the supplied `.perform` function, and
-parses the response. This is the single point through which all
-Hyperliquid API calls flow.
+Serialises `body` to the byte-exact signed JSON and routes it through
+[`connectcore::build_request()`](https://rdrr.io/pkg/connectcore/man/build_request.html)
+as a raw body, to one of Hyperliquid's two POST endpoints (`/info` or
+`/exchange`). This is the single point through which all Hyperliquid API
+calls flow.
 
 ## Usage
 
@@ -17,7 +16,8 @@ hyperliquid_build_request(
   .perform = httr2::req_perform,
   .parser = identity,
   is_async = FALSE,
-  timeout = 30
+  timeout = 30,
+  parse_envelope = parse_hyperliquid_response
 )
 ```
 
@@ -55,11 +55,28 @@ hyperliquid_build_request(
   (scalar\<numeric in \]0, Inf\[\>) request timeout in seconds. Default
   `30`.
 
+- parse_envelope:
+
+  (function) turns a response into data and raises on error; the
+  overridable error seam. Default `parse_hyperliquid_response()`.
+
 ## Value
 
 (any) parsed and post-processed API response data, or a promise thereof.
 
 ## Details
+
+Hyperliquid authenticates by signing the request **body** (a wallet
+signature embedded as a `signature` field), not the HTTP request, and
+requires the body on the wire exactly as it was signed — including
+`vaultAddress`/`expiresAfter` serialised as JSON `null`. The body is
+therefore pre-serialised here with
+`jsonlite::toJSON(..., auto_unbox = TRUE, null = "null")` and passed to
+connectcore's funnel with `body_format = "raw"`, which sends it
+byte-verbatim via httr2::req_body_raw — no `NULL`-pruning, no
+re-encoding — so the exact signed bytes reach the wire. (The default
+request-signing `.sign` seam is a no-op for Hyperliquid; signing happens
+in the body content, not the request.)
 
 ### Sync vs Async
 
@@ -73,7 +90,7 @@ The `.perform` argument controls execution mode:
   asynchronous, returns a
   [promises::promise](https://rstudio.github.io/promises/reference/promise.html).
 
-Errors are surfaced by `parse_hyperliquid_response()`, not httr2: the
-request is built with `req_error(is_error = ...)` returning `FALSE` so
-the API's own error body (HTTP 422 text for `/info`, an `{status:"err"}`
-envelope for `/exchange`) is formatted by the parser.
+Errors are surfaced by `parse_envelope`, not httr2: connectcore's funnel
+disables httr2's auto-error so the API's own error body (HTTP 422 text
+for `/info`, an `{status:"err"}` envelope for `/exchange`) is formatted
+by the parser.

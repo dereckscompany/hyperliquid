@@ -48,8 +48,10 @@ before signing.
 | sub_account_spot_transfer | subAccountSpotTransfer | Yes  |
 | vault_transfer            | vaultTransfer          | Yes  |
 
-## Super class
+## Super classes
 
+[`connectcore::RestClient`](https://rdrr.io/pkg/connectcore/man/RestClient.html)
+-\>
 [`hyperliquid::HyperliquidBase`](https://dereckscompany.github.io/hyperliquid/reference/HyperliquidBase.md)
 -\> `HyperliquidTransfers`
 

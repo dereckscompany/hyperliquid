@@ -9,7 +9,7 @@ HyperliquidBase: Abstract Base Class for Hyperliquid API Clients"></head><body>
 
     <a class="navbar-brand me-2" href="../index.html">hyperliquid</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -38,7 +38,7 @@ HyperliquidBase: Abstract Base Class for Hyperliquid API Clients"></head><body>
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>HyperliquidBase: Abstract Base Class for Hyperliquid API Clients</h1>
-      <small class="dont-index">Source: <a href="https://github.com/dereckscompany/hyperliquid/blob/v0.0.1/R/HyperliquidBase.R" class="external-link"><code>R/HyperliquidBase.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/dereckscompany/hyperliquid/blob/v0.3.0/R/HyperliquidBase.R" class="external-link"><code>R/HyperliquidBase.R</code></a></small>
       <div class="d-none name"><code>HyperliquidBase.Rd</code></div>
     </div>
 
@@ -52,7 +52,20 @@ HyperliquidBase: Abstract Base Class for Hyperliquid API Clients"></head><body>
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
     <p>Provides shared infrastructure for all Hyperliquid R6 classes: wallet
 credentials, network selection, sync/async execution mode, the request
-funnel (<code><a href="hyperliquid_build_request.html">hyperliquid_build_request()</a></code>), and lazy exchange-metadata caching.</p><div class="section">
+funnel (<code><a href="hyperliquid_build_request.html">hyperliquid_build_request()</a></code>), and lazy exchange-metadata caching.</p>
+<p>It <strong>inherits <a href="https://rdrr.io/pkg/connectcore/man/RestClient.html" class="external-link">connectcore::RestClient</a></strong>, the shared transport base, for the
+credential storage, sync/async perform function, and the overridable
+<code>.parse_envelope()</code> error seam — which it overrides with Hyperliquid's
+two-failure-shape parser (<code>parse_hyperliquid_response()</code>). The <code>.sign()</code> seam
+is left at its no-op default: Hyperliquid does not sign the HTTP request but
+the <strong>body</strong> (a wallet signature embedded as a <code>signature</code> field, built and
+attached by <code>.submit_l1()</code> / <code>.submit_user()</code> before the funnel), so request
+signing does not apply. The body-signed wire contract is honoured by routing
+the pre-serialised, byte-exact JSON through connectcore's shared funnel as a
+<strong>raw body</strong> (<code>body_format = "raw"</code>), so the connector owns no transport: the
+request build, perform, sync/async branch, and monotonic nonce all come from
+connectcore. Only the body serialisation and error envelope stay
+Hyperliquid-specific (<code><a href="hyperliquid_build_request.html">hyperliquid_build_request()</a></code>).</p><div class="section">
 <h3 id="sync-vs-async">Sync vs Async<a class="anchor" aria-label="anchor" href="#sync-vs-async"></a></h3>
 
 
@@ -93,27 +106,28 @@ public methods that delegate to <code>private$.info()</code> (reads) or
     <h2 id="fields">Fields<a class="anchor" aria-label="anchor" href="#fields"></a></h2>
 
 
-<p>All fields are private:</p><ul><li><p><code>.keys</code>: List; wallet credentials from <code><a href="get_api_keys.html">get_api_keys()</a></code>.</p></li>
+<p>All fields are private. <code>.keys</code>, <code>.is_async</code>, and <code>.perform</code> are inherited
+from <a href="https://rdrr.io/pkg/connectcore/man/RestClient.html" class="external-link">connectcore::RestClient</a>; the rest are Hyperliquid-specific:</p><ul><li><p><code>.keys</code>: List; wallet credentials from <code><a href="get_api_keys.html">get_api_keys()</a></code> (inherited).</p></li>
 <li><p><code>.signer</code>: <a href="https://dereckscompany.github.io/ethsign/reference/EthSigner.html" class="external-link">ethsign::EthSigner</a> or <code>NULL</code>; the wallet signer built from the
 key (used to sign /exchange actions), or <code>NULL</code> when no key is set.</p></li>
-<li><p><code>.base_url</code>: Character; REST base URL for the selected network.</p></li>
-<li><p><code>.is_async</code>: Logical; whether the instance is in async mode.</p></li>
-<li><p><code>.perform</code>: Function; <a href="https://httr2.r-lib.org/reference/req_perform.html" class="external-link">httr2::req_perform</a> or <a href="https://httr2.r-lib.org/reference/req_perform_promise.html" class="external-link">httr2::req_perform_promise</a>.</p></li>
+<li><p><code>.base_url</code>: Character; REST base URL for the selected network (inherited).</p></li>
+<li><p><code>.is_async</code>: Logical; whether the instance is in async mode (inherited).</p></li>
+<li><p><code>.perform</code>: Function; <a href="https://httr2.r-lib.org/reference/req_perform.html" class="external-link">httr2::req_perform</a> or <a href="https://httr2.r-lib.org/reference/req_perform_promise.html" class="external-link">httr2::req_perform_promise</a>
+(inherited).</p></li>
 <li><p><code>.testnet</code>: Logical; whether the instance targets testnet.</p></li>
 <li><p><code>.vault_address</code>: Character or <code>NULL</code>; vault/sub-account to act for.</p></li>
 <li><p><code>.account_address</code>: Character or <code>NULL</code>; master account for an agent wallet.</p></li>
 <li><p><code>.meta_cache</code>: List or <code>NULL</code>; cached asset-lookup tables (lazy).</p></li>
 </ul></div>
     <div class="section level2">
+    <h2 id="super-class">Super class<a class="anchor" aria-label="anchor" href="#super-class"></a></h2>
+    <p><code><a href="https://rdrr.io/pkg/connectcore/man/RestClient.html" class="external-link">connectcore::RestClient</a></code> -&gt; <code>HyperliquidBase</code></p>
+    </div>
+    <div class="section level2">
     <h2 id="active-bindings">Active bindings<a class="anchor" aria-label="anchor" href="#active-bindings"></a></h2>
-    <p></p><div class="r6-active-bindings"><dl><dt><code>is_async</code></dt>
+    <p></p><div class="r6-active-bindings"><dl><dt><code>testnet</code></dt>
 <dd><p>Logical; read-only flag indicating whether this instance
-operates in async mode.</p></dd>
-
-
-<dt><code>testnet</code></dt>
-<dd><p>Logical; read-only flag indicating whether this instance
-targets testnet.</p></dd>
+targets testnet. (<code>is_async</code> is inherited from <a href="https://rdrr.io/pkg/connectcore/man/RestClient.html" class="external-link">connectcore::RestClient</a>.)</p></dd>
 
 
 </dl><p></p></div>

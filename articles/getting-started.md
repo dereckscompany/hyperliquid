@@ -251,8 +251,8 @@ result is one row per resulting status (`resting`, `filled`, or
 order <- trading$place_order(
   "BTC",
   is_buy = TRUE,
-  sz = 0.001,
-  limit_px = 50000,
+  size = 0.001,
+  limit_price = 50000,
   order_type = list(limit = list(tif = "Gtc"))
 )
 order[]
@@ -271,7 +271,7 @@ one row per cancel:
 
 ``` r
 
-trading$cancel_order("BTC", oid = order$oid[order$status == "resting"][1])
+trading$cancel_order("BTC", order_id = order$oid[order$status == "resting"][1])
 ```
 
     #>     status  error

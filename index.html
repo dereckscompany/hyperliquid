@@ -22,7 +22,7 @@
 
     <a class="navbar-brand me-2" href="index.html">hyperliquid</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -73,7 +73,9 @@
 <li>
 <strong>One method, one <code>data.table</code>, no list columns.</strong> Every method returns a flat <code>data.table</code>; nested API objects are flattened into scalar columns, and heterogeneous rows are stacked with a discriminator column (<code>side</code>, <code>delta_type</code>, <code>status</code>, …).</li>
 <li>
-<strong>Sync and async.</strong> Every method works in both modes. <code>async = TRUE</code> returns a <a href="https://rstudio.github.io/promises/" class="external-link">promise</a>; otherwise results are returned directly. There is a single sync/async branch point (<code><a href="reference/hyperliquid_build_request.html">hyperliquid_build_request()</a></code>).</li>
+<strong>Sync and async.</strong> Every method works in both modes. <code>async = TRUE</code> returns a <a href="https://rstudio.github.io/promises/" class="external-link">promise</a>; otherwise results are returned directly. There is a single sync/async branch point (<code><a href="https://rdrr.io/pkg/connectcore/man/then_or_now.html" class="external-link">connectcore::then_or_now()</a></code>, which <code><a href="reference/hyperliquid_build_request.html">hyperliquid_build_request()</a></code> delegates to).</li>
+<li>
+<strong>Shared transport base via <a href="https://github.com/dereckscompany/connectcore" class="external-link">github.com/dereckscompany/connectcore</a>.</strong> <code>HyperliquidBase</code> inherits <code><a href="https://rdrr.io/pkg/connectcore/man/RestClient.html" class="external-link">connectcore::RestClient</a></code> for credential storage, the sync/async perform function, and the overridable error seam (Hyperliquid’s two-failure-shape parser plugs into <code>.parse_envelope()</code>). The connector owns no transport: because Hyperliquid signs the request <strong>body</strong> (not the request), the pre-serialised, byte-exact signed JSON is routed through connectcore’s funnel as a raw body (<code>body_format = "raw"</code>), which sends it on the wire verbatim.</li>
 <li>
 <strong>snake_case columns.</strong> API <code>camelCase</code> fields become <code>snake_case</code> columns; prices and sizes are returned as numerics.</li>
 <li>
@@ -86,7 +88,7 @@
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">renv</span><span class="fu">::</span><span class="fu">install</span><span class="op">(</span><span class="st">"dereckscompany/hyperliquid"</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="fu">renv</span><span class="fu">::</span><span class="fu"><a href="https://rstudio.github.io/renv/reference/install.html" class="external-link">install</a></span><span class="op">(</span><span class="st">"dereckscompany/hyperliquid"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># or, if you use remotes instead of renv:</span></span>
 <span><span class="co"># install.packages("remotes")</span></span>
@@ -196,8 +198,8 @@
 <span><span class="va">order</span> <span class="op">&lt;-</span> <span class="va">trading</span><span class="op">$</span><span class="fu">place_order</span><span class="op">(</span></span>
 <span>  <span class="st">"BTC"</span>,</span>
 <span>  is_buy <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  sz <span class="op">=</span> <span class="fl">0.001</span>,</span>
-<span>  limit_px <span class="op">=</span> <span class="fl">50000</span>,</span>
+<span>  size <span class="op">=</span> <span class="fl">0.001</span>,</span>
+<span>  limit_price <span class="op">=</span> <span class="fl">50000</span>,</span>
 <span>  order_type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>limit <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>tif <span class="op">=</span> <span class="st">"Gtc"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span><span class="va">order</span><span class="op">[</span><span class="op">]</span></span></code></pre></div>
@@ -208,7 +210,7 @@
 <span id="cb18-5"><a href="#cb18-5" tabindex="-1"></a><span class="co">#&gt; 3:   error       NA       NA     NA Order must have minimum value of $10.</span></span></code></pre></div>
 <div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Cancel a resting order by its order id</span></span>
-<span><span class="va">trading</span><span class="op">$</span><span class="fu">cancel_order</span><span class="op">(</span><span class="st">"BTC"</span>, oid <span class="op">=</span> <span class="fl">77738308</span><span class="op">)</span></span></code></pre></div>
+<span><span class="va">trading</span><span class="op">$</span><span class="fu">cancel_order</span><span class="op">(</span><span class="st">"BTC"</span>, order_id <span class="op">=</span> <span class="fl">77738308</span><span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb20"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" tabindex="-1"></a><span class="co">#&gt;     status  error</span></span>
 <span id="cb20-2"><a href="#cb20-2" tabindex="-1"></a><span class="co">#&gt;     &lt;char&gt; &lt;char&gt;</span></span>
 <span id="cb20-3"><a href="#cb20-3" tabindex="-1"></a><span class="co">#&gt; 1: success   &lt;NA&gt;</span></span></code></pre></div>

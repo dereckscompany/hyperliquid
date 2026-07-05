@@ -47,8 +47,10 @@ explicitly to inspect any other delegator.
 | get_delegator_history   | delegatorHistory | No   |
 | token_delegate          | tokenDelegate    | Yes  |
 
-## Super class
+## Super classes
 
+[`connectcore::RestClient`](https://rdrr.io/pkg/connectcore/man/RestClient.html)
+-\>
 [`hyperliquid::HyperliquidBase`](https://dereckscompany.github.io/hyperliquid/reference/HyperliquidBase.md)
 -\> `HyperliquidStaking`
 
@@ -121,9 +123,14 @@ Retrieve a delegator's active per-validator delegations.
 #### Returns
 
 (promise\<data.table\>) a
-[data.table::data.table](https://rdrr.io/pkg/data.table/man/data.table.html)
-with `validator`, `amount`, `locked_until_timestamp`, or a promise
-thereof.
+[data.table::data.table](https://rdrr.io/pkg/data.table/man/data.table.html),
+one row per active delegation (or a promise thereof):
+
+- validator (character) the validator's `0x` address.
+
+- amount (numeric) the staked amount.
+
+- locked_until_timestamp (POSIXct) when the delegation unlocks.
 
 ------------------------------------------------------------------------
 
@@ -145,8 +152,15 @@ Retrieve a delegator's historic staking rewards.
 #### Returns
 
 (promise\<data.table\>) a
-[data.table::data.table](https://rdrr.io/pkg/data.table/man/data.table.html)
-with `time`, `source`, `total_amount`, or a promise thereof.
+[data.table::data.table](https://rdrr.io/pkg/data.table/man/data.table.html),
+one row per reward accrual (or a promise thereof):
+
+- time (POSIXct) the accrual time.
+
+- source (character) the reward source, e.g. `"delegation"`,
+  `"commission"`.
+
+- total_amount (numeric) the reward amount.
 
 ------------------------------------------------------------------------
 
