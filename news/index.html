@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">hyperliquid</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -39,6 +39,13 @@
       <small>Source: <a href="https://github.com/dereckscompany/hyperliquid/blob/master/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.3.1" id="hyperliquid-031">hyperliquid 0.3.1<a class="anchor" aria-label="anchor" href="#hyperliquid-031"></a></h2>
+<div class="section level3">
+<h3 id="feature-as_cloid--is_cloid-map-any-client-tag-to-a-venue-valid-cloid-0-3-1">Feature: <code>as_cloid()</code> / <code>is_cloid()</code> map any client tag to a venue-valid cloid<a class="anchor" aria-label="anchor" href="#feature-as_cloid--is_cloid-map-any-client-tag-to-a-venue-valid-cloid-0-3-1"></a></h3>
+<ul><li>Hyperliquid’s client order id (<code>cloid</code>) must be a <code>0x</code>-prefixed 32-hex-character (16-byte) string, so a trader’s free-form idempotency id is silently rejected by the venue. <code><a href="../reference/as_cloid.html">as_cloid()</a></code> maps any character tag deterministically onto a valid cloid — an already-valid cloid passes through lowercased, and any other tag becomes <code>"0x"</code> plus the first 16 bytes of its SHA-256 digest — so the same logical id always yields the same cloid and idempotency is preserved (collisions are negligible at 128 bits). <code><a href="../reference/is_cloid.html">is_cloid()</a></code> is the vectorised, non-aborting predicate for the same format (<code>NA</code> in, <code>NA</code> out), useful as a boundary guard or filter. The hash step is one-way: recover the original tag by lookup against <code><a href="../reference/as_cloid.html">as_cloid()</a></code> of your candidate ids, not by decoding, so there is deliberately no <code>cloid_decode()</code>. The <code>cloid</code> regex now lives once in an internal <code>CLOID_PATTERN</code> constant shared with the order-boundary validator. Closes <a href="https://github.com/dereckscompany/hyperliquid/issues/2" class="external-link">#2</a>.</li>
+</ul></div>
+</div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.3.0" id="hyperliquid-030">hyperliquid 0.3.0<a class="anchor" aria-label="anchor" href="#hyperliquid-030"></a></h2>
 <div class="section level3">

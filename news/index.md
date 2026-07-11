@@ -1,5 +1,28 @@
 # Changelog
 
+## hyperliquid 0.3.1
+
+### Feature: `as_cloid()` / `is_cloid()` map any client tag to a venue-valid cloid
+
+- Hyperliquid’s client order id (`cloid`) must be a `0x`-prefixed
+  32-hex-character (16-byte) string, so a trader’s free-form idempotency
+  id is silently rejected by the venue.
+  [`as_cloid()`](https://dereckscompany.github.io/hyperliquid/reference/as_cloid.md)
+  maps any character tag deterministically onto a valid cloid — an
+  already-valid cloid passes through lowercased, and any other tag
+  becomes `"0x"` plus the first 16 bytes of its SHA-256 digest — so the
+  same logical id always yields the same cloid and idempotency is
+  preserved (collisions are negligible at 128 bits).
+  [`is_cloid()`](https://dereckscompany.github.io/hyperliquid/reference/is_cloid.md)
+  is the vectorised, non-aborting predicate for the same format (`NA`
+  in, `NA` out), useful as a boundary guard or filter. The hash step is
+  one-way: recover the original tag by lookup against
+  [`as_cloid()`](https://dereckscompany.github.io/hyperliquid/reference/as_cloid.md)
+  of your candidate ids, not by decoding, so there is deliberately no
+  `cloid_decode()`. The `cloid` regex now lives once in an internal
+  `CLOID_PATTERN` constant shared with the order-boundary validator.
+  Closes [\#2](https://github.com/dereckscompany/hyperliquid/issues/2).
+
 ## hyperliquid 0.3.0
 
 ### Breaking: spelled-out argument names on the trading and account signatures

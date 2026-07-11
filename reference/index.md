@@ -28,6 +28,10 @@ Wallet credential, endpoint, and client-order-id helpers
   : Retrieve the Hyperliquid REST Base URL
 - [`new_cloid()`](https://dereckscompany.github.io/hyperliquid/reference/new_cloid.md)
   : Generate a Client Order Id (cloid)
+- [`as_cloid()`](https://dereckscompany.github.io/hyperliquid/reference/as_cloid.md)
+  : Coerce Any Client Tag to a Canonical cloid
+- [`is_cloid()`](https://dereckscompany.github.io/hyperliquid/reference/is_cloid.md)
+  : Test Whether a Value Is a Valid cloid
 
 ## Low-Level Request
 

@@ -20,5 +20,5 @@ new_cloid()
 
 ``` r
 new_cloid()
-#> [1] "0xf50eff373346d75366f7fb663f091f5a"
+#> [1] "0x433a528b0b2fb8fc8fc285897bbea50b"
 ```
