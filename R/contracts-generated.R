@@ -1546,6 +1546,26 @@ assert_return_hyperliquid_backfill_funding <- function(value) {
   return(value)
 }
 
+assert_args_is_cloid <- function(x) {
+  assert_character(x)
+  return(invisible(NULL))
+}
+
+assert_return_is_cloid <- function(value) {
+  assert_logical(value)
+  return(value)
+}
+
+assert_args_as_cloid <- function(x) {
+  assert_character(x)
+  return(invisible(NULL))
+}
+
+assert_return_as_cloid <- function(value) {
+  assert_character(value)
+  return(value)
+}
+
 assert_args_hyperliquid_build_request <- function(base_url, path, body, .perform, .parser, is_async, timeout, parse_envelope) {
   assert_scalar_character(base_url)
   assert_scalar_character(path)

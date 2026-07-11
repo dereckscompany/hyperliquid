@@ -30,6 +30,8 @@ reference:
       - get_api_keys
       - get_base_url
       - new_cloid
+      - as_cloid
+      - is_cloid
 
   - title: Low-Level Request
     desc: The single funnel through which all Hyperliquid API calls flow

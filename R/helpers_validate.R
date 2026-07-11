@@ -107,7 +107,7 @@ side_to_is_buy <- function(side) {
 #' Validate a Client Order Id (cloid)
 #'
 #' @param x Character; a `0x`-prefixed 32-hex-character (16-byte) cloid, as
-#'   produced by [new_cloid()].
+#'   produced by [new_cloid()] or [as_cloid()].
 #' @return The lowercased cloid; aborts on anything else.
 #'
 #' @importFrom rlang abort
@@ -115,7 +115,7 @@ side_to_is_buy <- function(side) {
 #' @noRd
 validate_cloid <- function(x) {
   assert::assert_scalar_character(x)
-  if (!grepl("^0[xX][0-9a-fA-F]{32}$", x)) {
+  if (!grepl(CLOID_PATTERN, x)) {
     rlang::abort(paste0(
       "Invalid cloid '",
       x,

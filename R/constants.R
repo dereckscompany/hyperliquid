@@ -107,3 +107,16 @@ TIF_VALUES <- c("Alo", "Ioc", "Gtc")
 #' @keywords internal
 #' @noRd
 GROUPING_VALUES <- c("na", "normalTpsl", "positionTpsl")
+
+#' Client-Order-Id (cloid) Format Pattern
+#'
+#' The single source of truth for Hyperliquid's `cloid` format: a `0x` prefix
+#' followed by exactly 32 hex characters (16 bytes / 128 bits), matched
+#' case-insensitively. Shared by `is_cloid()`, `as_cloid()`, and the internal
+#' order-boundary `validate_cloid()`.
+#'
+#' @format A scalar character regular expression.
+#'
+#' @keywords internal
+#' @noRd
+CLOID_PATTERN <- "^0[xX][0-9a-fA-F]{32}$"
