@@ -129,7 +129,7 @@ parse_hyperliquid_response <- function(resp) {
 
   # /info malformed -> HTTP 422 text/plain. Surface the body verbatim.
   if (status >= 400L) {
-    rlang::abort(paste0("Hyperliquid HTTP error ", status, "\n", body_text))
+    abort_hyperliquid_error(status = status, url = resp$url, body = body_text)
   }
 
   if (!nzchar(trimws(body_text))) {
@@ -140,7 +140,7 @@ parse_hyperliquid_response <- function(resp) {
 
   # /exchange failures return HTTP 200 with {status:"err", response:<string>}.
   if (is.list(parsed) && identical(parsed$status, "err")) {
-    rlang::abort(paste0("Hyperliquid exchange error: ", parsed$response))
+    abort_hyperliquid_exchange_error(response = parsed$response, url = resp$url, body = body_text)
   }
 
   # Return is NOT wired: a JSON `null` body (e.g. `subAccounts` with no
