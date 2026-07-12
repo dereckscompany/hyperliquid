@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">hyperliquid</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -36,9 +36,19 @@
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Changelog</h1>
-      <small>Source: <a href="https://github.com/dereckscompany/hyperliquid/blob/v0.3.1/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
+      <small>Source: <a href="https://github.com/dereckscompany/hyperliquid/blob/master/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.4.0" id="hyperliquid-040">hyperliquid 0.4.0<a class="anchor" aria-label="anchor" href="#hyperliquid-040"></a></h2>
+<div class="section level3">
+<h3 id="typed-api-error-conditions-0-4-0">Typed API-error conditions<a class="anchor" aria-label="anchor" href="#typed-api-error-conditions-0-4-0"></a></h3>
+<ul><li>Both failure surfaces of the request funnel (<code>parse_hyperliquid_response()</code>) now signal a <strong>classed condition</strong> instead of a bare <code><a href="https://rlang.r-lib.org/reference/abort.html" class="external-link">rlang::abort()</a></code>, so a caller branches on error <em>type</em> and reads structured <em>fields</em> rather than grepping the message text. The <code>/info</code> malformed-body surface (a non-2xx HTTP status) raises <code>abort_hyperliquid_error()</code>, classed specific -&gt; general: <code>hyperliquid_api_error_&lt;status&gt;</code>, <code>hyperliquid_api_error</code>, then the inherited connectcore family <code>connectcore_api_error_&lt;status&gt;</code> / <code>connectcore_api_error</code> / <code>connectcore_error</code>, carrying <code>status</code> (integer), <code>url</code> (credentials redacted), and <code>body_snippet</code>.</li>
+<li>The <code>/exchange</code> surface is different: Hyperliquid returns HTTP <strong>200</strong> even on failure, with <code>{status:"err", response:"&lt;string&gt;"}</code>. This now raises <code>abort_hyperliquid_exchange_error()</code>, which adds a distinct <code>hyperliquid_exchange_error</code> class at the front of the family so a caller can single it out. Because the 200 status is meaningless for this surface it is <strong>no-status</strong>: it carries neither a per-status class nor a <code>status</code> field, and instead carries the exchange <code>response</code> string (plus <code>url</code> and <code>body_snippet</code>). Its full class vector is <code>c("hyperliquid_exchange_error", "hyperliquid_api_error", "connectcore_api_error", "connectcore_error")</code>, so <code>hyperliquid_api_error</code> / <code>connectcore_api_error</code> / <code>connectcore_error</code> still catch it.</li>
+<li>The message strings are <strong>byte-identical</strong> to the previous <code>"Hyperliquid HTTP error &lt;status&gt;\n&lt;body&gt;"</code> and <code>"Hyperliquid exchange error: &lt;response&gt;"</code>, so existing tests and downstream message greps keep matching. The classes and fields are purely additive.</li>
+<li>This follows the connector-subclass recipe documented in connectcore 0.4.0 (<code>?connectcore_conditions</code>); the floor is bumped to <code>connectcore (&gt;= 0.4.0)</code>.</li>
+</ul></div>
+</div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.3.1" id="hyperliquid-031">hyperliquid 0.3.1<a class="anchor" aria-label="anchor" href="#hyperliquid-031"></a></h2>
 <div class="section level3">

@@ -1,5 +1,42 @@
 # Changelog
 
+## hyperliquid 0.4.0
+
+### Typed API-error conditions
+
+- Both failure surfaces of the request funnel
+  (`parse_hyperliquid_response()`) now signal a **classed condition**
+  instead of a bare
+  [`rlang::abort()`](https://rlang.r-lib.org/reference/abort.html), so a
+  caller branches on error *type* and reads structured *fields* rather
+  than grepping the message text. The `/info` malformed-body surface (a
+  non-2xx HTTP status) raises `abort_hyperliquid_error()`, classed
+  specific -\> general: `hyperliquid_api_error_<status>`,
+  `hyperliquid_api_error`, then the inherited connectcore family
+  `connectcore_api_error_<status>` / `connectcore_api_error` /
+  `connectcore_error`, carrying `status` (integer), `url` (credentials
+  redacted), and `body_snippet`.
+- The `/exchange` surface is different: Hyperliquid returns HTTP **200**
+  even on failure, with `{status:"err", response:"<string>"}`. This now
+  raises `abort_hyperliquid_exchange_error()`, which adds a distinct
+  `hyperliquid_exchange_error` class at the front of the family so a
+  caller can single it out. Because the 200 status is meaningless for
+  this surface it is **no-status**: it carries neither a per-status
+  class nor a `status` field, and instead carries the exchange
+  `response` string (plus `url` and `body_snippet`). Its full class
+  vector is
+  `c("hyperliquid_exchange_error", "hyperliquid_api_error", "connectcore_api_error", "connectcore_error")`,
+  so `hyperliquid_api_error` / `connectcore_api_error` /
+  `connectcore_error` still catch it.
+- The message strings are **byte-identical** to the previous
+  `"Hyperliquid HTTP error <status>\n<body>"` and
+  `"Hyperliquid exchange error: <response>"`, so existing tests and
+  downstream message greps keep matching. The classes and fields are
+  purely additive.
+- This follows the connector-subclass recipe documented in connectcore
+  0.4.0 (`?connectcore_conditions`); the floor is bumped to
+  `connectcore (>= 0.4.0)`.
+
 ## hyperliquid 0.3.1
 
 ### Feature: `as_cloid()` / `is_cloid()` map any client tag to a venue-valid cloid
