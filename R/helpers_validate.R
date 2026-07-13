@@ -14,7 +14,7 @@
 validate_address <- function(x) {
   assert::assert_scalar_character(x)
   if (!grepl("^0[xX][0-9a-fA-F]{40}$", x)) {
-    rlang::abort(paste0(
+    abort_hyperliquid_validation_error(paste0(
       "Invalid address '",
       x,
       "'. Expected a 0x-prefixed 40-hex-character ",
@@ -39,7 +39,7 @@ validate_address <- function(x) {
 validate_coin <- function(x) {
   assert::assert_scalar_character(x)
   if (!nzchar(x)) {
-    rlang::abort(
+    abort_hyperliquid_validation_error(
       "`coin` must be a non-empty string, e.g. \"BTC\", \"@107\", or \"HYPE/USDC\"."
     )
   }
@@ -57,7 +57,7 @@ validate_coin <- function(x) {
 validate_interval <- function(x) {
   assert::assert_scalar_character(x)
   if (!x %in% HYPERLIQUID_INTERVALS) {
-    rlang::abort(paste0(
+    abort_hyperliquid_validation_error(paste0(
       "Invalid interval '",
       x,
       "'. Expected one of: ",
@@ -80,7 +80,7 @@ validate_side <- function(side) {
   assert::assert_scalar_character(side)
   low <- tolower(side)
   if (!low %in% names(ORDER_SIDE)) {
-    rlang::abort(paste0("Invalid side '", side, "'. Expected \"buy\" or \"sell\"."))
+    abort_hyperliquid_validation_error(paste0("Invalid side '", side, "'. Expected \"buy\" or \"sell\"."))
   }
   return(low)
 }
@@ -116,7 +116,7 @@ side_to_is_buy <- function(side) {
 validate_cloid <- function(x) {
   assert::assert_scalar_character(x)
   if (!grepl(CLOID_PATTERN, x)) {
-    rlang::abort(paste0(
+    abort_hyperliquid_validation_error(paste0(
       "Invalid cloid '",
       x,
       "'. Expected a 0x-prefixed 32-hex-character client ",
@@ -148,7 +148,7 @@ validate_cloid <- function(x) {
 assert_finite_positive <- function(x, name) {
   assert::assert_scalar_numeric(x)
   if (!is.finite(x) || x <= 0) {
-    rlang::abort(sprintf(
+    abort_hyperliquid_validation_error(sprintf(
       "`%s` must be a single finite number greater than 0 (in ]0, Inf[), got: %s",
       name,
       format(x)

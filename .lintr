@@ -1,7 +1,7 @@
 linters: linters_with_defaults(
     line_length_linter = line_length_linter(120),
     indentation_linter = indentation_linter(2),
-    return_linter = return_linter(return_style = "explicit", return_functions = c("abort")),
+    return_linter = return_linter(return_style = "explicit", return_functions = c("abort", "abort_hyperliquid_validation_error", "abort_hyperliquid_encoding_error")),
     object_name_linter = object_name_linter(styles = c("snake_case", "SNAKE_CASE", "CamelCase")),
     # Disabled: long fixture / API-field names are intentional.
     object_length_linter = NULL,

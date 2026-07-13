@@ -77,3 +77,47 @@ test_that("parse_hyperliquid_response returns the parsed body on a success envel
   out <- hyperliquid:::parse_hyperliquid_response(resp)
   expect_equal(out$status, "ok")
 })
+
+# ---- Non-transport surfaces: validation + wire-encoding ----------------------
+# The 37 non-transport aborts are typed under a DOMAIN root, hyperliquid_error,
+# parallel to the transport connectcore_error root. Two subclasses:
+# hyperliquid_validation_error (input/argument/credential) and
+# hyperliquid_encoding_error (msgpack / wire serialisation). Messages are
+# byte-identical to the bare rlang::abort() calls each site replaced.
+
+test_that("the two non-transport raisers layer their subclass then hyperliquid_error", {
+  ev <- tryCatch(hyperliquid:::abort_hyperliquid_validation_error("v"), error = function(e) e)
+  expect_identical(
+    class(ev),
+    c("hyperliquid_validation_error", "hyperliquid_error", "rlang_error", "error", "condition")
+  )
+  ee <- tryCatch(hyperliquid:::abort_hyperliquid_encoding_error("e"), error = function(e) e)
+  expect_identical(
+    class(ee),
+    c("hyperliquid_encoding_error", "hyperliquid_error", "rlang_error", "error", "condition")
+  )
+})
+
+test_that("both non-transport subclasses catch under hyperliquid_error and are NOT transport errors", {
+  for (raiser in c("abort_hyperliquid_validation_error", "abort_hyperliquid_encoding_error")) {
+    fn <- get(raiser, envir = asNamespace("hyperliquid"))
+    caught <- tryCatch(fn("x"), hyperliquid_error = function(e) "root")
+    expect_identical(caught, "root")
+    err <- tryCatch(fn("x"), error = function(e) e)
+    expect_false(inherits(err, "connectcore_error"))
+  }
+})
+
+test_that("validate_side rejects a bad side with hyperliquid_validation_error (golden)", {
+  err <- tryCatch(hyperliquid:::validate_side("hodl"), error = function(e) e)
+  expect_s3_class(err, "hyperliquid_validation_error")
+  expect_s3_class(err, "hyperliquid_error")
+  expect_identical(conditionMessage(err), "Invalid side 'hodl'. Expected \"buy\" or \"sell\".")
+})
+
+test_that("encode_msgpack rejects a non-finite numeric with hyperliquid_encoding_error (golden)", {
+  err <- tryCatch(hyperliquid:::encode_msgpack(Inf), error = function(e) e)
+  expect_s3_class(err, "hyperliquid_encoding_error")
+  expect_s3_class(err, "hyperliquid_error")
+  expect_identical(conditionMessage(err), "msgpack: non-finite numeric")
+})

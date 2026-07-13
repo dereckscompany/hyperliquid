@@ -20,7 +20,7 @@ float_to_wire <- function(x) {
   on.exit(options(old), add = TRUE)
   rounded <- sprintf("%.8f", x)
   if (abs(as.numeric(rounded) - x) >= 1e-12) {
-    rlang::abort(paste0("float_to_wire causes rounding: ", x))
+    abort_hyperliquid_encoding_error(paste0("float_to_wire causes rounding: ", x))
   }
   if (rounded == "-0") {
     rounded <- "0" # mirrors python's (unreachable) check on the %.8f string
@@ -63,7 +63,7 @@ float_to_int <- function(x, power) {
   }
   with_decimals <- x * 10^power
   if (abs(round(with_decimals) - with_decimals) >= 1e-3) {
-    rlang::abort(paste0("float_to_int causes rounding: ", x))
+    abort_hyperliquid_encoding_error(paste0("float_to_int causes rounding: ", x))
   }
   return(round(with_decimals)) # R round() is half-to-even, same as python
 }
@@ -321,7 +321,7 @@ order_type_to_wire <- function(order_type) {
       )
     ))
   }
-  rlang::abort("Invalid order type")
+  abort_hyperliquid_validation_error("Invalid order type")
 }
 
 #' Convert an Order Request to its Wire Representation

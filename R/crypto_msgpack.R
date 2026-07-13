@@ -98,7 +98,7 @@ mp_encode_int <- function(x) {
       return(c(as.raw(0xce), mp_u32_be(x))) # uint32
     }
     if (x >= 2^53) {
-      rlang::abort(paste0("msgpack: integer ", x, " >= 2^53, double cannot represent it exactly"))
+      abort_hyperliquid_encoding_error(paste0("msgpack: integer ", x, " >= 2^53, double cannot represent it exactly"))
     }
     return(c(as.raw(0xcf), mp_u64_be(x))) # uint64
   }
@@ -116,7 +116,7 @@ mp_encode_int <- function(x) {
     return(c(as.raw(0xd2), mp_u32_be(x + 4294967296))) # int32
   }
   if (x <= -(2^53)) {
-    rlang::abort(paste0("msgpack: integer ", x, " <= -2^53, double cannot represent it exactly"))
+    abort_hyperliquid_encoding_error(paste0("msgpack: integer ", x, " <= -2^53, double cannot represent it exactly"))
   }
   # BUGFIX: the original int64 negative path emitted mp_u64_be(x + 2^64), but
   # 18446744073709551616 (2^64) is not exactly representable as a double, so for
@@ -148,7 +148,7 @@ mp_encode_str <- function(x) {
   if (n <= 65535) {
     return(c(as.raw(0xda), mp_u16_be(n), b)) # str16
   }
-  rlang::abort("msgpack: string longer than 65535 bytes not supported in spike")
+  abort_hyperliquid_encoding_error("msgpack: string longer than 65535 bytes not supported in spike")
 }
 
 #' Encode an Exact Integer (`gmp::bigz`) as a msgpack Integer
@@ -170,7 +170,7 @@ mp_encode_bigz <- function(x) {
   }
   if (x >= 0) {
     if (x >= gmp::as.bigz(2)^64) {
-      rlang::abort("msgpack: integer exceeds uint64")
+      abort_hyperliquid_encoding_error("msgpack: integer exceeds uint64")
     }
     h <- as.character(x, b = 16)
     h <- gsub(" ", "0", sprintf("%016s", h))
@@ -178,7 +178,7 @@ mp_encode_bigz <- function(x) {
     return(c(as.raw(0xcf), as.raw(strtoi(substring(h, starts, starts + 1), 16L))))
   }
   if (x < -(gmp::as.bigz(2)^63)) {
-    rlang::abort("msgpack: integer below int64 minimum")
+    abort_hyperliquid_encoding_error("msgpack: integer below int64 minimum")
   }
   return(c(as.raw(0xd3), mp_encode_bigz(x + gmp::as.bigz(2)^64)[-1])) # two's complement
 }
@@ -204,7 +204,7 @@ encode_msgpack <- function(x) {
   }
   if (inherits(x, "bigz")) {
     if (length(x) != 1) {
-      rlang::abort("msgpack: only scalar bigz supported")
+      abort_hyperliquid_encoding_error("msgpack: only scalar bigz supported")
     }
     return(mp_encode_bigz(x))
   }
@@ -213,7 +213,7 @@ encode_msgpack <- function(x) {
     n <- length(x)
     is_map <- !is.null(nm) && all(nzchar(nm))
     if (!is.null(nm) && !is_map && any(nzchar(nm))) {
-      rlang::abort("msgpack: list with mixed named/unnamed elements")
+      abort_hyperliquid_encoding_error("msgpack: list with mixed named/unnamed elements")
     }
     if (is_map) {
       # map header
@@ -222,7 +222,7 @@ encode_msgpack <- function(x) {
       } else if (n <= 65535) {
         head <- c(as.raw(0xde), mp_u16_be(n)) # map16
       } else {
-        rlang::abort("msgpack: map too large for spike")
+        abort_hyperliquid_encoding_error("msgpack: map too large for spike")
       }
       body <- raw(0)
       for (i in seq_len(n)) {
@@ -237,7 +237,7 @@ encode_msgpack <- function(x) {
     } else if (n <= 65535) {
       head <- c(as.raw(0xdc), mp_u16_be(n)) # array16
     } else {
-      rlang::abort("msgpack: array too large for spike")
+      abort_hyperliquid_encoding_error("msgpack: array too large for spike")
     }
     body <- raw(0)
     for (i in seq_len(n)) {
@@ -246,14 +246,18 @@ encode_msgpack <- function(x) {
     return(c(head, body))
   }
   if (length(x) != 1) {
-    rlang::abort(paste0("msgpack: only scalar atomic values supported (got length ", length(x), ")"))
+    abort_hyperliquid_encoding_error(paste0(
+      "msgpack: only scalar atomic values supported (got length ",
+      length(x),
+      ")"
+    ))
   }
   if (is.character(x)) {
     return(mp_encode_str(x))
   }
   if (is.logical(x)) {
     if (is.na(x)) {
-      rlang::abort("msgpack: NA logical not supported")
+      abort_hyperliquid_encoding_error("msgpack: NA logical not supported")
     }
     if (x) {
       return(as.raw(0xc3))
@@ -262,13 +266,13 @@ encode_msgpack <- function(x) {
   }
   if (is.numeric(x)) {
     if (is.na(x) || !is.finite(x)) {
-      rlang::abort("msgpack: non-finite numeric")
+      abort_hyperliquid_encoding_error("msgpack: non-finite numeric")
     }
     if (x != trunc(x)) {
       # In this wire format ALL numerics in actions are ints; prices and sizes
       # arrive as strings (float_to_wire). A fractional double here means a
       # caller bug -- abort instead of emitting float64.
-      rlang::abort(paste0(
+      abort_hyperliquid_encoding_error(paste0(
         "msgpack: non-whole numeric ",
         x,
         " -- Hyperliquid actions carry only ints; ",
@@ -277,5 +281,5 @@ encode_msgpack <- function(x) {
     }
     return(mp_encode_int(x))
   }
-  rlang::abort(paste0("msgpack: unsupported type ", paste(class(x), collapse = "/")))
+  abort_hyperliquid_encoding_error(paste0("msgpack: unsupported type ", paste(class(x), collapse = "/")))
 }
