@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">hyperliquid</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -36,9 +36,19 @@
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Changelog</h1>
-      <small>Source: <a href="https://github.com/dereckscompany/hyperliquid/blob/v0.4.0/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
+      <small>Source: <a href="https://github.com/dereckscompany/hyperliquid/blob/master/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.5.0" id="hyperliquid-050">hyperliquid 0.5.0<a class="anchor" aria-label="anchor" href="#hyperliquid-050"></a></h2>
+<div class="section level3">
+<h3 id="typed-input-validation-and-wire-encoding-conditions-the-non-transport-taxonomy-0-5-0">Typed input-validation and wire-encoding conditions (the non-transport taxonomy)<a class="anchor" aria-label="anchor" href="#typed-input-validation-and-wire-encoding-conditions-the-non-transport-taxonomy-0-5-0"></a></h3>
+<ul><li>The connector’s 37 non-transport <code><a href="https://rlang.r-lib.org/reference/abort.html" class="external-link">rlang::abort()</a></code> sites now signal <strong>classed conditions</strong> instead of bare strings, so a caller branches on error <em>type</em> instead of grepping the message text. This completes the taxonomy alongside the request funnel’s typed transport conditions.</li>
+<li>Two domain subclasses, both rooted at <code>hyperliquid_error</code> (the connector’s DOMAIN root, parallel to the transport <code>connectcore_error</code> root — a non-transport failure is not a transport failure, so the two roots never meet, exactly the <code>core_error</code> / <code>connectcore_error</code> split): <code>hyperliquid_validation_error</code> (20 sites: a method’s argument, parameter, or credential setup is malformed — a bad address / coin / interval / side / cloid, a missing wallet key, an unknown coin or asset id, a non-finite amount) via a new <code>abort_hyperliquid_validation_error()</code>; and <code>hyperliquid_encoding_error</code> (17 sites: a value that cannot be serialised to the venue’s wire format — the msgpack encoder rejecting an unrepresentable integer, over-long string, non-finite or unsupported value, or a float-to-wire conversion that would silently round the order) via a new <code>abort_hyperliquid_encoding_error()</code>. Catch either subclass specifically, or <code>hyperliquid_error</code> for any non-transport failure.</li>
+<li>The message strings are <strong>byte-identical</strong> to the bare <code><a href="https://rlang.r-lib.org/reference/abort.html" class="external-link">rlang::abort()</a></code> calls they replaced (a reverse-substitution proves all 37 reproduce master exactly; golden tests pin a representative site per subclass), so existing tests and downstream message greps keep matching. The classes are purely additive; <code><a href="https://rdrr.io/r/base/conditions.html" class="external-link">conditionMessage()</a></code> and <code>inherits(e, "error")</code> are unchanged. No behaviour changes.</li>
+<li>Follows the org convention (dereckscompany/tradebot-core#30; discussion “throw typed errors, not bare strings”). The transport/API funnel (<code>abort_hyperliquid_error</code> / <code>abort_hyperliquid_exchange_error</code>, rooted at <code>connectcore_error</code>) is untouched.</li>
+</ul></div>
+</div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.4.0" id="hyperliquid-040">hyperliquid 0.4.0<a class="anchor" aria-label="anchor" href="#hyperliquid-040"></a></h2>
 <div class="section level3">
