@@ -299,7 +299,7 @@ HyperliquidTransfers <- R6::R6Class(
     .validate_token = function(token) {
       assert::assert_scalar_character(token)
       if (!nzchar(token)) {
-        rlang::abort(paste0(
+        abort_hyperliquid_validation_error(paste0(
           "`token` must be a non-empty string in NAME:0x<tokenId> form, ",
           "e.g. \"PURR:0xc1fb593aeffbeb02f85e0308e9956a90\"."
         ))

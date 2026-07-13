@@ -68,7 +68,7 @@ hyperliquid_backfill_klines <- function(
   verbose = TRUE
 ) {
   if (is.null(symbols) || length(symbols) == 0L) {
-    rlang::abort("`symbols` must be a non-empty character vector of coins.")
+    abort_hyperliquid_validation_error("`symbols` must be a non-empty character vector of coins.")
   }
   for (intv in intervals) {
     validate_interval(intv)
@@ -105,7 +105,7 @@ hyperliquid_backfill_klines <- function(
     existing <- tryCatch(data.table::fread(file), error = function(e) NULL)
     if (!is.null(existing) && nrow(existing) > 0L) {
       if (!identical(names(existing), out_cols)) {
-        rlang::abort(paste0(
+        abort_hyperliquid_validation_error(paste0(
           "Output file '",
           file,
           "' has columns (",
@@ -326,7 +326,7 @@ hyperliquid_backfill_funding <- function(
   verbose = TRUE
 ) {
   if (is.null(symbols) || length(symbols) == 0L) {
-    rlang::abort("`symbols` must be a non-empty character vector of coins.")
+    abort_hyperliquid_validation_error("`symbols` must be a non-empty character vector of coins.")
   }
   for (s in symbols) {
     validate_coin(s)
@@ -352,7 +352,7 @@ hyperliquid_backfill_funding <- function(
     existing <- tryCatch(data.table::fread(file), error = function(e) NULL)
     if (!is.null(existing) && nrow(existing) > 0L) {
       if (!identical(names(existing), out_cols)) {
-        rlang::abort(paste0(
+        abort_hyperliquid_validation_error(paste0(
           "Output file '",
           file,
           "' has columns (",

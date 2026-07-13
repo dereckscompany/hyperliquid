@@ -152,7 +152,7 @@ HyperliquidStaking <- R6::R6Class(
       assert_args_HyperliquidStaking__token_delegate(validator, wei, is_undelegate)
       validator <- validate_address(validator)
       if (wei != trunc(wei)) {
-        rlang::abort(sprintf(
+        abort_hyperliquid_validation_error(sprintf(
           "`wei` must be a whole number of wei (no fractional part), got: %s",
           format(wei)
         ))

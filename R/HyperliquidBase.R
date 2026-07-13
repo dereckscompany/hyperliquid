@@ -253,7 +253,7 @@ HyperliquidBase <- R6::R6Class(
     # helpers so the failure is the same actionable message everywhere.
     .require_signing_key = function() {
       if (is.null(private$.keys$private_key)) {
-        rlang::abort(paste0(
+        abort_hyperliquid_validation_error(paste0(
           "A signed action requires a wallet private key, but none is set. ",
           "Set HYPERLIQUID_PRIVATE_KEY (and optionally HYPERLIQUID_ACCOUNT_ADDRESS) ",
           "or pass keys = get_api_keys(private_key = ...) to the constructor."

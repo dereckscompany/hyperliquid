@@ -79,7 +79,7 @@ meta_name_to_coin <- function(maps, name) {
   assert_args_meta_name_to_coin(maps, name)
   coin <- maps$name_to_coin[[name]]
   if (is.null(coin)) {
-    rlang::abort(paste0(
+    abort_hyperliquid_validation_error(paste0(
       "Unknown coin/name: '",
       name,
       "'. Call refresh_meta() if it was newly listed."
@@ -119,7 +119,7 @@ meta_sz_decimals <- function(maps, asset) {
   # arrives over live JSON. Corrected tags are `scalar<count>`.
   sz <- maps$asset_to_sz_decimals[[as.character(asset)]]
   if (is.null(sz)) {
-    rlang::abort(paste0(
+    abort_hyperliquid_validation_error(paste0(
       "Unknown asset id: ",
       asset,
       ". Call refresh_meta() if it was newly listed."

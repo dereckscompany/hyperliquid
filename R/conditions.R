@@ -127,3 +127,72 @@ abort_hyperliquid_exchange_error <- function(response, url = NULL, body = NULL, 
     call = rlang::caller_env()
   ))
 }
+
+#' Raise a typed Hyperliquid input-validation error
+#'
+#' Signals a condition classed `c("hyperliquid_validation_error",`
+#' `"hyperliquid_error")` (on top of rlang's error classes) for a NON-transport
+#' failure: a method's argument, parameter, or credential setup is malformed or
+#' violates a rule before any request is made (a bad address / coin / interval /
+#' side / cloid, a missing wallet key, an unknown coin or asset id, a non-finite
+#' amount). `hyperliquid_error` is the connector's DOMAIN root, parallel to the
+#' transport `connectcore_error` root: a validation failure is not a transport
+#' failure, so the two roots never meet -- exactly the `core_error` /
+#' `connectcore_error` split. The `message` is passed through verbatim, so the
+#' string stays byte-identical to the bare `rlang::abort()` this replaced. See
+#' [connectcore::connectcore_conditions] for the transport taxonomy.
+#'
+#' @param message (scalar<character>) the condition message, passed through
+#'   verbatim to [rlang::abort()].
+#' @param ... structured fields stored on the condition, read with `e[["field"]]`.
+#'   Forwarded to [rlang::abort()].
+#' @param call (environment) the environment blamed in the traceback; defaults to
+#'   the caller via [rlang::caller_env()].
+#' @return (class<hyperliquid_error>) never returns normally; signals the classed
+#'   condition described above.
+#' @importFrom rlang abort caller_env
+#' @keywords internal
+#' @noassert
+#' @noRd
+abort_hyperliquid_validation_error <- function(message, ..., call = rlang::caller_env()) {
+  return(rlang::abort(
+    message = message,
+    class = c("hyperliquid_validation_error", "hyperliquid_error"),
+    ...,
+    call = call
+  ))
+}
+
+#' Raise a typed Hyperliquid wire-encoding error
+#'
+#' Signals a condition classed `c("hyperliquid_encoding_error",`
+#' `"hyperliquid_error")` (on top of rlang's error classes) for a value that
+#' cannot be serialised to the venue's wire format: the msgpack encoder rejecting
+#' an unrepresentable integer, an over-long string, a non-finite or unsupported
+#' value, or a float-to-wire conversion that would silently round the order.
+#' `hyperliquid_error` is the connector's DOMAIN root (see
+#' [abort_hyperliquid_validation_error]); an encoding failure is a distinct kind
+#' from an input-validation failure, so it carries its own subclass. The `message`
+#' is passed through verbatim, so the string stays byte-identical to the bare
+#' `rlang::abort()` this replaced.
+#'
+#' @param message (scalar<character>) the condition message, passed through
+#'   verbatim to [rlang::abort()].
+#' @param ... structured fields stored on the condition, read with `e[["field"]]`.
+#'   Forwarded to [rlang::abort()].
+#' @param call (environment) the environment blamed in the traceback; defaults to
+#'   the caller via [rlang::caller_env()].
+#' @return (class<hyperliquid_error>) never returns normally; signals the classed
+#'   condition described above.
+#' @importFrom rlang abort caller_env
+#' @keywords internal
+#' @noassert
+#' @noRd
+abort_hyperliquid_encoding_error <- function(message, ..., call = rlang::caller_env()) {
+  return(rlang::abort(
+    message = message,
+    class = c("hyperliquid_encoding_error", "hyperliquid_error"),
+    ...,
+    call = call
+  ))
+}

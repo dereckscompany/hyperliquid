@@ -1,3 +1,12 @@
+# hyperliquid 0.5.0
+
+## Typed input-validation and wire-encoding conditions (the non-transport taxonomy)
+
+* The connector's 37 non-transport `rlang::abort()` sites now signal **classed conditions** instead of bare strings, so a caller branches on error *type* instead of grepping the message text. This completes the taxonomy alongside the request funnel's typed transport conditions.
+* Two domain subclasses, both rooted at `hyperliquid_error` (the connector's DOMAIN root, parallel to the transport `connectcore_error` root — a non-transport failure is not a transport failure, so the two roots never meet, exactly the `core_error` / `connectcore_error` split): `hyperliquid_validation_error` (20 sites: a method's argument, parameter, or credential setup is malformed — a bad address / coin / interval / side / cloid, a missing wallet key, an unknown coin or asset id, a non-finite amount) via a new `abort_hyperliquid_validation_error()`; and `hyperliquid_encoding_error` (17 sites: a value that cannot be serialised to the venue's wire format — the msgpack encoder rejecting an unrepresentable integer, over-long string, non-finite or unsupported value, or a float-to-wire conversion that would silently round the order) via a new `abort_hyperliquid_encoding_error()`. Catch either subclass specifically, or `hyperliquid_error` for any non-transport failure.
+* The message strings are **byte-identical** to the bare `rlang::abort()` calls they replaced (a reverse-substitution proves all 37 reproduce master exactly; golden tests pin a representative site per subclass), so existing tests and downstream message greps keep matching. The classes are purely additive; `conditionMessage()` and `inherits(e, "error")` are unchanged. No behaviour changes.
+* Follows the org convention (dereckscompany/tradebot-core#30; discussion "throw typed errors, not bare strings"). The transport/API funnel (`abort_hyperliquid_error` / `abort_hyperliquid_exchange_error`, rooted at `connectcore_error`) is untouched.
+
 # hyperliquid 0.4.0
 
 ## Typed API-error conditions

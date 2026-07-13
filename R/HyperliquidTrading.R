@@ -201,7 +201,7 @@ HyperliquidTrading <- R6::R6Class(
       )
       szi <- private$.position_szi(state, coin)
       if (is.null(szi)) {
-        rlang::abort(paste0(
+        abort_hyperliquid_validation_error(paste0(
           "No open position for '",
           coin,
           "' to close. Open one with market_open()."
@@ -413,7 +413,7 @@ HyperliquidTrading <- R6::R6Class(
       assert_args_HyperliquidTrading__update_isolated_margin(name, amount)
       validate_coin(name)
       if (!is.finite(amount) || amount == 0) {
-        rlang::abort(sprintf(
+        abort_hyperliquid_validation_error(sprintf(
           "`amount` must be a single finite, non-zero number (negative removes margin), got: %s",
           format(amount)
         ))
@@ -526,7 +526,7 @@ HyperliquidTrading <- R6::R6Class(
         mids <- private$.info(list(type = "allMids"), .parser = parse_all_mids)
         px <- mids[["mid"]][match(coin, mids[["coin"]])]
         if (length(px) == 0L || is.na(px)) {
-          rlang::abort(paste0("No mid price available for '", coin, "'."))
+          abort_hyperliquid_validation_error(paste0("No mid price available for '", coin, "'."))
         }
       }
       is_spot <- asset >= 10000

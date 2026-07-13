@@ -17,7 +17,7 @@
 hex2raw <- function(h) {
   h <- sub("^0[xX]", "", h)
   if (nchar(h) %% 2L != 0L) {
-    rlang::abort("hex2raw: hex string must have an even number of characters.")
+    abort_hyperliquid_encoding_error("hex2raw: hex string must have an even number of characters.")
   }
   if (nchar(h) == 0L) {
     return(raw(0))
@@ -85,7 +85,7 @@ normalise_private_key <- function(private_key) {
   assert_args_normalise_private_key(private_key)
   hex <- sub("^0[xX]", "", private_key)
   if (!grepl("^[0-9a-fA-F]{64}$", hex)) {
-    rlang::abort(
+    abort_hyperliquid_validation_error(
       "`private_key` must be a 64-character hex string (optionally 0x-prefixed)."
     )
   }
