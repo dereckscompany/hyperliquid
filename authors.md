@@ -8,7 +8,7 @@
 ## Citation
 
 Source:
-[`inst/CITATION`](https://github.com/dereckscompany/hyperliquid/blob/v0.6.0/inst/CITATION)
+[`inst/CITATION`](https://github.com/dereckscompany/hyperliquid/blob/master/inst/CITATION)
 
 Mezquita D (2026). *hyperliquid: API Wrapper to the Hyperliquid
 Exchange*. R package version 0.6.0,
