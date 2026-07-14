@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">hyperliquid</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.6.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -36,9 +36,16 @@
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Changelog</h1>
-      <small>Source: <a href="https://github.com/dereckscompany/hyperliquid/blob/master/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
+      <small>Source: <a href="https://github.com/dereckscompany/hyperliquid/blob/v0.6.0/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.6.0" id="hyperliquid-060">hyperliquid 0.6.0<a class="anchor" aria-label="anchor" href="#hyperliquid-060"></a></h2>
+<div class="section level3">
+<h3 id="opt-in-request-retry-at-construction-max_tries-gated-on-path-idempotency-0-6-0">Opt-in request retry at construction (<code>max_tries</code>), gated on path idempotency<a class="anchor" aria-label="anchor" href="#opt-in-request-retry-at-construction-max_tries-gated-on-path-idempotency-0-6-0"></a></h3>
+<p>Every client class constructor (via <code>HyperliquidBase</code>) gains a <code>max_tries</code> argument (<code>scalar&lt;integer in [1, 10]&gt;</code>, default <code>1</code> = no retry) threaded to <code>connectcore</code>’s retry machinery. Hyperliquid is unusual: its <strong>entire API is POST</strong> — both <code>/info</code> (reads) and <code>/exchange</code> (writes) — so a plain GET-only carve-out would make retry inert. Instead the retry decision is by <strong>idempotency of the path</strong>: <code><a href="../reference/hyperliquid_build_request.html">hyperliquid_build_request()</a></code> marks <code>/info</code> idempotent (its query is encoded in the body, so it is safe to re-send) and <code>/exchange</code> non-idempotent (a write), hardcoded per path and never caller-choosable. <code>max_tries &gt; 1</code> therefore retries a transient <code>/info</code> failure (HTTP 408/429/5xx or a dropped connection) with jittered backoff, while an <code>/exchange</code> write is performed exactly once regardless of <code>max_tries</code>, so an order or cancel can never be silently resent and double-submitted. The default <code>1</code> leaves live-trading behaviour unchanged — the trader layer stays the single retry authority there; raise <code>max_tries</code> only for research and backfill reads. Requires <code>connectcore (&gt;= 0.5.0)</code>, whose <code>build_request()</code> gained the explicit per-request <code>idempotent</code> flag this relies on.</p>
+</div>
+</div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.5.0" id="hyperliquid-050">hyperliquid 0.5.0<a class="anchor" aria-label="anchor" href="#hyperliquid-050"></a></h2>
 <div class="section level3">

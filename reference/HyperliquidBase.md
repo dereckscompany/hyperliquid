@@ -57,6 +57,23 @@ never by URL sniffing: the network changes the signature itself
 (phantom-agent source and `hyperliquidChain` tag). See
 [`get_base_url()`](https://dereckscompany.github.io/hyperliquid/reference/get_base_url.md).
 
+### Retries
+
+`max_tries > 1` opts the client's **reads** (`/info`) into automatic
+retry on a transient failure (HTTP 408/429/5xx or a dropped connection)
+with jittered backoff, delegated to
+[`connectcore::build_request()`](https://dereckscompany.github.io/connectcore/reference/build_request.html).
+Unlike a typical REST venue, Hyperliquid's entire API is POST — both
+`/info` (reads) and `/exchange` (writes) — so the retry decision is by
+**idempotency of the path**, not the HTTP verb: `/info` is marked
+idempotent (its query is encoded in the body) and retries; `/exchange`
+is a write and is **never** auto-retried, so an order or cancel can
+never be silently resent and double-submitted. This is hardcoded per
+path and not caller-choosable. Leave `max_tries` at the default `1` for
+live trading — there the trader layer is the single retry authority (it
+routes by typed error class and manages cooldowns); raise it only for
+research and backfill reads.
+
 ### Design
 
 This class is not meant to be instantiated directly. Subclasses (e.g.
@@ -143,7 +160,8 @@ Initialise a HyperliquidBase object.
       keys = get_api_keys(),
       testnet = FALSE,
       async = FALSE,
-      vault_address = NULL
+      vault_address = NULL,
+      max_tries = 1L
     )
 
 #### Arguments
@@ -170,6 +188,14 @@ Initialise a HyperliquidBase object.
   (scalar\<character\> \| NULL) a vault or sub-account address to act on
   behalf of (threaded into the action hash and payload of signed
   actions). Default `NULL`.
+
+- `max_tries`:
+
+  (scalar\<integer in \[1, 10\]\>) retry up to this many times on a
+  transient failure. Retry applies to reads (`/info`) only; a write
+  (`/exchange`) is never auto-retried. Default `1` (no retry). See the
+  class **Retries** section for the write-safety carve-out and why live
+  trading should leave this at `1`.
 
 #### Returns
 

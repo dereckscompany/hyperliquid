@@ -17,6 +17,7 @@ hyperliquid_build_request(
   .parser = identity,
   is_async = FALSE,
   timeout = 30,
+  max_tries = 1L,
   parse_envelope = parse_hyperliquid_response
 )
 ```
@@ -54,6 +55,14 @@ hyperliquid_build_request(
 
   (scalar\<numeric in \]0, Inf\[\>) request timeout in seconds. Default
   `30`.
+
+- max_tries:
+
+  (scalar\<integer in \[1, 10\]\>) retry up to this many times on a
+  transient failure (408/429/5xx or a connection failure). Retry applies
+  to the idempotent read path (`/info`) only; the write path
+  (`/exchange`) is never auto-retried whatever this value, so an order
+  can never be silently double-submitted. Default `1` (no retry).
 
 - parse_envelope:
 
