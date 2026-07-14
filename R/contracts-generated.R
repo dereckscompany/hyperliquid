@@ -551,13 +551,15 @@ assert_return_HyperliquidAccount__get_user_vault_equities <- function(value) {
   return(value)
 }
 
-assert_args_HyperliquidBase__initialize <- function(keys, testnet, async, vault_address) {
+assert_args_HyperliquidBase__initialize <- function(keys, testnet, async, vault_address, max_tries) {
   assert_list(keys)
   assert_scalar_logical(testnet)
   assert_scalar_logical(async)
   if (!is.null(vault_address)) {
     assert_scalar_character(vault_address)
   }
+  assert_scalar_integer(max_tries)
+  assert_between(max_tries, lower = 1, upper = 10)
   return(invisible(NULL))
 }
 
@@ -1566,7 +1568,7 @@ assert_return_as_cloid <- function(value) {
   return(value)
 }
 
-assert_args_hyperliquid_build_request <- function(base_url, path, body, .perform, .parser, is_async, timeout, parse_envelope) {
+assert_args_hyperliquid_build_request <- function(base_url, path, body, .perform, .parser, is_async, timeout, max_tries, parse_envelope) {
   assert_scalar_character(base_url)
   assert_scalar_character(path)
   assert_list(body)
@@ -1575,6 +1577,8 @@ assert_args_hyperliquid_build_request <- function(base_url, path, body, .perform
   assert_scalar_logical(is_async)
   assert_scalar_double(timeout)
   assert_between(timeout, lower = 0, lower_inclusive = FALSE, upper = Inf, upper_inclusive = FALSE)
+  assert_scalar_integer(max_tries)
+  assert_between(max_tries, lower = 1, upper = 10)
   assert_function(parse_envelope)
   return(invisible(NULL))
 }

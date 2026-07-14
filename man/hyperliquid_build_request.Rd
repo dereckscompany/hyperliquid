@@ -12,6 +12,7 @@ hyperliquid_build_request(
   .parser = identity,
   is_async = FALSE,
   timeout = 30,
+  max_tries = 1L,
   parse_envelope = parse_hyperliquid_response
 )
 }
@@ -34,6 +35,12 @@ Default \code{FALSE}.}
 
 \item{timeout}{(scalar<numeric in ]0, Inf[>) request timeout in seconds.
 Default \code{30}.}
+
+\item{max_tries}{(scalar<integer in [1, 10]>) retry up to this many times on a
+transient failure (408/429/5xx or a connection failure). Retry applies to
+the idempotent read path (\verb{/info}) only; the write path (\verb{/exchange}) is
+never auto-retried whatever this value, so an order can never be silently
+double-submitted. Default \code{1} (no retry).}
 
 \item{parse_envelope}{(function) turns a response into data and raises on
 error; the overridable error seam. Default \code{parse_hyperliquid_response()}.}
