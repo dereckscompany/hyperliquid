@@ -53,7 +53,7 @@ HyperliquidBase: Abstract Base Class for Hyperliquid API Clients"></head><body>
     <p>Provides shared infrastructure for all Hyperliquid R6 classes: wallet
 credentials, network selection, sync/async execution mode, the request
 funnel (<code><a href="hyperliquid_build_request.html">hyperliquid_build_request()</a></code>), and lazy exchange-metadata caching.</p>
-<p>It <strong>inherits <a href="https://rdrr.io/pkg/connectcore/man/RestClient.html" class="external-link">connectcore::RestClient</a></strong>, the shared transport base, for the
+<p>It <strong>inherits <a href="https://dereckscompany.github.io/connectcore/reference/RestClient.html" class="external-link">connectcore::RestClient</a></strong>, the shared transport base, for the
 credential storage, sync/async perform function, and the overridable
 <code>.parse_envelope()</code> error seam — which it overrides with Hyperliquid's
 two-failure-shape parser (<code>parse_hyperliquid_response()</code>). The <code>.sign()</code> seam
@@ -107,7 +107,7 @@ public methods that delegate to <code>private$.info()</code> (reads) or
 
 
 <p>All fields are private. <code>.keys</code>, <code>.is_async</code>, and <code>.perform</code> are inherited
-from <a href="https://rdrr.io/pkg/connectcore/man/RestClient.html" class="external-link">connectcore::RestClient</a>; the rest are Hyperliquid-specific:</p><ul><li><p><code>.keys</code>: List; wallet credentials from <code><a href="get_api_keys.html">get_api_keys()</a></code> (inherited).</p></li>
+from <a href="https://dereckscompany.github.io/connectcore/reference/RestClient.html" class="external-link">connectcore::RestClient</a>; the rest are Hyperliquid-specific:</p><ul><li><p><code>.keys</code>: List; wallet credentials from <code><a href="get_api_keys.html">get_api_keys()</a></code> (inherited).</p></li>
 <li><p><code>.signer</code>: <a href="https://dereckscompany.github.io/ethsign/reference/EthSigner.html" class="external-link">ethsign::EthSigner</a> or <code>NULL</code>; the wallet signer built from the
 key (used to sign /exchange actions), or <code>NULL</code> when no key is set.</p></li>
 <li><p><code>.base_url</code>: Character; REST base URL for the selected network (inherited).</p></li>
@@ -121,13 +121,13 @@ key (used to sign /exchange actions), or <code>NULL</code> when no key is set.</
 </ul></div>
     <div class="section level2">
     <h2 id="super-class">Super class<a class="anchor" aria-label="anchor" href="#super-class"></a></h2>
-    <p><code><a href="https://rdrr.io/pkg/connectcore/man/RestClient.html" class="external-link">connectcore::RestClient</a></code> -&gt; <code>HyperliquidBase</code></p>
+    <p><code><a href="https://dereckscompany.github.io/connectcore/reference/RestClient.html" class="external-link">connectcore::RestClient</a></code> -&gt; <code>HyperliquidBase</code></p>
     </div>
     <div class="section level2">
     <h2 id="active-bindings">Active bindings<a class="anchor" aria-label="anchor" href="#active-bindings"></a></h2>
     <p></p><div class="r6-active-bindings"><dl><dt><code>testnet</code></dt>
 <dd><p>Logical; read-only flag indicating whether this instance
-targets testnet. (<code>is_async</code> is inherited from <a href="https://rdrr.io/pkg/connectcore/man/RestClient.html" class="external-link">connectcore::RestClient</a>.)</p></dd>
+targets testnet. (<code>is_async</code> is inherited from <a href="https://dereckscompany.github.io/connectcore/reference/RestClient.html" class="external-link">connectcore::RestClient</a>.)</p></dd>
 
 
 </dl><p></p></div>

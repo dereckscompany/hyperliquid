@@ -13,7 +13,7 @@ funnel
 and lazy exchange-metadata caching.
 
 It **inherits
-[connectcore::RestClient](https://rdrr.io/pkg/connectcore/man/RestClient.html)**,
+[connectcore::RestClient](https://dereckscompany.github.io/connectcore/reference/RestClient.html)**,
 the shared transport base, for the credential storage, sync/async
 perform function, and the overridable `.parse_envelope()` error seam —
 which it overrides with Hyperliquid's two-failure-shape parser
@@ -69,7 +69,7 @@ define public methods that delegate to `private$.info()` (reads) or
 
 All fields are private. `.keys`, `.is_async`, and `.perform` are
 inherited from
-[connectcore::RestClient](https://rdrr.io/pkg/connectcore/man/RestClient.html);
+[connectcore::RestClient](https://dereckscompany.github.io/connectcore/reference/RestClient.html);
 the rest are Hyperliquid-specific:
 
 - `.keys`: List; wallet credentials from
@@ -104,7 +104,7 @@ the rest are Hyperliquid-specific:
 
 ## Super class
 
-[`connectcore::RestClient`](https://rdrr.io/pkg/connectcore/man/RestClient.html)
+[`connectcore::RestClient`](https://dereckscompany.github.io/connectcore/reference/RestClient.html)
 -\> `HyperliquidBase`
 
 ## Active bindings
@@ -113,7 +113,7 @@ the rest are Hyperliquid-specific:
 
   Logical; read-only flag indicating whether this instance targets
   testnet. (`is_async` is inherited from
-  [connectcore::RestClient](https://rdrr.io/pkg/connectcore/man/RestClient.html).)
+  [connectcore::RestClient](https://dereckscompany.github.io/connectcore/reference/RestClient.html).)
 
 ## Methods
 

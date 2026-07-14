@@ -1,7 +1,7 @@
 # Build and Execute a Hyperliquid API Request
 
 Serialises `body` to the byte-exact signed JSON and routes it through
-[`connectcore::build_request()`](https://rdrr.io/pkg/connectcore/man/build_request.html)
+[`connectcore::build_request()`](https://dereckscompany.github.io/connectcore/reference/build_request.html)
 as a raw body, to one of Hyperliquid's two POST endpoints (`/info` or
 `/exchange`). This is the single point through which all Hyperliquid API
 calls flow.

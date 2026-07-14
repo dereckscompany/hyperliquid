@@ -28,14 +28,14 @@ mainnet.
   returns a [promise](https://rstudio.github.io/promises/); otherwise
   results are returned directly. There is a single sync/async branch
   point
-  ([`connectcore::then_or_now()`](https://rdrr.io/pkg/connectcore/man/then_or_now.html),
+  ([`connectcore::then_or_now()`](https://dereckscompany.github.io/connectcore/reference/then_or_now.html),
   which
   [`hyperliquid_build_request()`](https://dereckscompany.github.io/hyperliquid/reference/hyperliquid_build_request.md)
   delegates to).
 - **Shared transport base via
   [github.com/dereckscompany/connectcore](https://github.com/dereckscompany/connectcore).**
   `HyperliquidBase` inherits
-  [`connectcore::RestClient`](https://rdrr.io/pkg/connectcore/man/RestClient.html)
+  [`connectcore::RestClient`](https://dereckscompany.github.io/connectcore/reference/RestClient.html)
   for credential storage, the sync/async perform function, and the
   overridable error seam (Hyperliquid’s two-failure-shape parser plugs
   into `.parse_envelope()`). The connector owns no transport: because

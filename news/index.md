@@ -126,7 +126,7 @@
 
 - The local `ms_to_datetime()` re-implementation is dropped in favour of
   the canonical, length-preserving, NA-in-NA-out
-  [`connectcore::ms_to_datetime()`](https://rdrr.io/pkg/connectcore/man/ms_to_datetime.html)
+  [`connectcore::ms_to_datetime()`](https://dereckscompany.github.io/connectcore/reference/ms_to_datetime.html)
   (connectcore \>= 0.3.0), matching the fleet-wide centralisation.
   Behaviour is unchanged: epoch-millisecond timestamps still convert to
   POSIXct in UTC.
@@ -255,7 +255,7 @@
   the (already body-signed) payload with
   `jsonlite::toJSON(..., auto_unbox = TRUE, null = "null")` and routes
   it through
-  [`connectcore::build_request()`](https://rdrr.io/pkg/connectcore/man/build_request.html)
+  [`connectcore::build_request()`](https://dereckscompany.github.io/connectcore/reference/build_request.html)
   with `body_format = "raw"`, which sends the bytes verbatim via
   [`httr2::req_body_raw()`](https://httr2.r-lib.org/reference/req_body.html).
   The hand-rolled `httr2` request builder (`request()` /
@@ -276,7 +276,7 @@
 ### Transport: migrate to connectcore
 
 - `HyperliquidBase` now **inherits
-  [`connectcore::RestClient`](https://rdrr.io/pkg/connectcore/man/RestClient.html)**,
+  [`connectcore::RestClient`](https://dereckscompany.github.io/connectcore/reference/RestClient.html)**,
   the shared transport base, for credential storage, the sync/async
   perform function, and the overridable `.parse_envelope()` error seam.
   The Hyperliquid two-failure-shape parser (`/info` HTTP 422 text,
@@ -293,7 +293,7 @@
   `vaultAddress`/`expiresAfter` as JSON `null`), so it keeps
   `req_body_raw()` rather than connectcore’s request funnel — but it now
   delegates its sync/async branch to
-  [`connectcore::then_or_now()`](https://rdrr.io/pkg/connectcore/man/then_or_now.html)
+  [`connectcore::then_or_now()`](https://dereckscompany.github.io/connectcore/reference/then_or_now.html)
   and accepts an overridable `parse_envelope` seam.
 - No public API change: every exported class, method, signature, and
   return shape is unchanged, and the full test suite passes.

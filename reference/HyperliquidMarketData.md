@@ -53,7 +53,7 @@ coin first, use the inherited `name_to_coin()`.
 
 ## Super classes
 
-[`connectcore::RestClient`](https://rdrr.io/pkg/connectcore/man/RestClient.html)
+[`connectcore::RestClient`](https://dereckscompany.github.io/connectcore/reference/RestClient.html)
 -\>
 [`hyperliquid::HyperliquidBase`](https://dereckscompany.github.io/hyperliquid/reference/HyperliquidBase.md)
 -\> `HyperliquidMarketData`
