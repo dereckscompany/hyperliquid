@@ -45,6 +45,11 @@
 #'   Default `FALSE`.
 #' @param timeout (scalar<numeric in ]0, Inf[>) request timeout in seconds.
 #'   Default `30`.
+#' @param max_tries (scalar<integer in [1, 10]>) retry up to this many times on a
+#'   transient failure (408/429/5xx or a connection failure). Retry applies to
+#'   the idempotent read path (`/info`) only; the write path (`/exchange`) is
+#'   never auto-retried whatever this value, so an order can never be silently
+#'   double-submitted. Default `1` (no retry).
 #' @param parse_envelope (function) turns a response into data and raises on
 #'   error; the overridable error seam. Default `parse_hyperliquid_response()`.
 #' @return (any) parsed and post-processed API response data, or a promise
@@ -61,6 +66,7 @@ hyperliquid_build_request <- function(
   .parser = identity,
   is_async = FALSE,
   timeout = 30,
+  max_tries = 1L,
   parse_envelope = parse_hyperliquid_response
 ) {
   assert_args_hyperliquid_build_request(
@@ -71,12 +77,18 @@ hyperliquid_build_request <- function(
     .parser,
     is_async,
     timeout,
+    max_tries,
     parse_envelope
   )
   # Pre-serialise to the byte-exact signed JSON, then send it byte-verbatim
   # through connectcore's funnel as a raw body. `null = "null"` keeps
   # vaultAddress/expiresAfter as JSON null (the raw path does not prune them).
   raw_body <- as.character(jsonlite::toJSON(body, auto_unbox = TRUE, null = "null"))
+  # Both endpoints are POST, so idempotency is decided by the path, not the verb:
+  # `/info` is a read (its query is encoded in the body) and is safe to retry;
+  # `/exchange` is a write and must NEVER be retried (a resend could
+  # double-submit an order). Hardcoded here, never caller-choosable.
+  is_idempotent <- identical(path, "/info")
   return(connectcore::build_request(
     base_url = base_url,
     endpoint = path,
@@ -89,6 +101,8 @@ hyperliquid_build_request <- function(
     .parser = .parser,
     is_async = is_async,
     timeout = timeout,
+    max_tries = max_tries,
+    idempotent = is_idempotent,
     user_agent = "dereckscompany/hyperliquid"
   ))
 }

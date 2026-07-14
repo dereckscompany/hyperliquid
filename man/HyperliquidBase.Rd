@@ -51,6 +51,22 @@ sniffing: the network changes the signature itself (phantom-agent source and
 \code{hyperliquidChain} tag). See \code{\link[=get_base_url]{get_base_url()}}.
 }
 
+\subsection{Retries}{
+
+\code{max_tries > 1} opts the client's \strong{reads} (\verb{/info}) into automatic retry on
+a transient failure (HTTP 408/429/5xx or a dropped connection) with jittered
+backoff, delegated to \code{\link[connectcore:build_request]{connectcore::build_request()}}. Unlike a typical REST
+venue, Hyperliquid's entire API is POST — both \verb{/info} (reads) and
+\verb{/exchange} (writes) — so the retry decision is by \strong{idempotency of the path},
+not the HTTP verb: \verb{/info} is marked idempotent (its query is encoded in the
+body) and retries; \verb{/exchange} is a write and is \strong{never} auto-retried, so an
+order or cancel can never be silently resent and double-submitted. This is
+hardcoded per path and not caller-choosable. Leave \code{max_tries} at the default
+\code{1} for live trading — there the trader layer is the single retry authority (it
+routes by typed error class and manages cooldowns); raise it only for research
+and backfill reads.
+}
+
 \subsection{Design}{
 
 This class is not meant to be instantiated directly. Subclasses (e.g.
@@ -111,7 +127,8 @@ Initialise a HyperliquidBase object.
   keys = get_api_keys(),
   testnet = FALSE,
   async = FALSE,
-  vault_address = NULL
+  vault_address = NULL,
+  max_tries = 1L
 )}\if{html}{\out{</div>}}
 }
 
@@ -130,6 +147,12 @@ Default \code{FALSE}.}
 \item{\code{vault_address}}{(scalar<character> | NULL) a vault or sub-account
 address to act on behalf of (threaded into the action hash and payload
 of signed actions). Default \code{NULL}.}
+
+\item{\code{max_tries}}{(scalar<integer in [1, 10]>) retry up to this many times
+on a transient failure. Retry applies to reads (\verb{/info}) only; a write
+(\verb{/exchange}) is never auto-retried. Default \code{1} (no retry). See the
+class \strong{Retries} section for the write-safety carve-out and why live
+trading should leave this at \code{1}.}
 }
 \if{html}{\out{</div>}}
 }

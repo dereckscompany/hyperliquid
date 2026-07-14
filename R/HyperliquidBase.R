@@ -40,6 +40,20 @@
 #' sniffing: the network changes the signature itself (phantom-agent source and
 #' `hyperliquidChain` tag). See [get_base_url()].
 #'
+#' ### Retries
+#' `max_tries > 1` opts the client's **reads** (`/info`) into automatic retry on
+#' a transient failure (HTTP 408/429/5xx or a dropped connection) with jittered
+#' backoff, delegated to [connectcore::build_request()]. Unlike a typical REST
+#' venue, Hyperliquid's entire API is POST — both `/info` (reads) and
+#' `/exchange` (writes) — so the retry decision is by **idempotency of the path**,
+#' not the HTTP verb: `/info` is marked idempotent (its query is encoded in the
+#' body) and retries; `/exchange` is a write and is **never** auto-retried, so an
+#' order or cancel can never be silently resent and double-submitted. This is
+#' hardcoded per path and not caller-choosable. Leave `max_tries` at the default
+#' `1` for live trading — there the trader layer is the single retry authority (it
+#' routes by typed error class and manages cooldowns); raise it only for research
+#' and backfill reads.
+#'
 #' ### Design
 #' This class is not meant to be instantiated directly. Subclasses (e.g.
 #' `HyperliquidMarketData`, `HyperliquidTrading`) inherit from it and define
@@ -81,14 +95,20 @@ HyperliquidBase <- R6::R6Class(
     #' @param vault_address (scalar<character> | NULL) a vault or sub-account
     #'   address to act on behalf of (threaded into the action hash and payload
     #'   of signed actions). Default `NULL`.
+    #' @param max_tries (scalar<integer in [1, 10]>) retry up to this many times
+    #'   on a transient failure. Retry applies to reads (`/info`) only; a write
+    #'   (`/exchange`) is never auto-retried. Default `1` (no retry). See the
+    #'   class **Retries** section for the write-safety carve-out and why live
+    #'   trading should leave this at `1`.
     #' @return (class<HyperliquidBase>) invisible self.
     initialize = function(
       keys = get_api_keys(),
       testnet = FALSE,
       async = FALSE,
-      vault_address = NULL
+      vault_address = NULL,
+      max_tries = 1L
     ) {
-      assert_args_HyperliquidBase__initialize(keys, testnet, async, vault_address)
+      assert_args_HyperliquidBase__initialize(keys, testnet, async, vault_address, max_tries)
 
       # Inherit credential storage, the sync/async perform function, base URL,
       # and the .parse_envelope error seam from connectcore::RestClient. The body
@@ -100,7 +120,8 @@ HyperliquidBase <- R6::R6Class(
         base_url = get_base_url(testnet = isTRUE(testnet)),
         async = isTRUE(async),
         body_format = "none",
-        user_agent = "dereckscompany/hyperliquid"
+        user_agent = "dereckscompany/hyperliquid",
+        max_tries = max_tries
       )
 
       private$.signer <- if (!is.null(keys$private_key)) {
@@ -215,6 +236,7 @@ HyperliquidBase <- R6::R6Class(
         .parser = .parser,
         is_async = private$.is_async,
         timeout = timeout,
+        max_tries = private$.max_tries,
         parse_envelope = private$.parse_envelope
       ))
     },

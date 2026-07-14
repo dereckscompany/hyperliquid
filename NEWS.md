@@ -1,3 +1,9 @@
+# hyperliquid 0.6.0
+
+## Opt-in request retry at construction (`max_tries`), gated on path idempotency
+
+Every client class constructor (via `HyperliquidBase`) gains a `max_tries` argument (`scalar<integer in [1, 10]>`, default `1` = no retry) threaded to `connectcore`'s retry machinery. Hyperliquid is unusual: its **entire API is POST** — both `/info` (reads) and `/exchange` (writes) — so a plain GET-only carve-out would make retry inert. Instead the retry decision is by **idempotency of the path**: `hyperliquid_build_request()` marks `/info` idempotent (its query is encoded in the body, so it is safe to re-send) and `/exchange` non-idempotent (a write), hardcoded per path and never caller-choosable. `max_tries > 1` therefore retries a transient `/info` failure (HTTP 408/429/5xx or a dropped connection) with jittered backoff, while an `/exchange` write is performed exactly once regardless of `max_tries`, so an order or cancel can never be silently resent and double-submitted. The default `1` leaves live-trading behaviour unchanged — the trader layer stays the single retry authority there; raise `max_tries` only for research and backfill reads. Requires `connectcore (>= 0.5.0)`, whose `build_request()` gained the explicit per-request `idempotent` flag this relies on.
+
 # hyperliquid 0.5.0
 
 ## Typed input-validation and wire-encoding conditions (the non-transport taxonomy)
