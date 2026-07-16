@@ -1,5 +1,39 @@
 # Changelog
 
+## hyperliquid 0.7.0
+
+A lossless raw accessor for funding history, alongside the typed
+surface, for byte-faithful bronze archival.
+
+In plain English: the typed `data.table` methods are the right default
+for analysis, but a raw-data archive wants the exchange’s own records
+untouched — the exact decimal strings it sent, in its own field order.
+Hyperliquid reports a funding rate and premium as strings
+(e.g. `"0.0000034197"`) and the settlement time as a raw
+epoch-millisecond number; the typed `get_funding_history()` converts
+those to doubles and a POSIXct and snake_cases the names, which is right
+for analysis but not for an archive that must keep exactly what the
+venue sent. This release adds a raw sibling for the funding surface the
+scraper’s `hyperliquid-funding` collector archives, so the archive
+stores Hyperliquid’s own bytes and the tidy table stays the analysis
+convenience.
+
+- `get_funding_history_raw()`: the parsed JSON array exactly as
+  Hyperliquid returns it — one named list per settlement
+  `{ coin, fundingRate, premium, time }`, in venue order,
+  `fundingRate`/`premium` kept as the venue’s decimal STRINGS (no float
+  coercion, no precision loss) and `time` kept as the raw
+  epoch-millisecond number, a JSON `null` kept distinct from an absent
+  field. The typed `get_funding_history()` is unchanged.
+- The raw method carries a roxyassert `(promise<list>)` contract and
+  threads sync/async from the constructor exactly like its typed
+  sibling. End-to-end mock-router tests cover both the losslessness
+  (strings, field order, raw time preserved) and sync/async parity,
+  against the existing funding fixture.
+- Universe discovery needs no raw sibling: the typed `get_meta()`
+  already exposes every perp `name` (delisted included) faithfully, and
+  meta is derived-for-discovery, never archived as bronze.
+
 ## hyperliquid 0.6.0
 
 ### Opt-in request retry at construction (`max_tries`), gated on path idempotency

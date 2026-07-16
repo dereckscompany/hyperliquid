@@ -22,7 +22,7 @@
 
     <a class="navbar-brand me-2" href="index.html">hyperliquid</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.6.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.7.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -64,7 +64,7 @@
 <div class="section level2">
 <h2 id="technical-overview">Technical overview<a class="anchor" aria-label="anchor" href="#technical-overview"></a>
 </h2>
-<p>R API wrapper to the <a href="https://hyperliquid.xyz" class="external-link">Hyperliquid</a> decentralised exchange supporting both synchronous and asynchronous (promise based) operations. Provides R6 classes for market data, perpetual and spot trading, account management, transfers, and staking. Every method returns a flat <code>data.table</code>. The <code>/exchange</code> endpoint is authenticated by an Ethereum wallet signature, computed in <strong>pure R</strong> via the companion <a href="https://github.com/dereckscompany/ethsign" class="external-link"><code>ethsign</code></a> package (no compiled code) and verified byte-for-byte against the official Hyperliquid SDKs.</p>
+<p>R API wrapper to the <a href="https://hyperliquid.xyz" class="external-link">Hyperliquid</a> decentralised exchange supporting both synchronous and asynchronous (promise based) operations. Provides R6 classes for market data, perpetual and spot trading, account management, transfers, and staking. Every typed method returns a flat <code>data.table</code> (with lossless <code>*_raw()</code> siblings for byte-faithful archival). The <code>/exchange</code> endpoint is authenticated by an Ethereum wallet signature, computed in <strong>pure R</strong> via the companion <a href="https://github.com/dereckscompany/ethsign" class="external-link"><code>ethsign</code></a> package (no compiled code) and verified byte-for-byte against the official Hyperliquid SDKs.</p>
 </div>
 <div class="section level2">
 <h2 id="disclaimer">Disclaimer<a class="anchor" aria-label="anchor" href="#disclaimer"></a>
@@ -76,7 +76,7 @@
 </h2>
 <ul>
 <li>
-<strong>One method, one <code>data.table</code>, no list columns.</strong> Every method returns a flat <code>data.table</code>; nested API objects are flattened into scalar columns, and heterogeneous rows are stacked with a discriminator column (<code>side</code>, <code>delta_type</code>, <code>status</code>, …).</li>
+<strong>One typed method, one <code>data.table</code>, no list columns — with a lossless escape hatch.</strong> Every typed method returns a flat <code>data.table</code>; nested API objects are flattened into scalar columns, and heterogeneous rows are stacked with a discriminator column (<code>side</code>, <code>delta_type</code>, <code>status</code>, …). Where a byte-faithful archive needs the venue’s own records instead of a tidy table, a <code>*_raw()</code> sibling (e.g. <code>get_funding_history_raw()</code>) returns Hyperliquid’s parsed JSON untouched — decimal strings, field order, and null-vs-absent all preserved.</li>
 <li>
 <strong>Sync and async.</strong> Every method works in both modes. <code>async = TRUE</code> returns a <a href="https://rstudio.github.io/promises/" class="external-link">promise</a>; otherwise results are returned directly. There is a single sync/async branch point (<code><a href="https://dereckscompany.github.io/connectcore/reference/then_or_now.html" class="external-link">connectcore::then_or_now()</a></code>, which <code><a href="reference/hyperliquid_build_request.html">hyperliquid_build_request()</a></code> delegates to).</li>
 <li>
@@ -165,40 +165,58 @@
 <span id="cb10-4"><a href="#cb10-4" tabindex="-1"></a><span class="co">#&gt; 2:    bid     2 61944  0.00085     4</span></span>
 <span id="cb10-5"><a href="#cb10-5" tabindex="-1"></a><span class="co">#&gt; 3:    ask     1 61946 13.32523    39</span></span>
 <span id="cb10-6"><a href="#cb10-6" tabindex="-1"></a><span class="co">#&gt; 4:    ask     2 61947  0.06724     6</span></span></code></pre></div>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Funding history, raw: the venue's own records untouched — fundingRate/premium</span></span>
+<span><span class="co"># stay decimal strings and time stays epoch-ms, for a byte-faithful archive.</span></span>
+<span><span class="va">market</span><span class="op">$</span><span class="fu">get_funding_history_raw</span><span class="op">(</span></span>
+<span>  <span class="st">"BTC"</span>,</span>
+<span>  start <span class="op">=</span> <span class="fu">lubridate</span><span class="fu">::</span><span class="fu"><a href="https://lubridate.tidyverse.org/reference/now.html" class="external-link">now</a></span><span class="op">(</span><span class="st">"UTC"</span><span class="op">)</span> <span class="op">-</span> <span class="fu">lubridate</span><span class="fu">::</span><span class="fu"><a href="https://lubridate.tidyverse.org/reference/period.html" class="external-link">days</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span></span>
+<span><span class="op">)</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span></span></code></pre></div>
+<div class="sourceCode" id="cb12"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" tabindex="-1"></a><span class="co">#&gt; $coin</span></span>
+<span id="cb12-2"><a href="#cb12-2" tabindex="-1"></a><span class="co">#&gt; [1] "BTC"</span></span>
+<span id="cb12-3"><a href="#cb12-3" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb12-4"><a href="#cb12-4" tabindex="-1"></a><span class="co">#&gt; $fundingRate</span></span>
+<span id="cb12-5"><a href="#cb12-5" tabindex="-1"></a><span class="co">#&gt; [1] "0.0000034197"</span></span>
+<span id="cb12-6"><a href="#cb12-6" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb12-7"><a href="#cb12-7" tabindex="-1"></a><span class="co">#&gt; $premium</span></span>
+<span id="cb12-8"><a href="#cb12-8" tabindex="-1"></a><span class="co">#&gt; [1] "-0.0004726428"</span></span>
+<span id="cb12-9"><a href="#cb12-9" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb12-10"><a href="#cb12-10" tabindex="-1"></a><span class="co">#&gt; $time</span></span>
+<span id="cb12-11"><a href="#cb12-11" tabindex="-1"></a><span class="co">#&gt; [1] 1.780553e+12</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="account-no-auth">Account (no auth)<a class="anchor" aria-label="anchor" href="#account-no-auth"></a>
 </h2>
 <p><code>HyperliquidAccount</code> reads the full state and history of any account from <code>/info</code> by its address. No key is required; pass the address you want to inspect (or let it default to your own wallet when a key is set).</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">account</span> <span class="op">&lt;-</span> <span class="va"><a href="reference/HyperliquidAccount.html">HyperliquidAccount</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="va">addr</span> <span class="op">&lt;-</span> <span class="st">"0x010461c14e146ac35fe42271bdc1134ee31c703a"</span></span></code></pre></div>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Open perpetual positions, one row per position</span></span>
 <span><span class="va">account</span><span class="op">$</span><span class="fu">get_positions</span><span class="op">(</span><span class="va">addr</span><span class="op">)</span></span></code></pre></div>
-<div class="sourceCode" id="cb13"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" tabindex="-1"></a><span class="co">#&gt;      coin      szi entry_px position_value unrealized_pnl return_on_equity</span></span>
-<span id="cb13-2"><a href="#cb13-2" tabindex="-1"></a><span class="co">#&gt;    &lt;char&gt;    &lt;num&gt;    &lt;num&gt;          &lt;num&gt;          &lt;num&gt;            &lt;num&gt;</span></span>
-<span id="cb13-3"><a href="#cb13-3" tabindex="-1"></a><span class="co">#&gt; 1:    BTC  0.61148 61699.10     37899.5304       171.7548      0.091049531</span></span>
-<span id="cb13-4"><a href="#cb13-4" tabindex="-1"></a><span class="co">#&gt; 2:    ETH -0.37080  1606.85       595.6902         0.1306      0.004383868</span></span>
-<span id="cb13-5"><a href="#cb13-5" tabindex="-1"></a><span class="co">#&gt;    leverage_type leverage_value liquidation_px margin_used</span></span>
-<span id="cb13-6"><a href="#cb13-6" tabindex="-1"></a><span class="co">#&gt;           &lt;char&gt;          &lt;num&gt;          &lt;num&gt;       &lt;num&gt;</span></span>
-<span id="cb13-7"><a href="#cb13-7" tabindex="-1"></a><span class="co">#&gt; 1:         cross             20             NA  1894.97652</span></span>
-<span id="cb13-8"><a href="#cb13-8" tabindex="-1"></a><span class="co">#&gt; 2:         cross             20        7863060    29.78451</span></span></code></pre></div>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb15"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" tabindex="-1"></a><span class="co">#&gt;      coin      szi entry_px position_value unrealized_pnl return_on_equity</span></span>
+<span id="cb15-2"><a href="#cb15-2" tabindex="-1"></a><span class="co">#&gt;    &lt;char&gt;    &lt;num&gt;    &lt;num&gt;          &lt;num&gt;          &lt;num&gt;            &lt;num&gt;</span></span>
+<span id="cb15-3"><a href="#cb15-3" tabindex="-1"></a><span class="co">#&gt; 1:    BTC  0.61148 61699.10     37899.5304       171.7548      0.091049531</span></span>
+<span id="cb15-4"><a href="#cb15-4" tabindex="-1"></a><span class="co">#&gt; 2:    ETH -0.37080  1606.85       595.6902         0.1306      0.004383868</span></span>
+<span id="cb15-5"><a href="#cb15-5" tabindex="-1"></a><span class="co">#&gt;    leverage_type leverage_value liquidation_px margin_used</span></span>
+<span id="cb15-6"><a href="#cb15-6" tabindex="-1"></a><span class="co">#&gt;           &lt;char&gt;          &lt;num&gt;          &lt;num&gt;       &lt;num&gt;</span></span>
+<span id="cb15-7"><a href="#cb15-7" tabindex="-1"></a><span class="co">#&gt; 1:         cross             20             NA  1894.97652</span></span>
+<span id="cb15-8"><a href="#cb15-8" tabindex="-1"></a><span class="co">#&gt; 2:         cross             20        7863060    29.78451</span></span></code></pre></div>
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Most recent fills</span></span>
 <span><span class="va">account</span><span class="op">$</span><span class="fu">get_user_fills</span><span class="op">(</span><span class="va">addr</span><span class="op">)</span><span class="op">[</span>, <span class="fu">.</span><span class="op">(</span><span class="va">coin</span>, <span class="va">side</span>, <span class="va">px</span>, <span class="va">sz</span>, <span class="va">dir</span>, <span class="va">closed_pnl</span>, <span class="va">fee</span><span class="op">)</span><span class="op">]</span></span></code></pre></div>
-<div class="sourceCode" id="cb15"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" tabindex="-1"></a><span class="co">#&gt;      coin   side       px    sz        dir closed_pnl   fee</span></span>
-<span id="cb15-2"><a href="#cb15-2" tabindex="-1"></a><span class="co">#&gt;    &lt;char&gt; &lt;char&gt;    &lt;num&gt; &lt;num&gt;     &lt;char&gt;      &lt;num&gt; &lt;num&gt;</span></span>
-<span id="cb15-3"><a href="#cb15-3" tabindex="-1"></a><span class="co">#&gt; 1:   IOTA    buy 0.045274   371  Open Long          0     0</span></span>
-<span id="cb15-4"><a href="#cb15-4" tabindex="-1"></a><span class="co">#&gt; 2: PENDLE   sell 1.245300   253 Open Short          0     0</span></span></code></pre></div>
+<div class="sourceCode" id="cb17"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" tabindex="-1"></a><span class="co">#&gt;      coin   side       px    sz        dir closed_pnl   fee</span></span>
+<span id="cb17-2"><a href="#cb17-2" tabindex="-1"></a><span class="co">#&gt;    &lt;char&gt; &lt;char&gt;    &lt;num&gt; &lt;num&gt;     &lt;char&gt;      &lt;num&gt; &lt;num&gt;</span></span>
+<span id="cb17-3"><a href="#cb17-3" tabindex="-1"></a><span class="co">#&gt; 1:   IOTA    buy 0.045274   371  Open Long          0     0</span></span>
+<span id="cb17-4"><a href="#cb17-4" tabindex="-1"></a><span class="co">#&gt; 2: PENDLE   sell 1.245300   253 Open Short          0     0</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="trading-signed">Trading (signed)<a class="anchor" aria-label="anchor" href="#trading-signed"></a>
 </h2>
 <p><code>HyperliquidTrading</code> places, modifies, and cancels orders. Every method signs an <code>/exchange</code> action with your wallet key. The calls below run against the mock; against the live API they would place and cancel real orders.</p>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">trading</span> <span class="op">&lt;-</span> <span class="va"><a href="reference/HyperliquidTrading.html">HyperliquidTrading</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># A good-til-cancelled limit bid. Returns one row per resulting status.</span></span>
 <span><span class="va">order</span> <span class="op">&lt;-</span> <span class="va">trading</span><span class="op">$</span><span class="fu">place_order</span><span class="op">(</span></span>
 <span>  <span class="st">"BTC"</span>,</span>
@@ -208,47 +226,47 @@
 <span>  order_type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>limit <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>tif <span class="op">=</span> <span class="st">"Gtc"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span><span class="va">order</span><span class="op">[</span><span class="op">]</span></span></code></pre></div>
-<div class="sourceCode" id="cb18"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" tabindex="-1"></a><span class="co">#&gt;     status      oid total_sz avg_px                                 error</span></span>
-<span id="cb18-2"><a href="#cb18-2" tabindex="-1"></a><span class="co">#&gt;     &lt;char&gt;    &lt;num&gt;    &lt;num&gt;  &lt;num&gt;                                &lt;char&gt;</span></span>
-<span id="cb18-3"><a href="#cb18-3" tabindex="-1"></a><span class="co">#&gt; 1: resting 77738308       NA     NA                                  &lt;NA&gt;</span></span>
-<span id="cb18-4"><a href="#cb18-4" tabindex="-1"></a><span class="co">#&gt; 2:  filled 77747314     0.02 1891.4                                  &lt;NA&gt;</span></span>
-<span id="cb18-5"><a href="#cb18-5" tabindex="-1"></a><span class="co">#&gt; 3:   error       NA       NA     NA Order must have minimum value of $10.</span></span></code></pre></div>
-<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb20"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" tabindex="-1"></a><span class="co">#&gt;     status      oid total_sz avg_px                                 error</span></span>
+<span id="cb20-2"><a href="#cb20-2" tabindex="-1"></a><span class="co">#&gt;     &lt;char&gt;    &lt;num&gt;    &lt;num&gt;  &lt;num&gt;                                &lt;char&gt;</span></span>
+<span id="cb20-3"><a href="#cb20-3" tabindex="-1"></a><span class="co">#&gt; 1: resting 77738308       NA     NA                                  &lt;NA&gt;</span></span>
+<span id="cb20-4"><a href="#cb20-4" tabindex="-1"></a><span class="co">#&gt; 2:  filled 77747314     0.02 1891.4                                  &lt;NA&gt;</span></span>
+<span id="cb20-5"><a href="#cb20-5" tabindex="-1"></a><span class="co">#&gt; 3:   error       NA       NA     NA Order must have minimum value of $10.</span></span></code></pre></div>
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Cancel a resting order by its order id</span></span>
 <span><span class="va">trading</span><span class="op">$</span><span class="fu">cancel_order</span><span class="op">(</span><span class="st">"BTC"</span>, order_id <span class="op">=</span> <span class="fl">77738308</span><span class="op">)</span></span></code></pre></div>
-<div class="sourceCode" id="cb20"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" tabindex="-1"></a><span class="co">#&gt;     status  error</span></span>
-<span id="cb20-2"><a href="#cb20-2" tabindex="-1"></a><span class="co">#&gt;     &lt;char&gt; &lt;char&gt;</span></span>
-<span id="cb20-3"><a href="#cb20-3" tabindex="-1"></a><span class="co">#&gt; 1: success   &lt;NA&gt;</span></span></code></pre></div>
+<div class="sourceCode" id="cb22"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" tabindex="-1"></a><span class="co">#&gt;     status  error</span></span>
+<span id="cb22-2"><a href="#cb22-2" tabindex="-1"></a><span class="co">#&gt;     &lt;char&gt; &lt;char&gt;</span></span>
+<span id="cb22-3"><a href="#cb22-3" tabindex="-1"></a><span class="co">#&gt; 1: success   &lt;NA&gt;</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="transfers-signed">Transfers (signed)<a class="anchor" aria-label="anchor" href="#transfers-signed"></a>
 </h2>
 <p><code>HyperliquidTransfers</code> moves collateral between the spot and perp wallets, sends to other addresses, withdraws to the bridge, and moves funds to sub-accounts and vaults.</p>
-<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">transfers</span> <span class="op">&lt;-</span> <span class="va"><a href="reference/HyperliquidTransfers.html">HyperliquidTransfers</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Move $100 of USDC collateral from the spot wallet into the perp wallet</span></span>
 <span><span class="va">transfers</span><span class="op">$</span><span class="fu">usd_class_transfer</span><span class="op">(</span><span class="fl">100</span>, to_perp <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
-<div class="sourceCode" id="cb23"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" tabindex="-1"></a><span class="co">#&gt;    status response_type</span></span>
-<span id="cb23-2"><a href="#cb23-2" tabindex="-1"></a><span class="co">#&gt;    &lt;char&gt;        &lt;char&gt;</span></span>
-<span id="cb23-3"><a href="#cb23-3" tabindex="-1"></a><span class="co">#&gt; 1:     ok       default</span></span></code></pre></div>
+<div class="sourceCode" id="cb25"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" tabindex="-1"></a><span class="co">#&gt;    status response_type</span></span>
+<span id="cb25-2"><a href="#cb25-2" tabindex="-1"></a><span class="co">#&gt;    &lt;char&gt;        &lt;char&gt;</span></span>
+<span id="cb25-3"><a href="#cb25-3" tabindex="-1"></a><span class="co">#&gt; 1:     ok       default</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="staking-no-auth-to-read">Staking (no auth to read)<a class="anchor" aria-label="anchor" href="#staking-no-auth-to-read"></a>
 </h2>
 <p><code>HyperliquidStaking</code> reads a delegator’s staking state and history, and (with a key) delegates or undelegates the native token.</p>
-<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">staking</span> <span class="op">&lt;-</span> <span class="va"><a href="reference/HyperliquidStaking.html">HyperliquidStaking</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="va">staking</span><span class="op">$</span><span class="fu">get_staking_summary</span><span class="op">(</span><span class="st">"0x5ac99df645f3414876c816caa18b2d234024b487"</span><span class="op">)</span></span></code></pre></div>
-<div class="sourceCode" id="cb25"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" tabindex="-1"></a><span class="co">#&gt;    delegated undelegated total_pending_withdrawal n_pending_withdrawals</span></span>
-<span id="cb25-2"><a href="#cb25-2" tabindex="-1"></a><span class="co">#&gt;        &lt;num&gt;       &lt;num&gt;                    &lt;num&gt;                 &lt;int&gt;</span></span>
-<span id="cb25-3"><a href="#cb25-3" tabindex="-1"></a><span class="co">#&gt; 1:  70064.73           0                        0                     0</span></span></code></pre></div>
+<div class="sourceCode" id="cb27"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" tabindex="-1"></a><span class="co">#&gt;    delegated undelegated total_pending_withdrawal n_pending_withdrawals</span></span>
+<span id="cb27-2"><a href="#cb27-2" tabindex="-1"></a><span class="co">#&gt;        &lt;num&gt;       &lt;num&gt;                    &lt;num&gt;                 &lt;int&gt;</span></span>
+<span id="cb27-3"><a href="#cb27-3" tabindex="-1"></a><span class="co">#&gt; 1:  70064.73           0                        0                     0</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="bulk-backfill">Bulk Backfill<a class="anchor" aria-label="anchor" href="#bulk-backfill"></a>
 </h2>
 <p><code><a href="reference/hyperliquid_backfill_klines.html">hyperliquid_backfill_klines()</a></code> and <code><a href="reference/hyperliquid_backfill_funding.html">hyperliquid_backfill_funding()</a></code> download history for many coins/intervals, writing to a CSV incrementally so progress survives an interruption (re-running resumes each series from its last stored row).</p>
-<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="reference/hyperliquid_backfill_klines.html">hyperliquid_backfill_klines</a></span><span class="op">(</span></span>
 <span>  symbols <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"BTC"</span>, <span class="st">"ETH"</span><span class="op">)</span>,</span>
 <span>  intervals <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"1d"</span>, <span class="st">"1h"</span><span class="op">)</span>,</span>
@@ -256,22 +274,22 @@
 <span>  file <span class="op">=</span> <span class="st">"klines.csv"</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <p>A bundled sample dataset, <code>hyperliquid_ohlcv</code>, ships daily candles for <code>"BTC"</code>, <code>"ETH"</code>, and <code>"SOL"</code> for examples:</p>
-<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">hyperliquid_ohlcv</span><span class="op">)</span></span></code></pre></div>
-<div class="sourceCode" id="cb28"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" tabindex="-1"></a><span class="co">#&gt;    symbol   datetime   open   high    low  close   volume trades</span></span>
-<span id="cb28-2"><a href="#cb28-2" tabindex="-1"></a><span class="co">#&gt;    &lt;char&gt;     &lt;POSc&gt;  &lt;num&gt;  &lt;num&gt;  &lt;num&gt;  &lt;num&gt;    &lt;num&gt;  &lt;num&gt;</span></span>
-<span id="cb28-3"><a href="#cb28-3" tabindex="-1"></a><span class="co">#&gt; 1:    BTC 2025-06-07 104245 105866 103792 105476 12188.04 150136</span></span>
-<span id="cb28-4"><a href="#cb28-4" tabindex="-1"></a><span class="co">#&gt; 2:    BTC 2025-06-08 105476 106431 105024 105659 12537.01 150508</span></span>
-<span id="cb28-5"><a href="#cb28-5" tabindex="-1"></a><span class="co">#&gt; 3:    BTC 2025-06-09 105659 111000 105269 110340 38937.19 365657</span></span>
-<span id="cb28-6"><a href="#cb28-6" tabindex="-1"></a><span class="co">#&gt; 4:    BTC 2025-06-10 110341 110500 108409 110373 28095.43 318756</span></span>
-<span id="cb28-7"><a href="#cb28-7" tabindex="-1"></a><span class="co">#&gt; 5:    BTC 2025-06-11 110373 110480 108069 108668 27049.51 308450</span></span>
-<span id="cb28-8"><a href="#cb28-8" tabindex="-1"></a><span class="co">#&gt; 6:    BTC 2025-06-12 108667 108817 105600 105627 39646.83 426870</span></span></code></pre></div>
+<div class="sourceCode" id="cb30"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" tabindex="-1"></a><span class="co">#&gt;    symbol   datetime   open   high    low  close   volume trades</span></span>
+<span id="cb30-2"><a href="#cb30-2" tabindex="-1"></a><span class="co">#&gt;    &lt;char&gt;     &lt;POSc&gt;  &lt;num&gt;  &lt;num&gt;  &lt;num&gt;  &lt;num&gt;    &lt;num&gt;  &lt;num&gt;</span></span>
+<span id="cb30-3"><a href="#cb30-3" tabindex="-1"></a><span class="co">#&gt; 1:    BTC 2025-06-07 104245 105866 103792 105476 12188.04 150136</span></span>
+<span id="cb30-4"><a href="#cb30-4" tabindex="-1"></a><span class="co">#&gt; 2:    BTC 2025-06-08 105476 106431 105024 105659 12537.01 150508</span></span>
+<span id="cb30-5"><a href="#cb30-5" tabindex="-1"></a><span class="co">#&gt; 3:    BTC 2025-06-09 105659 111000 105269 110340 38937.19 365657</span></span>
+<span id="cb30-6"><a href="#cb30-6" tabindex="-1"></a><span class="co">#&gt; 4:    BTC 2025-06-10 110341 110500 108409 110373 28095.43 318756</span></span>
+<span id="cb30-7"><a href="#cb30-7" tabindex="-1"></a><span class="co">#&gt; 5:    BTC 2025-06-11 110373 110480 108069 108668 27049.51 308450</span></span>
+<span id="cb30-8"><a href="#cb30-8" tabindex="-1"></a><span class="co">#&gt; 6:    BTC 2025-06-12 108667 108817 105600 105627 39646.83 426870</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="asynchronous-use">Asynchronous Use<a class="anchor" aria-label="anchor" href="#asynchronous-use"></a>
 </h2>
 <p>The package is written around promises for non-blocking, event-loop use. Pass <code>async = TRUE</code> to any class and its methods return a <a href="https://rstudio.github.io/promises/" class="external-link">promise</a> instead of a <code>data.table</code>. Resolve it with <code><a href="https://coro.r-lib.org/reference/async.html" class="external-link">coro::async()</a></code> / <code>await()</code> for sequential-looking code, and drive the event loop with <a href="https://r-lib.github.io/later/" class="external-link">later</a>.</p>
-<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">market_async</span> <span class="op">&lt;-</span> <span class="va"><a href="reference/HyperliquidMarketData.html">HyperliquidMarketData</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span>async <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">main</span> <span class="op">&lt;-</span> <span class="va">coro</span><span class="op">$</span><span class="fu">async</span><span class="op">(</span><span class="kw">function</span><span class="op">(</span><span class="op">)</span> <span class="op">{</span></span>
@@ -289,17 +307,17 @@
 <span><span class="kw">while</span> <span class="op">(</span><span class="op">!</span><span class="va">later</span><span class="op">$</span><span class="fu">loop_empty</span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="va">later</span><span class="op">$</span><span class="fu">run_now</span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="op">}</span></span></code></pre></div>
-<div class="sourceCode" id="cb30"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" tabindex="-1"></a><span class="co">#&gt;      coin        mid</span></span>
-<span id="cb30-2"><a href="#cb30-2" tabindex="-1"></a><span class="co">#&gt;    &lt;char&gt;      &lt;num&gt;</span></span>
-<span id="cb30-3"><a href="#cb30-3" tabindex="-1"></a><span class="co">#&gt; 1:    BTC 61958.5000</span></span>
-<span id="cb30-4"><a href="#cb30-4" tabindex="-1"></a><span class="co">#&gt; 2:    ETH  1605.4500</span></span>
-<span id="cb30-5"><a href="#cb30-5" tabindex="-1"></a><span class="co">#&gt; 3:     @1     9.6738</span></span>
-<span id="cb30-6"><a href="#cb30-6" tabindex="-1"></a><span class="co">#&gt;      side level    px       sz     n</span></span>
-<span id="cb30-7"><a href="#cb30-7" tabindex="-1"></a><span class="co">#&gt;    &lt;char&gt; &lt;int&gt; &lt;num&gt;    &lt;num&gt; &lt;num&gt;</span></span>
-<span id="cb30-8"><a href="#cb30-8" tabindex="-1"></a><span class="co">#&gt; 1:    bid     1 61945  0.03164     3</span></span>
-<span id="cb30-9"><a href="#cb30-9" tabindex="-1"></a><span class="co">#&gt; 2:    bid     2 61944  0.00085     4</span></span>
-<span id="cb30-10"><a href="#cb30-10" tabindex="-1"></a><span class="co">#&gt; 3:    ask     1 61946 13.32523    39</span></span>
-<span id="cb30-11"><a href="#cb30-11" tabindex="-1"></a><span class="co">#&gt; 4:    ask     2 61947  0.06724     6</span></span></code></pre></div>
+<div class="sourceCode" id="cb32"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" tabindex="-1"></a><span class="co">#&gt;      coin        mid</span></span>
+<span id="cb32-2"><a href="#cb32-2" tabindex="-1"></a><span class="co">#&gt;    &lt;char&gt;      &lt;num&gt;</span></span>
+<span id="cb32-3"><a href="#cb32-3" tabindex="-1"></a><span class="co">#&gt; 1:    BTC 61958.5000</span></span>
+<span id="cb32-4"><a href="#cb32-4" tabindex="-1"></a><span class="co">#&gt; 2:    ETH  1605.4500</span></span>
+<span id="cb32-5"><a href="#cb32-5" tabindex="-1"></a><span class="co">#&gt; 3:     @1     9.6738</span></span>
+<span id="cb32-6"><a href="#cb32-6" tabindex="-1"></a><span class="co">#&gt;      side level    px       sz     n</span></span>
+<span id="cb32-7"><a href="#cb32-7" tabindex="-1"></a><span class="co">#&gt;    &lt;char&gt; &lt;int&gt; &lt;num&gt;    &lt;num&gt; &lt;num&gt;</span></span>
+<span id="cb32-8"><a href="#cb32-8" tabindex="-1"></a><span class="co">#&gt; 1:    bid     1 61945  0.03164     3</span></span>
+<span id="cb32-9"><a href="#cb32-9" tabindex="-1"></a><span class="co">#&gt; 2:    bid     2 61944  0.00085     4</span></span>
+<span id="cb32-10"><a href="#cb32-10" tabindex="-1"></a><span class="co">#&gt; 3:    ask     1 61946 13.32523    39</span></span>
+<span id="cb32-11"><a href="#cb32-11" tabindex="-1"></a><span class="co">#&gt; 4:    ask     2 61947  0.06724     6</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="available-classes">Available Classes<a class="anchor" aria-label="anchor" href="#available-classes"></a>

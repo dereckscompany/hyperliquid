@@ -9,7 +9,7 @@ HyperliquidMarketData: Public Market Data Retrieval"></head><body>
 
     <a class="navbar-brand me-2" href="../index.html">hyperliquid</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.6.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.7.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -78,7 +78,7 @@ the inherited <code>name_to_coin()</code>.</p>
 
 <div class="section">
 <h3 id="endpoints-covered">Endpoints Covered<a class="anchor" aria-label="anchor" href="#endpoints-covered"></a></h3>
-<table class="table table"><tr><td>Method</td><td>type</td><td>Auth</td></tr><tr><td>get_meta</td><td>meta</td><td>No</td></tr><tr><td>get_spot_meta</td><td>spotMeta</td><td>No</td></tr><tr><td>get_spot_tokens</td><td>spotMeta</td><td>No</td></tr><tr><td>get_meta_and_asset_ctxs</td><td>metaAndAssetCtxs</td><td>No</td></tr><tr><td>get_spot_meta_and_asset_ctxs</td><td>spotMetaAndAssetCtxs</td><td>No</td></tr><tr><td>get_all_mids</td><td>allMids</td><td>No</td></tr><tr><td>get_l2_book</td><td>l2Book</td><td>No</td></tr><tr><td>get_candles</td><td>candleSnapshot</td><td>No</td></tr><tr><td>get_funding_history</td><td>fundingHistory</td><td>No</td></tr><tr><td>get_predicted_fundings</td><td>predictedFundings</td><td>No</td></tr><tr><td>get_perp_dexs</td><td>perpDexs</td><td>No</td></tr><tr><td>get_recent_trades</td><td>recentTrades</td><td>No</td></tr><tr><td>get_exchange_status</td><td>exchangeStatus</td><td>No</td></tr></table></div>
+<table class="table table"><tr><td>Method</td><td>type</td><td>Auth</td></tr><tr><td>get_meta</td><td>meta</td><td>No</td></tr><tr><td>get_spot_meta</td><td>spotMeta</td><td>No</td></tr><tr><td>get_spot_tokens</td><td>spotMeta</td><td>No</td></tr><tr><td>get_meta_and_asset_ctxs</td><td>metaAndAssetCtxs</td><td>No</td></tr><tr><td>get_spot_meta_and_asset_ctxs</td><td>spotMetaAndAssetCtxs</td><td>No</td></tr><tr><td>get_all_mids</td><td>allMids</td><td>No</td></tr><tr><td>get_l2_book</td><td>l2Book</td><td>No</td></tr><tr><td>get_candles</td><td>candleSnapshot</td><td>No</td></tr><tr><td>get_funding_history</td><td>fundingHistory</td><td>No</td></tr><tr><td>get_funding_history_raw</td><td>fundingHistory</td><td>No</td></tr><tr><td>get_predicted_fundings</td><td>predictedFundings</td><td>No</td></tr><tr><td>get_perp_dexs</td><td>perpDexs</td><td>No</td></tr><tr><td>get_recent_trades</td><td>recentTrades</td><td>No</td></tr><tr><td>get_exchange_status</td><td>exchangeStatus</td><td>No</td></tr></table></div>
 
     </div>
     <div class="section level2">
@@ -100,6 +100,7 @@ the inherited <code>name_to_coin()</code>.</p>
 <li><p><a href="#method-HyperliquidMarketData-get_l2_book"><code>HyperliquidMarketData$get_l2_book()</code></a></p></li>
 <li><p><a href="#method-HyperliquidMarketData-get_candles"><code>HyperliquidMarketData$get_candles()</code></a></p></li>
 <li><p><a href="#method-HyperliquidMarketData-get_funding_history"><code>HyperliquidMarketData$get_funding_history()</code></a></p></li>
+<li><p><a href="#method-HyperliquidMarketData-get_funding_history_raw"><code>HyperliquidMarketData$get_funding_history_raw()</code></a></p></li>
 <li><p><a href="#method-HyperliquidMarketData-get_predicted_fundings"><code>HyperliquidMarketData$get_predicted_fundings()</code></a></p></li>
 <li><p><a href="#method-HyperliquidMarketData-get_perp_dexs"><code>HyperliquidMarketData$get_perp_dexs()</code></a></p></li>
 <li><p><a href="#method-HyperliquidMarketData-get_recent_trades"><code>HyperliquidMarketData$get_recent_trades()</code></a></p></li>
@@ -328,16 +329,57 @@ epoch-milliseconds, or <code>NULL</code>). Default <code>NULL</code> (up to now)
 <code>coin</code>, <code>funding_rate</code>, <code>premium</code>, <code>time</code>, or a promise thereof.</p>
 </div>
 
+</div><p></p><hr><a id="method-HyperliquidMarketData-get_funding_history_raw"></a><div class="section">
+<h3 id="method-get-funding-history-raw-">Method <code>get_funding_history_raw()</code><a class="anchor" aria-label="anchor" href="#method-get-funding-history-raw-"></a></h3>
+<p>Retrieve funding-rate history for a coin as the venue's own
+<strong>raw records</strong> — the parsed JSON array exactly as Hyperliquid returns
+it, in venue order, every field preserved and untouched: <code>fundingRate</code>
+and <code>premium</code> kept as the venue's own decimal STRINGS (no float
+coercion, no precision loss) and <code>time</code> kept as the raw
+epoch-millisecond number. This is the lossless counterpart to
+<code>get_funding_history()</code>, which returns tidy typed rows (<code>funding_rate</code> /
+<code>premium</code> as doubles, <code>time</code> as POSIXct, snake_cased): where that is the
+analysis convenience, this returns the untouched records a bronze
+passthrough archives verbatim. Each element is one settlement as a named
+list <code>{ coin, fundingRate, premium, time }</code>.</p><div class="section">
+<h4 id="usage-9">Usage<a class="anchor" aria-label="anchor" href="#usage-9"></a></h4>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">HyperliquidMarketData</span><span class="op">$</span><span class="fu">get_funding_history_raw</span><span class="op">(</span><span class="va">coin</span>, <span class="va">start</span>, end <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div><p></p></div>
+</div>
+
+<div class="section">
+<h4 id="arguments-3">Arguments<a class="anchor" aria-label="anchor" href="#arguments-3"></a></h4>
+<p></p><div class="arguments"><dl><dt><code>coin</code></dt>
+<dd><p>(scalar&lt;character&gt;) the canonical coin symbol, e.g. <code>"BTC"</code>.</p></dd>
+
+
+<dt><code>start</code></dt>
+<dd><p>(POSIXct | numeric) range start (POSIXct or numeric
+epoch-milliseconds).</p></dd>
+
+
+<dt><code>end</code></dt>
+<dd><p>(POSIXct | numeric | NULL) range end (POSIXct, numeric
+epoch-milliseconds, or <code>NULL</code>). Default <code>NULL</code> (up to now).</p></dd>
+
+
+</dl><p></p></div>
+</div>
+<div class="section">
+<h4 id="returns-9">Returns<a class="anchor" aria-label="anchor" href="#returns-9"></a></h4>
+<p>(promise&lt;list&gt;) the raw funding settlement records (one named list
+per settlement), or a promise thereof.</p>
+</div>
+
 </div><p></p><hr><a id="method-HyperliquidMarketData-get_predicted_fundings"></a><div class="section">
 <h3 id="method-get-predicted-fundings-">Method <code>get_predicted_fundings()</code><a class="anchor" aria-label="anchor" href="#method-get-predicted-fundings-"></a></h3>
 <p>Retrieve predicted next-funding rates across venues, long:
 one row per (coin, venue).</p><div class="section">
-<h4 id="usage-9">Usage<a class="anchor" aria-label="anchor" href="#usage-9"></a></h4>
+<h4 id="usage-10">Usage<a class="anchor" aria-label="anchor" href="#usage-10"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">HyperliquidMarketData</span><span class="op">$</span><span class="fu">get_predicted_fundings</span><span class="op">(</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
-<h4 id="returns-9">Returns<a class="anchor" aria-label="anchor" href="#returns-9"></a></h4>
+<h4 id="returns-10">Returns<a class="anchor" aria-label="anchor" href="#returns-10"></a></h4>
 <p>(promise&lt;data.table&gt;) a <a href="https://rdrr.io/pkg/data.table/man/data.table.html" class="external-link">data.table::data.table</a>, one row per
 (coin, venue) (or a promise thereof). A venue whose body is <code>null</code> yields
 <code>NA</code> rate fields:</p><ul><li><p>coin (character) the coin symbol.</p></li>
@@ -351,12 +393,12 @@ one row per (coin, venue).</p><div class="section">
 <h3 id="method-get-perp-dexs-">Method <code>get_perp_dexs()</code><a class="anchor" aria-label="anchor" href="#method-get-perp-dexs-"></a></h3>
 <p>Retrieve builder-deployed (HIP-3) perp dexes. The <code>null</code>
 core-dex sentinel is omitted.</p><div class="section">
-<h4 id="usage-10">Usage<a class="anchor" aria-label="anchor" href="#usage-10"></a></h4>
+<h4 id="usage-11">Usage<a class="anchor" aria-label="anchor" href="#usage-11"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">HyperliquidMarketData</span><span class="op">$</span><span class="fu">get_perp_dexs</span><span class="op">(</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
-<h4 id="returns-10">Returns<a class="anchor" aria-label="anchor" href="#returns-10"></a></h4>
+<h4 id="returns-11">Returns<a class="anchor" aria-label="anchor" href="#returns-11"></a></h4>
 <p>(promise&lt;data.table&gt;) a <a href="https://rdrr.io/pkg/data.table/man/data.table.html" class="external-link">data.table::data.table</a>, one row per
 builder-deployed perp dex (or a promise thereof):</p><ul><li><p>name (character) the dex short name.</p></li>
 <li><p>full_name (character) the dex full name.</p></li>
@@ -370,12 +412,12 @@ absent.</p></li>
 <h3 id="method-get-recent-trades-">Method <code>get_recent_trades()</code><a class="anchor" aria-label="anchor" href="#method-get-recent-trades-"></a></h3>
 <p>Retrieve the most recent trades for a coin (about 10 rows,
 both counterparty addresses included).</p><div class="section">
-<h4 id="usage-11">Usage<a class="anchor" aria-label="anchor" href="#usage-11"></a></h4>
+<h4 id="usage-12">Usage<a class="anchor" aria-label="anchor" href="#usage-12"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">HyperliquidMarketData</span><span class="op">$</span><span class="fu">get_recent_trades</span><span class="op">(</span><span class="va">coin</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
-<h4 id="arguments-3">Arguments<a class="anchor" aria-label="anchor" href="#arguments-3"></a></h4>
+<h4 id="arguments-4">Arguments<a class="anchor" aria-label="anchor" href="#arguments-4"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>coin</code></dt>
 <dd><p>(scalar&lt;character&gt;) the canonical coin symbol, e.g. <code>"BTC"</code>.</p></dd>
 
@@ -383,7 +425,7 @@ both counterparty addresses included).</p><div class="section">
 </dl><p></p></div>
 </div>
 <div class="section">
-<h4 id="returns-11">Returns<a class="anchor" aria-label="anchor" href="#returns-11"></a></h4>
+<h4 id="returns-12">Returns<a class="anchor" aria-label="anchor" href="#returns-12"></a></h4>
 <p>(promise&lt;data.table&gt;) a <a href="https://rdrr.io/pkg/data.table/man/data.table.html" class="external-link">data.table::data.table</a>, one row per trade
 (or a promise thereof):</p><ul><li><p>coin (character) the coin symbol.</p></li>
 <li><p>side (character) the aggressor side (<code>"buy"</code> or <code>"sell"</code>).</p></li>
@@ -399,12 +441,12 @@ both counterparty addresses included).</p><div class="section">
 </div><p></p><hr><a id="method-HyperliquidMarketData-get_exchange_status"></a><div class="section">
 <h3 id="method-get-exchange-status-">Method <code>get_exchange_status()</code><a class="anchor" aria-label="anchor" href="#method-get-exchange-status-"></a></h3>
 <p>Retrieve the current exchange status.</p><div class="section">
-<h4 id="usage-12">Usage<a class="anchor" aria-label="anchor" href="#usage-12"></a></h4>
+<h4 id="usage-13">Usage<a class="anchor" aria-label="anchor" href="#usage-13"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">HyperliquidMarketData</span><span class="op">$</span><span class="fu">get_exchange_status</span><span class="op">(</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
-<h4 id="returns-12">Returns<a class="anchor" aria-label="anchor" href="#returns-12"></a></h4>
+<h4 id="returns-13">Returns<a class="anchor" aria-label="anchor" href="#returns-13"></a></h4>
 <p>(promise&lt;data.table&gt;) a single-row <a href="https://rdrr.io/pkg/data.table/man/data.table.html" class="external-link">data.table::data.table</a> (or a
 promise thereof):</p><ul><li><p>time (POSIXct) the status timestamp.</p></li>
 <li><p>special_statuses (character | NA) any special statuses as a JSON
@@ -414,12 +456,12 @@ string, <code>NA</code> when absent.</p></li>
 </div><p></p><hr><a id="method-HyperliquidMarketData-clone"></a><div class="section">
 <h3 id="method-clone-">Method <code>clone()</code><a class="anchor" aria-label="anchor" href="#method-clone-"></a></h3>
 <p>The objects of this class are cloneable with this method.</p><div class="section">
-<h4 id="usage-13">Usage<a class="anchor" aria-label="anchor" href="#usage-13"></a></h4>
+<h4 id="usage-14">Usage<a class="anchor" aria-label="anchor" href="#usage-14"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">HyperliquidMarketData</span><span class="op">$</span><span class="fu">clone</span><span class="op">(</span>deep <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
-<h4 id="arguments-4">Arguments<a class="anchor" aria-label="anchor" href="#arguments-4"></a></h4>
+<h4 id="arguments-5">Arguments<a class="anchor" aria-label="anchor" href="#arguments-5"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>deep</code></dt>
 <dd><p>Whether to make a deep clone.</p></dd>
 

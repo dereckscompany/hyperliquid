@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">hyperliquid</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.6.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.7.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -39,6 +39,15 @@
       <small>Source: <a href="https://github.com/dereckscompany/hyperliquid/blob/master/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.7.0" id="hyperliquid-070">hyperliquid 0.7.0<a class="anchor" aria-label="anchor" href="#hyperliquid-070"></a></h2>
+<p>A lossless raw accessor for funding history, alongside the typed surface, for byte-faithful bronze archival.</p>
+<p>In plain English: the typed <code>data.table</code> methods are the right default for analysis, but a raw-data archive wants the exchange’s own records untouched — the exact decimal strings it sent, in its own field order. Hyperliquid reports a funding rate and premium as strings (e.g. <code>"0.0000034197"</code>) and the settlement time as a raw epoch-millisecond number; the typed <code>get_funding_history()</code> converts those to doubles and a POSIXct and snake_cases the names, which is right for analysis but not for an archive that must keep exactly what the venue sent. This release adds a raw sibling for the funding surface the scraper’s <code>hyperliquid-funding</code> collector archives, so the archive stores Hyperliquid’s own bytes and the tidy table stays the analysis convenience.</p>
+<ul><li>
+<code>get_funding_history_raw()</code>: the parsed JSON array exactly as Hyperliquid returns it — one named list per settlement <code>{ coin, fundingRate, premium, time }</code>, in venue order, <code>fundingRate</code>/<code>premium</code> kept as the venue’s decimal STRINGS (no float coercion, no precision loss) and <code>time</code> kept as the raw epoch-millisecond number, a JSON <code>null</code> kept distinct from an absent field. The typed <code>get_funding_history()</code> is unchanged.</li>
+<li>The raw method carries a roxyassert <code>(promise&lt;list&gt;)</code> contract and threads sync/async from the constructor exactly like its typed sibling. End-to-end mock-router tests cover both the losslessness (strings, field order, raw time preserved) and sync/async parity, against the existing funding fixture.</li>
+<li>Universe discovery needs no raw sibling: the typed <code>get_meta()</code> already exposes every perp <code>name</code> (delisted included) faithfully, and meta is derived-for-discovery, never archived as bronze.</li>
+</ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.6.0" id="hyperliquid-060">hyperliquid 0.6.0<a class="anchor" aria-label="anchor" href="#hyperliquid-060"></a></h2>
 <div class="section level3">

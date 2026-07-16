@@ -46,6 +46,7 @@ coin first, use the inherited `name_to_coin()`.
 | get_l2_book                  | l2Book               | No   |
 | get_candles                  | candleSnapshot       | No   |
 | get_funding_history          | fundingHistory       | No   |
+| get_funding_history_raw      | fundingHistory       | No   |
 | get_predicted_fundings       | predictedFundings    | No   |
 | get_perp_dexs                | perpDexs             | No   |
 | get_recent_trades            | recentTrades         | No   |
@@ -79,6 +80,8 @@ coin first, use the inherited `name_to_coin()`.
 - [`HyperliquidMarketData$get_candles()`](#method-HyperliquidMarketData-get_candles)
 
 - [`HyperliquidMarketData$get_funding_history()`](#method-HyperliquidMarketData-get_funding_history)
+
+- [`HyperliquidMarketData$get_funding_history_raw()`](#method-HyperliquidMarketData-get_funding_history_raw)
 
 - [`HyperliquidMarketData$get_predicted_fundings()`](#method-HyperliquidMarketData-get_predicted_fundings)
 
@@ -371,6 +374,47 @@ on Hyperliquid; 500 records are returned per call.
 [data.table::data.table](https://rdrr.io/pkg/data.table/man/data.table.html)
 with columns `coin`, `funding_rate`, `premium`, `time`, or a promise
 thereof.
+
+------------------------------------------------------------------------
+
+### Method `get_funding_history_raw()`
+
+Retrieve funding-rate history for a coin as the venue's own **raw
+records** — the parsed JSON array exactly as Hyperliquid returns it, in
+venue order, every field preserved and untouched: `fundingRate` and
+`premium` kept as the venue's own decimal STRINGS (no float coercion, no
+precision loss) and `time` kept as the raw epoch-millisecond number.
+This is the lossless counterpart to `get_funding_history()`, which
+returns tidy typed rows (`funding_rate` / `premium` as doubles, `time`
+as POSIXct, snake_cased): where that is the analysis convenience, this
+returns the untouched records a bronze passthrough archives verbatim.
+Each element is one settlement as a named list
+`{ coin, fundingRate, premium, time }`.
+
+#### Usage
+
+    HyperliquidMarketData$get_funding_history_raw(coin, start, end = NULL)
+
+#### Arguments
+
+- `coin`:
+
+  (scalar\<character\>) the canonical coin symbol, e.g. `"BTC"`.
+
+- `start`:
+
+  (POSIXct \| numeric) range start (POSIXct or numeric
+  epoch-milliseconds).
+
+- `end`:
+
+  (POSIXct \| numeric \| NULL) range end (POSIXct, numeric
+  epoch-milliseconds, or `NULL`). Default `NULL` (up to now).
+
+#### Returns
+
+(promise\<list\>) the raw funding settlement records (one named list per
+settlement), or a promise thereof.
 
 ------------------------------------------------------------------------
 
