@@ -35,6 +35,7 @@
 #' | get_l2_book | l2Book | No |
 #' | get_candles | candleSnapshot | No |
 #' | get_funding_history | fundingHistory | No |
+#' | get_funding_history_raw | fundingHistory | No |
 #' | get_predicted_fundings | predictedFundings | No |
 #' | get_perp_dexs | perpDexs | No |
 #' | get_recent_trades | recentTrades | No |
@@ -248,6 +249,38 @@ HyperliquidMarketData <- R6::R6Class(
       return(private$.info(
         payload,
         .parser = function(x) assert_return_HyperliquidMarketData__get_funding_history(parse_funding_history(x))
+      ))
+    },
+
+    #' @description Retrieve funding-rate history for a coin as the venue's own
+    #'   **raw records** — the parsed JSON array exactly as Hyperliquid returns
+    #'   it, in venue order, every field preserved and untouched: `fundingRate`
+    #'   and `premium` kept as the venue's own decimal STRINGS (no float
+    #'   coercion, no precision loss) and `time` kept as the raw
+    #'   epoch-millisecond number. This is the lossless counterpart to
+    #'   `get_funding_history()`, which returns tidy typed rows (`funding_rate` /
+    #'   `premium` as doubles, `time` as POSIXct, snake_cased): where that is the
+    #'   analysis convenience, this returns the untouched records a bronze
+    #'   passthrough archives verbatim. Each element is one settlement as a named
+    #'   list `{ coin, fundingRate, premium, time }`.
+    #' @param coin (scalar<character>) the canonical coin symbol, e.g. `"BTC"`.
+    #' @param start (POSIXct | numeric) range start (POSIXct or numeric
+    #'   epoch-milliseconds).
+    #' @param end (POSIXct | numeric | NULL) range end (POSIXct, numeric
+    #'   epoch-milliseconds, or `NULL`). Default `NULL` (up to now).
+    #' @return (promise<list>) the raw funding settlement records (one named list
+    #'   per settlement), or a promise thereof.
+    get_funding_history_raw = function(coin, start, end = NULL) {
+      assert_args_HyperliquidMarketData__get_funding_history_raw(coin, start, end)
+      validate_coin(coin)
+      start_ms <- if (is.numeric(start)) floor(start) else datetime_to_ms(start)
+      payload <- list(type = "fundingHistory", coin = coin, startTime = start_ms)
+      if (!is.null(end)) {
+        payload$endTime <- if (is.numeric(end)) floor(end) else datetime_to_ms(end)
+      }
+      return(private$.info(
+        payload,
+        .parser = function(x) assert_return_HyperliquidMarketData__get_funding_history_raw(x)
       ))
     },
 

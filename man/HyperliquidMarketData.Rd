@@ -43,6 +43,7 @@ the inherited \code{name_to_coin()}.
    get_l2_book \tab l2Book \tab No \cr
    get_candles \tab candleSnapshot \tab No \cr
    get_funding_history \tab fundingHistory \tab No \cr
+   get_funding_history_raw \tab fundingHistory \tab No \cr
    get_predicted_fundings \tab predictedFundings \tab No \cr
    get_perp_dexs \tab perpDexs \tab No \cr
    get_recent_trades \tab recentTrades \tab No \cr
@@ -86,6 +87,7 @@ while (!later::loop_empty()) later::run_now()
 \item \href{#method-HyperliquidMarketData-get_l2_book}{\code{HyperliquidMarketData$get_l2_book()}}
 \item \href{#method-HyperliquidMarketData-get_candles}{\code{HyperliquidMarketData$get_candles()}}
 \item \href{#method-HyperliquidMarketData-get_funding_history}{\code{HyperliquidMarketData$get_funding_history()}}
+\item \href{#method-HyperliquidMarketData-get_funding_history_raw}{\code{HyperliquidMarketData$get_funding_history_raw()}}
 \item \href{#method-HyperliquidMarketData-get_predicted_fundings}{\code{HyperliquidMarketData$get_predicted_fundings()}}
 \item \href{#method-HyperliquidMarketData-get_perp_dexs}{\code{HyperliquidMarketData$get_perp_dexs()}}
 \item \href{#method-HyperliquidMarketData-get_recent_trades}{\code{HyperliquidMarketData$get_recent_trades()}}
@@ -327,6 +329,43 @@ epoch-milliseconds, or \code{NULL}). Default \code{NULL} (up to now).}
 \subsection{Returns}{
 (promise<FundingHistory>) a \link[data.table:data.table]{data.table::data.table} with columns
 \code{coin}, \code{funding_rate}, \code{premium}, \code{time}, or a promise thereof.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-HyperliquidMarketData-get_funding_history_raw"></a>}}
+\if{latex}{\out{\hypertarget{method-HyperliquidMarketData-get_funding_history_raw}{}}}
+\subsection{Method \code{get_funding_history_raw()}}{
+Retrieve funding-rate history for a coin as the venue's own
+\strong{raw records} — the parsed JSON array exactly as Hyperliquid returns
+it, in venue order, every field preserved and untouched: \code{fundingRate}
+and \code{premium} kept as the venue's own decimal STRINGS (no float
+coercion, no precision loss) and \code{time} kept as the raw
+epoch-millisecond number. This is the lossless counterpart to
+\code{get_funding_history()}, which returns tidy typed rows (\code{funding_rate} /
+\code{premium} as doubles, \code{time} as POSIXct, snake_cased): where that is the
+analysis convenience, this returns the untouched records a bronze
+passthrough archives verbatim. Each element is one settlement as a named
+list \verb{\{ coin, fundingRate, premium, time \}}.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{HyperliquidMarketData$get_funding_history_raw(coin, start, end = NULL)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{coin}}{(scalar<character>) the canonical coin symbol, e.g. \code{"BTC"}.}
+
+\item{\code{start}}{(POSIXct | numeric) range start (POSIXct or numeric
+epoch-milliseconds).}
+
+\item{\code{end}}{(POSIXct | numeric | NULL) range end (POSIXct, numeric
+epoch-milliseconds, or \code{NULL}). Default \code{NULL} (up to now).}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+(promise<list>) the raw funding settlement records (one named list
+per settlement), or a promise thereof.
 }
 }
 \if{html}{\out{<hr>}}
