@@ -1,5 +1,21 @@
 # hyperliquid
 
+**In plain terms:** Hyperliquid is a decentralised cryptocurrency
+exchange, and this package is the R doorway to it. You call plain R
+functions to read live prices, place and manage perpetual and spot
+trades, move funds, and stake, without hand-building web requests or
+untangling the raw replies. Because a decentralised exchange has no
+username and password, orders are authorised by signing them with your
+Ethereum wallet key; this package does that signing itself, in plain R
+with no compiled code, and checks it byte-for-byte against the
+exchange’s own reference tools so a signature that leaves your machine
+is provably correct. Every answer comes back as a tidy table with
+consistent column names, and any request can run right away or in the
+background so a slow call does not freeze your session. You bring the
+wallet; the package handles the plumbing.
+
+## Technical overview
+
 R API wrapper to the [Hyperliquid](https://hyperliquid.xyz)
 decentralised exchange supporting both synchronous and asynchronous
 (promise based) operations. Provides R6 classes for market data,
