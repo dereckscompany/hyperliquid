@@ -64,6 +64,54 @@ test_that("HyperliquidMarketData public methods round-trip through the router", 
   expect_equal(nrow(market$get_exchange_status()), 1L)
 })
 
+test_that("get_funding_history_raw is a lossless passthrough of the venue records", {
+  connectcore::local_mock_api(.mock_routes)
+  market <- HyperliquidMarketData$new(keys = .keys)
+  start <- lubridate::now("UTC") - lubridate::days(1)
+
+  raw <- market$get_funding_history_raw("BTC", start = start)
+  typed <- market$get_funding_history("BTC", start = start)
+
+  # A list of raw records, one per settlement, NOT a data.table.
+  expect_type(raw, "list")
+  expect_false(data.table::is.data.table(raw))
+  expect_length(raw, 2L)
+  expect_true(all(vapply(raw, is.list, logical(1L))))
+
+  # fundingRate / premium stay the venue's own decimal STRINGS (no float
+  # coercion), where the typed table converts them to doubles and snake_cases.
+  expect_identical(raw[[1L]]$fundingRate, "0.0000034197")
+  expect_identical(raw[[1L]]$premium, "-0.0004726428")
+  expect_false("funding_rate" %in% names(raw[[1L]]))
+  expect_type(typed$funding_rate, "double")
+
+  # time stays the raw epoch-millisecond number, where the typed table derives a
+  # POSIXct `time` column.
+  expect_false(inherits(raw[[2L]]$time, "POSIXct"))
+  expect_equal(raw[[2L]]$time, 1780556400059)
+  expect_s3_class(typed$time, "POSIXct")
+
+  # Venue field names and order preserved verbatim.
+  expect_identical(names(raw[[1L]]), c("coin", "fundingRate", "premium", "time"))
+})
+
+test_that("get_funding_history_raw async agrees with sync through the router", {
+  skip_if_not_installed("promises")
+  skip_if_not_installed("later")
+  connectcore::local_mock_api(.mock_routes)
+  start <- lubridate::now("UTC") - lubridate::days(1)
+
+  sync <- HyperliquidMarketData$new(keys = .keys, async = FALSE)$get_funding_history_raw("BTC", start = start)
+  p <- HyperliquidMarketData$new(keys = .keys, async = TRUE)$get_funding_history_raw("BTC", start = start)
+  expect_true(promises::is.promise(p))
+  out <- new.env(parent = emptyenv())
+  promises::then(p, function(v) out$value <- v)
+  while (!later::loop_empty()) {
+    later::run_now()
+  }
+  expect_identical(out$value, sync)
+})
+
 test_that("HyperliquidAccount public methods round-trip through the router", {
   connectcore::local_mock_api(.mock_routes)
   account <- HyperliquidAccount$new(keys = .keys)

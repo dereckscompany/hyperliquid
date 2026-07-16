@@ -829,6 +829,40 @@ assert_return_HyperliquidMarketData__get_funding_history <- function(value) {
   return(value)
 }
 
+assert_args_HyperliquidMarketData__get_funding_history_raw <- function(coin, start, end) {
+  assert_scalar_character(coin)
+  assert_any_of(
+    start,
+    function(.x) {
+      assert_datetime(.x)
+      assert_no_missing_values(.x)
+    },
+    function(.x) {
+      assert_double(.x)
+      assert_no_missing_values(.x)
+    }
+  )
+  if (!is.null(end)) {
+    assert_any_of(
+      end,
+      function(.x) {
+        assert_datetime(.x)
+        assert_no_missing_values(.x)
+      },
+      function(.x) {
+        assert_double(.x)
+        assert_no_missing_values(.x)
+      }
+    )
+  }
+  return(invisible(NULL))
+}
+
+assert_return_HyperliquidMarketData__get_funding_history_raw <- function(value) {
+  assert_list(value)
+  return(value)
+}
+
 assert_return_HyperliquidMarketData__get_predicted_fundings <- function(value) {
   assert_data_table(value)
   assert_has_columns(value, c("coin", "venue", "funding_rate", "next_funding_time", "funding_interval_hours"))

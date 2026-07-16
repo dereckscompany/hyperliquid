@@ -30,7 +30,8 @@ R API wrapper to the [Hyperliquid](https://hyperliquid.xyz)
 decentralised exchange supporting both synchronous and asynchronous
 (promise based) operations. Provides R6 classes for market data,
 perpetual and spot trading, account management, transfers, and staking.
-Every method returns a flat `data.table`. The `/exchange` endpoint is
+Every typed method returns a flat `data.table` (with lossless `*_raw()`
+siblings for byte-faithful archival). The `/exchange` endpoint is
 authenticated by an Ethereum wallet signature, computed in **pure R**
 via the companion [`ethsign`](https://github.com/dereckscompany/ethsign)
 package (no compiled code) and verified byte-for-byte against the
@@ -46,10 +47,15 @@ mainnet.
 
 ## Design
 
-- **One method, one `data.table`, no list columns.** Every method
-  returns a flat `data.table`; nested API objects are flattened into
-  scalar columns, and heterogeneous rows are stacked with a
-  discriminator column (`side`, `delta_type`, `status`, …).
+- **One typed method, one `data.table`, no list columns — with a
+  lossless escape hatch.** Every typed method returns a flat
+  `data.table`; nested API objects are flattened into scalar columns,
+  and heterogeneous rows are stacked with a discriminator column
+  (`side`, `delta_type`, `status`, …). Where a byte-faithful archive
+  needs the venue’s own records instead of a tidy table, a `*_raw()`
+  sibling (e.g. `get_funding_history_raw()`) returns Hyperliquid’s
+  parsed JSON untouched — decimal strings, field order, and
+  null-vs-absent all preserved.
 - **Sync and async.** Every method works in both modes. `async = TRUE`
   returns a [promise](https://rstudio.github.io/promises/); otherwise
   results are returned directly. There is a single sync/async branch
@@ -192,6 +198,27 @@ market$get_l2_book("BTC")
     #> 2:    bid     2 61944  0.00085     4
     #> 3:    ask     1 61946 13.32523    39
     #> 4:    ask     2 61947  0.06724     6
+
+``` r
+# Funding history, raw: the venue's own records untouched — fundingRate/premium
+# stay decimal strings and time stays epoch-ms, for a byte-faithful archive.
+market$get_funding_history_raw(
+  "BTC",
+  start = lubridate::now("UTC") - lubridate::days(1)
+)[[1]]
+```
+
+    #> $coin
+    #> [1] "BTC"
+    #> 
+    #> $fundingRate
+    #> [1] "0.0000034197"
+    #> 
+    #> $premium
+    #> [1] "-0.0004726428"
+    #> 
+    #> $time
+    #> [1] 1.780553e+12
 
 ## Account (no auth)
 
