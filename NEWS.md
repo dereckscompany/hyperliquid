@@ -1,3 +1,10 @@
+# hyperliquid 0.7.1
+
+**Read-only mode: an account address without a private key now works.** In plain English: you can now point the client at an account by its public address alone — every account-state read (positions, balances, margin summary) answers for that address, while placing orders stays physically impossible because there is no key to sign with. Previously the address was silently discarded whenever the key was absent, so a key-less client could read only public market data. The motivating use is the trading system's forward test: watch a real account daily with credentials that cannot trade.
+
+- `get_api_keys()` keeps `account_address` when `private_key` is absent (it used to return all-`NULL`), and the warning now says which mode you are in: READ-ONLY (address kept, signing impossible) versus public-only (neither set).
+- `HyperliquidAccount`'s acting-address resolution is unchanged — `account_address` already took precedence — so read-only credentials flow through every `/info` account read with no other change.
+
 # hyperliquid 0.7.0
 
 A lossless raw accessor for funding history, alongside the typed surface, for byte-faithful bronze archival.

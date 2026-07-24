@@ -106,6 +106,13 @@ normalise_private_key <- function(private_key) {
 #' When no key is present this **warns** (it does not abort): public `/info`
 #' market data works without credentials, so a key-less client is still useful.
 #'
+#' **Read-only mode**: when `account_address` is set but the private key is
+#' absent, the address is KEPT (not discarded) — every account-state `/info`
+#' read (positions, balances, margin summary) works against that address, while
+#' signing `/exchange` actions stays impossible. This is deliberate: a forward
+#' test or monitoring process can watch a real account with credentials that
+#' are physically incapable of placing an order.
+#'
 #' @param private_key (scalar<character>) the signing key. Defaults to
 #'   `Sys.getenv("HYPERLIQUID_PRIVATE_KEY")`.
 #' @param account_address (scalar<character>) the optional master account
@@ -130,15 +137,26 @@ get_api_keys <- function(
 ) {
   assert_args_get_api_keys(private_key, account_address)
   if (!nzchar(private_key)) {
-    rlang::warn(paste0(
-      "Hyperliquid private key is not set; only public /info endpoints will ",
-      "work. Set HYPERLIQUID_PRIVATE_KEY (and optionally ",
-      "HYPERLIQUID_ACCOUNT_ADDRESS) or pass them explicitly to sign /exchange ",
-      "actions."
-    ))
+    account <- NULL
+    if (nzchar(account_address)) {
+      account <- account_address
+      rlang::warn(paste0(
+        "Hyperliquid private key is not set; READ-ONLY mode for ",
+        account_address,
+        ": account-state /info reads work, signing /exchange actions is ",
+        "impossible. Set HYPERLIQUID_PRIVATE_KEY to trade."
+      ))
+    } else {
+      rlang::warn(paste0(
+        "Hyperliquid private key is not set; only public /info endpoints will ",
+        "work. Set HYPERLIQUID_PRIVATE_KEY (and optionally ",
+        "HYPERLIQUID_ACCOUNT_ADDRESS) or pass them explicitly to sign ",
+        "/exchange actions."
+      ))
+    }
     return(assert_return_get_api_keys(list(
       private_key = NULL,
-      account_address = NULL,
+      account_address = account,
       wallet_address = NULL
     )))
   }

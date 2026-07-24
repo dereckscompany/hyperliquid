@@ -39,6 +39,13 @@ account when the key is an \strong{agent/API wallet} acting on its behalf.
 
 When no key is present this \strong{warns} (it does not abort): public \verb{/info}
 market data works without credentials, so a key-less client is still useful.
+
+\strong{Read-only mode}: when \code{account_address} is set but the private key is
+absent, the address is KEPT (not discarded) — every account-state \verb{/info}
+read (positions, balances, margin summary) works against that address, while
+signing \verb{/exchange} actions stays impossible. This is deliberate: a forward
+test or monitoring process can watch a real account with credentials that
+are physically incapable of placing an order.
 }
 \examples{
 \dontrun{
