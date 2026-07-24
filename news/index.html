@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">hyperliquid</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.7.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.7.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -36,9 +36,17 @@
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Changelog</h1>
-      <small>Source: <a href="https://github.com/dereckscompany/hyperliquid/blob/v0.7.0/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
+      <small>Source: <a href="https://github.com/dereckscompany/hyperliquid/blob/master/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.7.1" id="hyperliquid-071">hyperliquid 0.7.1<a class="anchor" aria-label="anchor" href="#hyperliquid-071"></a></h2>
+<p><strong>Read-only mode: an account address without a private key now works.</strong> In plain English: you can now point the client at an account by its public address alone — every account-state read (positions, balances, margin summary) answers for that address, while placing orders stays physically impossible because there is no key to sign with. Previously the address was silently discarded whenever the key was absent, so a key-less client could read only public market data. The motivating use is the trading system’s forward test: watch a real account daily with credentials that cannot trade.</p>
+<ul><li>
+<code><a href="../reference/get_api_keys.html">get_api_keys()</a></code> keeps <code>account_address</code> when <code>private_key</code> is absent (it used to return all-<code>NULL</code>), and the warning now says which mode you are in: READ-ONLY (address kept, signing impossible) versus public-only (neither set).</li>
+<li>
+<code>HyperliquidAccount</code>’s acting-address resolution is unchanged — <code>account_address</code> already took precedence — so read-only credentials flow through every <code>/info</code> account read with no other change.</li>
+</ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.7.0" id="hyperliquid-070">hyperliquid 0.7.0<a class="anchor" aria-label="anchor" href="#hyperliquid-070"></a></h2>
 <p>A lossless raw accessor for funding history, alongside the typed surface, for byte-faithful bronze archival.</p>

@@ -13,7 +13,7 @@ signature in the body."></head><body>
 
     <a class="navbar-brand me-2" href="../index.html">hyperliquid</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.7.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.7.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -42,7 +42,7 @@ signature in the body."></head><body>
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Retrieve Hyperliquid Wallet Credentials</h1>
-      <small class="dont-index">Source: <a href="https://github.com/dereckscompany/hyperliquid/blob/v0.7.0/R/utils.R" class="external-link"><code>R/utils.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/dereckscompany/hyperliquid/blob/master/R/utils.R" class="external-link"><code>R/utils.R</code></a></small>
       <div class="d-none name"><code>get_api_keys.Rd</code></div>
     </div>
 
@@ -90,6 +90,12 @@ secp256k1 key). Optional <code>HYPERLIQUID_ACCOUNT_ADDRESS</code> names the mast
 account when the key is an <strong>agent/API wallet</strong> acting on its behalf.</p>
 <p>When no key is present this <strong>warns</strong> (it does not abort): public <code>/info</code>
 market data works without credentials, so a key-less client is still useful.</p>
+<p><strong>Read-only mode</strong>: when <code>account_address</code> is set but the private key is
+absent, the address is KEPT (not discarded) — every account-state <code>/info</code>
+read (positions, balances, margin summary) works against that address, while
+signing <code>/exchange</code> actions stays impossible. This is deliberate: a forward
+test or monitoring process can watch a real account with credentials that
+are physically incapable of placing an order.</p>
     </div>
 
     <div class="section level2">

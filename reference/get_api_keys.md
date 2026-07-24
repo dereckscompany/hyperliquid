@@ -50,6 +50,14 @@ When no key is present this **warns** (it does not abort): public
 `/info` market data works without credentials, so a key-less client is
 still useful.
 
+**Read-only mode**: when `account_address` is set but the private key is
+absent, the address is KEPT (not discarded) — every account-state
+`/info` read (positions, balances, margin summary) works against that
+address, while signing `/exchange` actions stays impossible. This is
+deliberate: a forward test or monitoring process can watch a real
+account with credentials that are physically incapable of placing an
+order.
+
 ## Examples
 
 ``` r
