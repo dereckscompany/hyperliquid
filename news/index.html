@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">hyperliquid</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.7.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.7.2</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -36,9 +36,15 @@
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Changelog</h1>
-      <small>Source: <a href="https://github.com/dereckscompany/hyperliquid/blob/v0.7.1/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
+      <small>Source: <a href="https://github.com/dereckscompany/hyperliquid/blob/master/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.7.2" id="hyperliquid-072">hyperliquid 0.7.2<a class="anchor" aria-label="anchor" href="#hyperliquid-072"></a></h2>
+<p><strong>A regression test that guards against price data ever being truncated again.</strong> In plain English: on 2026-09-13 the fleet discovered that every Hyperliquid candle in the data lake had been stored to four decimal places for months, so a coin priced below a cent (e.g. “0.000212”) lost almost all of its information, and a strategy that ranks coins by calmness ranked them wrongly as a result. The cause was traced and proved NOT to be in this package — the wrapper parses Hyperliquid’s price strings into R numbers at full precision, verified live (the venue’s <code>"0.000212"</code> comes back as <code>0.00021200000000000000</code>) — it was a re-serialisation default in the data scraper, since fixed. This release adds a test that pins that correctness in place: if anyone later introduces <code><a href="https://rdrr.io/r/base/Round.html" class="external-link">round()</a></code>, <code><a href="https://rdrr.io/r/base/Round.html" class="external-link">signif()</a></code>, <code>sprintf("%.4f")</code>, <code>format(nsmall = )</code>, or a narrowing cast into a parse helper, the test fails immediately.</p>
+<ul><li>Added <code>tests/testthat/test-parse-precision.R</code>: drives <code>get_candles()</code>, <code>get_meta_and_asset_ctxs()</code>, and <code>get_funding_history()</code> through the real public client, via a synthetic high-precision fixture routed through the shared <code>connectcore</code> mock harness (<code>body_routes()</code> + <code>local_mock_api()</code>). Every numeric column is asserted <code>expect_identical()</code> (never tolerance-based) against <code><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric()</a></code> of the fixture’s own decimal string, and a big-integer-looking identifier column is asserted to stay character and unchanged.</li>
+<li>No behaviour change: the parse path (<code>num_or_na()</code> -&gt; <code><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric()</a></code>, <code>R/helpers_parse.R</code>) was already correct and is untouched.</li>
+</ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.7.1" id="hyperliquid-071">hyperliquid 0.7.1<a class="anchor" aria-label="anchor" href="#hyperliquid-071"></a></h2>
 <p><strong>Read-only mode: an account address without a private key now works.</strong> In plain English: you can now point the client at an account by its public address alone — every account-state read (positions, balances, margin summary) answers for that address, while placing orders stays physically impossible because there is no key to sign with. Previously the address was silently discarded whenever the key was absent, so a key-less client could read only public market data. The motivating use is the trading system’s forward test: watch a real account daily with credentials that cannot trade.</p>
