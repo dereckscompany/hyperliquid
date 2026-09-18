@@ -115,7 +115,7 @@ We deposited ~\$9. **This mainnet deposit is only there to unlock the testnet
 faucet** -- the actual test trades use *free* testnet money, so there is no reason
 to deposit more.
 
-<!-- SCREENSHOT: Hyperliquid deposit dialog (USDC / Arbitrum / amount) -->
+<!-- SCREENSHOT: Hyperliquid deposit dialogue (USDC / Arbitrum / amount) -->
 
 ## Step 4 -- Claim the testnet faucet
 
