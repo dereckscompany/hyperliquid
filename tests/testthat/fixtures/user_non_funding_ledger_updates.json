@@ -56,8 +56,8 @@
     "hash": "0x000000000000000000000000000000000000000000000000000000000000000a",
     "delta": {
       "type": "liquidation",
-      "liquidatedNtlPos": "54187.21188",
-      "accountValue": "356.952084",
+      "liquidatedNtlPos": "50000.0",
+      "accountValue": "500.0",
       "leverageType": "Isolated",
       "liquidatedPositions": [
         {

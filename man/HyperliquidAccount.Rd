@@ -64,7 +64,7 @@ inspect any other account.
 \examples{
 \dontrun{
 account <- HyperliquidAccount$new()
-addr <- "0x010461c14e146ac35fe42271bdc1134ee31c703a"
+addr <- "0x0000000000000000000000000000000000000001"
 account$get_positions(addr)
 account$get_margin_summary(addr)
 account$get_user_fills_by_time(addr, start = lubridate::now("UTC") - lubridate::days(1))

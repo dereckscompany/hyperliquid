@@ -1,4 +1,4 @@
-# Tests for the staking domain: the parsers against their captured fixtures, an
+# Tests for the staking domain: the parsers against their authored fixtures, an
 # end-to-end /info read through a mocked transport, and the user-signed
 # tokenDelegate write (asserting action type + {r,s,v} signature structure).
 
@@ -37,7 +37,7 @@ read_client <- function() {
   ))
 }
 
-STAKER <- "0x5ac99df645f3414876c816caa18b2d234024b487"
+STAKER <- "0x0000000000000000000000000000000000000010"
 
 # ---- parse_staking_summary ---------------------------------------------------
 
@@ -49,7 +49,7 @@ test_that("parse_staking_summary flattens the summary to one typed row", {
     names(dt),
     c("delegated", "undelegated", "total_pending_withdrawal", "n_pending_withdrawals")
   )
-  expect_equal(dt$delegated, 70064.72854868)
+  expect_equal(dt$delegated, 50000.0)
   expect_equal(dt$undelegated, 0)
   expect_equal(dt$n_pending_withdrawals, 0L)
   expect_type(dt$delegated, "double")
@@ -78,7 +78,7 @@ test_that("parse_staking_delegations stacks delegations with a POSIXct lockup", 
   expect_equal(nrow(dt), 1L)
   expect_equal(names(dt), c("validator", "amount", "locked_until_timestamp"))
   expect_equal(dt$validator, STAKER)
-  expect_equal(dt$amount, 70064.72854868)
+  expect_equal(dt$amount, 50000.0)
   expect_type(dt$amount, "double")
   expect_s3_class(dt$locked_until_timestamp, "POSIXct")
   expect_true(no_list_cols(dt))
@@ -97,7 +97,7 @@ test_that("parse_staking_rewards stacks reward accruals with a POSIXct time", {
   expect_equal(names(dt), c("time", "source", "total_amount"))
   expect_s3_class(dt$time, "POSIXct")
   expect_equal(dt$source, c("delegation", "commission", "delegation", "commission"))
-  expect_equal(dt$total_amount[1], 4.18960439)
+  expect_equal(dt$total_amount[1], 5.0)
   expect_type(dt$total_amount, "double")
   expect_true(no_list_cols(dt))
 })
@@ -168,7 +168,7 @@ test_that("get_staking_summary posts delegatorSummary and parses the response", 
   expect_equal(seen$body$user, STAKER)
   # Parsed result.
   expect_equal(nrow(dt), 1L)
-  expect_equal(dt$delegated, 70064.72854868)
+  expect_equal(dt$delegated, 50000.0)
   expect_true(no_list_cols(dt))
 })
 

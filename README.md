@@ -229,7 +229,7 @@ set).
 
 ``` r
 account <- HyperliquidAccount$new()
-addr <- "0x010461c14e146ac35fe42271bdc1134ee31c703a"
+addr <- "0x0000000000000000000000000000000000000001"
 ```
 
 ``` r
@@ -239,12 +239,12 @@ account$get_positions(addr)
 
     #>      coin      szi entry_px position_value unrealized_pnl return_on_equity
     #>    <char>    <num>    <num>          <num>          <num>            <num>
-    #> 1:    BTC  0.61148 61699.10     37899.5304       171.7548      0.091049531
-    #> 2:    ETH -0.37080  1606.85       595.6902         0.1306      0.004383868
+    #> 1:    BTC  0.61148 61699.10     37899.5304       171.7548            0.090
+    #> 2:    ETH -0.37080  1606.85       595.6902         0.1306            0.005
     #>    leverage_type leverage_value liquidation_px margin_used
     #>           <char>          <num>          <num>       <num>
     #> 1:         cross             20             NA  1894.97652
-    #> 2:         cross             20        7863060    29.78451
+    #> 2:         cross             20        6500000    29.78451
 
 ``` r
 # Most recent fills
@@ -320,12 +320,12 @@ transfers$usd_class_transfer(100, to_perp = TRUE)
 
 ``` r
 staking <- HyperliquidStaking$new()
-staking$get_staking_summary("0x5ac99df645f3414876c816caa18b2d234024b487")
+staking$get_staking_summary("0x0000000000000000000000000000000000000010")
 ```
 
     #>    delegated undelegated total_pending_withdrawal n_pending_withdrawals
     #>        <num>       <num>                    <num>                 <int>
-    #> 1:  70064.73           0                        0                     0
+    #> 1:     50000           0                        0                     0
 
 ## Bulk Backfill
 

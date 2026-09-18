@@ -122,13 +122,13 @@ test_that("spot_send posts spotSend carrying the token", {
       return(client$spot_send(
         1.5,
         "0x5e9ee1089755c3435139848e47e6635505d5a13a",
-        "PURR:0xc1fb593aeffbeb02f85e0308e9956a90"
+        "PURR:0x00000000000000000000000000000002"
       ))
     },
     fixture_spot_send()
   )
   expect_equal(res$posted$action$type, "spotSend")
-  expect_equal(res$posted$action$token, "PURR:0xc1fb593aeffbeb02f85e0308e9956a90")
+  expect_equal(res$posted$action$token, "PURR:0x00000000000000000000000000000002")
   expect_equal(res$posted$action$amount, "1.5")
   expect_has_signature(res$posted)
 })
@@ -199,7 +199,7 @@ test_that("sub_account_spot_transfer posts subAccountSpotTransfer with a string 
       return(client$sub_account_spot_transfer(
         "0x5e9ee1089755c3435139848e47e6635505d5a13a",
         is_deposit = FALSE,
-        token = "PURR:0xc1fb593aeffbeb02f85e0308e9956a90",
+        token = "PURR:0x00000000000000000000000000000002",
         amount = 5
       ))
     },
@@ -207,7 +207,7 @@ test_that("sub_account_spot_transfer posts subAccountSpotTransfer with a string 
   )
   expect_equal(res$posted$action$type, "subAccountSpotTransfer")
   expect_false(res$posted$action$isDeposit)
-  expect_equal(res$posted$action$token, "PURR:0xc1fb593aeffbeb02f85e0308e9956a90")
+  expect_equal(res$posted$action$token, "PURR:0x00000000000000000000000000000002")
   expect_equal(res$posted$action$amount, "5")
   expect_has_signature(res$posted)
 })
@@ -217,7 +217,7 @@ test_that("vault_transfer posts vaultTransfer with a micro-USD integer", {
   res <- post_capture(
     function() {
       return(client$vault_transfer(
-        "0xdfc24b077bc1425ad1dea75bcb6f8158e10df303",
+        "0x0000000000000000000000000000000000000002",
         is_deposit = TRUE,
         usd = 250
       ))
@@ -225,7 +225,7 @@ test_that("vault_transfer posts vaultTransfer with a micro-USD integer", {
     fixture_vault_transfer()
   )
   expect_equal(res$posted$action$type, "vaultTransfer")
-  expect_equal(res$posted$action$vaultAddress, "0xdfc24b077bc1425ad1dea75bcb6f8158e10df303")
+  expect_equal(res$posted$action$vaultAddress, "0x0000000000000000000000000000000000000002")
   expect_true(res$posted$action$isDeposit)
   expect_equal(res$posted$action$usd, 250000000)
   expect_has_signature(res$posted)

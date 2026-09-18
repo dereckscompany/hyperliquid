@@ -1,9 +1,15 @@
 # Fixtures for HyperliquidMarketData. Each function returns the R list that
 # jsonlite::fromJSON(simplifyVector = FALSE) yields for one /info market-data
-# response type. Read shapes are trimmed captures of the live mainnet public API
-# (POST https://api.hyperliquid.xyz/info), with field names and string/number
-# encodings preserved exactly as the API returns them. These also feed the
-# shared mock router for the README and vignettes.
+# response type. Every fixture is AUTHORED SYNTHETIC DATA, hand-written to be
+# shape-faithful to Hyperliquid's own documented /info responses (same field
+# names and string/number encodings the API uses) -- it is never captured from
+# the live API, not even scrubbed. Addresses and on-chain hashes follow the
+# patterned placeholder scheme shared with tests/testthat/fixtures/*.json
+# (`0x000...000N`), and prices/volumes/supplies are round numbers on an invented
+# scale. This is a public repository; nothing here may ever be replaced with a
+# live capture (fleet fixture-authoring rule, ratified 2026-07-05, re-ratified
+# 2026-09-17). These also feed the shared mock router for the README and
+# vignettes.
 
 # meta -> perp universe. Includes a delisted asset (MATIC) and an isolated-only
 # asset carrying marginMode (HOOD) to exercise the sparse logical/string columns.
@@ -40,9 +46,9 @@ hl_md_spot_meta <- function() {
         szDecimals = 8L,
         weiDecimals = 8L,
         index = 0L,
-        tokenId = "0x6d1e7cde53ba9467b783cb7c530ce054",
+        tokenId = "0x00000000000000000000000000000001",
         isCanonical = TRUE,
-        evmContract = list(address = "0x6b9e773128f453f5c2c60935ee2de2cbc5390a24", evm_extra_wei_decimals = -2L),
+        evmContract = list(address = "0x0000000000000000000000000000000000000009", evm_extra_wei_decimals = -2L),
         fullName = NULL,
         deployerTradingFeeShare = "0.0"
       ),
@@ -51,7 +57,7 @@ hl_md_spot_meta <- function() {
         szDecimals = 0L,
         weiDecimals = 5L,
         index = 1L,
-        tokenId = "0xc1fb593aeffbeb02f85e0308e9956a90",
+        tokenId = "0x00000000000000000000000000000002",
         isCanonical = TRUE,
         evmContract = NULL,
         fullName = NULL,
@@ -75,7 +81,7 @@ hl_md_meta_and_asset_ctxs <- function() {
         funding = "0.0000125",
         openInterest = "33122.6367",
         prevDayPx = "60729.0",
-        dayNtlVlm = "2636140606.5446190834",
+        dayNtlVlm = "2600000000.0",
         premium = "-0.0003065208",
         oraclePx = "61986.0",
         markPx = "61964.0",
@@ -87,13 +93,13 @@ hl_md_meta_and_asset_ctxs <- function() {
         funding = "0.0000064122",
         openInterest = "685018.9388",
         prevDayPx = "1548.8",
-        dayNtlVlm = "692425434.4373297691",
+        dayNtlVlm = "690000000.0",
         premium = "-0.0004604854",
         oraclePx = "1607.0",
         markPx = "1606.2",
         midPx = "1606.15",
         impactPxs = list("1606.1", "1606.26"),
-        dayBaseVlm = "441613.2052999999"
+        dayBaseVlm = "441000.0"
       )
     )
   ))
@@ -106,22 +112,22 @@ hl_md_spot_meta_and_asset_ctxs <- function() {
     list(
       list(
         prevDayPx = "0.08889",
-        dayNtlVlm = "912632.1060209998",
+        dayNtlVlm = "910000.0",
         markPx = "0.090784",
         midPx = "0.0908055",
-        circulatingSupply = "595295911.3807499409",
+        circulatingSupply = "595000000.0",
         coin = "PURR/USDC",
-        totalSupply = "595295917.9035300016",
+        totalSupply = "595100000.0",
         dayBaseVlm = "10471112.0"
       ),
       list(
         prevDayPx = "9.7168",
-        dayNtlVlm = "28631.474477",
+        dayNtlVlm = "28600.0",
         markPx = "9.6794",
         midPx = "9.6738",
-        circulatingSupply = "995906.4607351",
+        circulatingSupply = "995000.0",
         coin = "@1",
-        totalSupply = "995906.51156126",
+        totalSupply = "996000.0",
         dayBaseVlm = "2957.81"
       )
     )
@@ -222,9 +228,9 @@ hl_md_perp_dexs <- function() {
     list(
       name = "xyz",
       fullName = "XYZ",
-      deployer = "0x88806a71d74ad0a510b350545c9ae490912f0888",
+      deployer = "0x000000000000000000000000000000000000000a",
       oracleUpdater = NULL,
-      feeRecipient = "0x9cd0a696c7cbb9d44de99268194cb08e5684e5fe"
+      feeRecipient = "0x000000000000000000000000000000000000000b"
     )
   ))
 }
@@ -240,7 +246,7 @@ hl_md_recent_trades <- function() {
       time = 1780809632050,
       hash = "0x0000000000000000000000000000000000000000000000000000000000000000",
       tid = 867924607859908,
-      users = list("0x28f0233472b6a44e170e002a72845ca100be4a7e", "0x1c1c270b573d55b68b3d14722b5d5d401511bed0")
+      users = list("0x000000000000000000000000000000000000000c", "0x000000000000000000000000000000000000000d")
     ),
     list(
       coin = "BTC",
@@ -248,9 +254,9 @@ hl_md_recent_trades <- function() {
       px = "61916.0",
       sz = "0.001",
       time = 1780809631657,
-      hash = "0xc21d4ed7bbf8e7c7c397043d26c52302020000bd56fc069965e5fa2a7afcc1b2",
+      hash = "0x000000000000000000000000000000000000000000000000000000000000000b",
       tid = 344331450499251,
-      users = list("0xa62b923a112d50d03e1e096bbd53422490dac104", "0x60b9a6713427c83608d9daecfa06a6d2361f0614")
+      users = list("0x000000000000000000000000000000000000000e", "0x000000000000000000000000000000000000000f")
     )
   ))
 }

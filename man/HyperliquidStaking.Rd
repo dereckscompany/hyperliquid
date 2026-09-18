@@ -53,12 +53,12 @@ explicitly to inspect any other delegator.
 \examples{
 \dontrun{
 staking <- HyperliquidStaking$new()
-staking$get_staking_summary("0x5ac99df645f3414876c816caa18b2d234024b487")
-staking$get_staking_delegations("0x5ac99df645f3414876c816caa18b2d234024b487")
+staking$get_staking_summary("0x0000000000000000000000000000000000000010")
+staking$get_staking_delegations("0x0000000000000000000000000000000000000010")
 
 # Delegate 100 wei to a validator (requires a signing key):
 staking$token_delegate(
-  validator = "0x5ac99df645f3414876c816caa18b2d234024b487",
+  validator = "0x0000000000000000000000000000000000000010",
   wei = 100,
   is_undelegate = FALSE
 )

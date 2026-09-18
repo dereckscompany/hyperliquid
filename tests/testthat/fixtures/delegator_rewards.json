@@ -2,21 +2,21 @@
   {
     "time": 1780790400085,
     "source": "delegation",
-    "totalAmount": "4.18960439"
+    "totalAmount": "5.0"
   },
   {
     "time": 1780790400085,
     "source": "commission",
-    "totalAmount": "97.26830074"
+    "totalAmount": "100.0"
   },
   {
     "time": 1780704000050,
     "source": "delegation",
-    "totalAmount": "4.18331289"
+    "totalAmount": "4.5"
   },
   {
     "time": 1780704000050,
     "source": "commission",
-    "totalAmount": "97.31493716"
+    "totalAmount": "95.0"
   }
 ]

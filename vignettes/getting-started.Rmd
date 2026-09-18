@@ -172,7 +172,7 @@ inspect (when a signing key is set, `address` defaults to your own wallet).
 
 ```{r account-init}
 account <- HyperliquidAccount$new()
-addr <- "0x010461c14e146ac35fe42271bdc1134ee31c703a"
+addr <- "0x0000000000000000000000000000000000000001"
 ```
 
 ### Positions and Margin
@@ -246,7 +246,7 @@ delegates / undelegates the native token with a key.
 
 ```{r staking}
 staking <- HyperliquidStaking$new()
-staking$get_staking_summary("0x5ac99df645f3414876c816caa18b2d234024b487")
+staking$get_staking_summary("0x0000000000000000000000000000000000000010")
 ```
 
 ---

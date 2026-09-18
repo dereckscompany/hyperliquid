@@ -3,12 +3,12 @@
     {
       "coin": "USDC",
       "token": 0,
-      "total": "13967.93682455",
-      "hold": "-5.92201599",
+      "total": "10000.0",
+      "hold": "-5.0",
       "entryNtl": "0.0",
       "spotHold": "0.0",
       "ltv": "0.0",
-      "supplied": "13967.93682455"
+      "supplied": "10000.0"
     },
     {
       "coin": "PURR",

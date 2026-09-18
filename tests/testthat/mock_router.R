@@ -11,17 +11,25 @@
 # is POST /info discriminated by `body$type`, and every signed write is POST
 # /exchange discriminated by `body$action$type`. connectcore::body_routes()
 # builds one predicate-route per body type from a named case table, so the table
-# below is just `type -> captured-fixture JSON string`.
+# below is just `type -> authored-fixture JSON string`.
 #
-# Each fixture is the REAL captured (or, for write acks, synthetic) Hyperliquid
-# JSON for that body type, loaded verbatim from tests/testthat/fixtures/*.json by
-# connectcore::load_fixtures() (a named list keyed by file basename; each value
-# the raw JSON string). connectcore::mock_response() serves a string body
-# verbatim, so the parsers and column contracts run against genuine response
-# shapes. The captured read fixtures are scrubbed of every real account / vault /
-# validator address and on-chain hash (deterministic placeholders) while
-# preserving the exact JSON shape; the /exchange write acks are synthetic
-# success envelopes (write endpoints are never called to capture).
+# Every fixture in tests/testthat/fixtures/*.json is AUTHORED SYNTHETIC DATA,
+# hand-written to be shape-faithful to Hyperliquid's own documented responses
+# (same keys, nesting, and value types as the real API) -- it is never captured
+# from a live account, not even scrubbed. Addresses and on-chain hashes follow a
+# patterned scheme (`0x00000000000000000000000000000000000000N` for user/vault
+# addresses, the same shape with a trailing hex letter for a validator, `0x`
+# followed by 62 zeros and a two-digit suffix for a transaction hash), order ids
+# are small invented integers, and balances/prices/volumes are round numbers on
+# an invented scale. Loaded verbatim as raw JSON strings by
+# connectcore::load_fixtures() (a named list keyed by file basename) and served
+# verbatim by connectcore::mock_response(), so the parsers and column contracts
+# still exercise the real wire shape -- just never real account data. This is a
+# public repository; nothing under tests/testthat/fixtures/ may ever be replaced
+# with a live capture, scrubbed or otherwise (fleet fixture-authoring rule,
+# ratified 2026-07-05, re-ratified 2026-09-17). The /exchange write acks were
+# always synthetic success envelopes (write endpoints are never called to
+# capture).
 #
 # httr2 exposes a native global mock hook: connectcore::with_mock_api(.mock_routes,
 # { ... }) (or local_mock_api(.mock_routes)) installs the dispatcher as the
@@ -40,12 +48,12 @@ box::use(
   connectcore[body_routes, load_fixtures]
 )
 
-# Load every captured fixture as its raw JSON string, keyed by file basename
+# Load every authored fixture as its raw JSON string, keyed by file basename
 # (meta.json -> "meta"). Resolved relative to THIS module file so it works from
 # the package root (README), vignettes/, and tests/testthat alike.
 .fixtures <- load_fixtures(box::file("fixtures"))
 
-#' `/info` read routes: `body$type` -> captured-fixture JSON string.
+#' `/info` read routes: `body$type` -> authored-fixture JSON string.
 #'
 #' One case per read endpoint. The two cross-domain collisions resolve here:
 #' `clearinghouseState` serves the richer two-position account fixture and

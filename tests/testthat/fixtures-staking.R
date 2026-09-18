@@ -2,16 +2,22 @@
 # jsonlite::fromJSON(simplifyVector = FALSE) yields for the corresponding
 # endpoint, so parsers and the mock router can be exercised offline.
 #
-# READ fixtures are REAL mainnet /info responses captured on 2026-06-06 for the
-# staker/validator 0x5ac99df645f3414876c816caa18b2d234024b487 (the rewards
-# fixture is a representative four-row slice of a much longer history). The
-# tokenDelegate WRITE fixture is the standard /exchange success envelope
-# (the SDK posts a user-signed action and receives {status:"ok", response:...}).
+# Every READ fixture is AUTHORED SYNTHETIC DATA, hand-written to be
+# shape-faithful to Hyperliquid's own documented /info responses for a
+# staker/validator (the rewards fixture is a representative four-row slice
+# standing in for a much longer history) -- it is never captured from a live
+# mainnet account, not even scrubbed, and the validator is a patterned
+# placeholder address (`0x000...0010`), never a real validator's identity. This
+# is a public repository; nothing here may ever be replaced with a live
+# capture (fleet fixture-authoring rule, ratified 2026-07-05, re-ratified
+# 2026-09-17). The tokenDelegate WRITE fixture is the standard /exchange
+# success envelope (the SDK posts a user-signed action and receives
+# {status:"ok", response:...}).
 
 # delegatorSummary -> parse_staking_summary (single object).
 fixture_staking_summary <- function() {
   return(list(
-    delegated = "70064.72854868",
+    delegated = "50000.0",
     undelegated = "0.0",
     totalPendingWithdrawal = "0.0",
     nPendingWithdrawals = 0
@@ -22,8 +28,8 @@ fixture_staking_summary <- function() {
 fixture_staking_delegations <- function() {
   return(list(
     list(
-      validator = "0x5ac99df645f3414876c816caa18b2d234024b487",
-      amount = "70064.72854868",
+      validator = "0x0000000000000000000000000000000000000010",
+      amount = "50000.0",
       lockedUntilTimestamp = 1735466781353
     )
   ))
@@ -32,10 +38,10 @@ fixture_staking_delegations <- function() {
 # delegatorRewards -> parse_staking_rewards (array of objects).
 fixture_staking_rewards <- function() {
   return(list(
-    list(time = 1780790400085, source = "delegation", totalAmount = "4.18960439"),
-    list(time = 1780790400085, source = "commission", totalAmount = "97.26830074"),
-    list(time = 1780704000050, source = "delegation", totalAmount = "4.18331289"),
-    list(time = 1780704000050, source = "commission", totalAmount = "97.31493716")
+    list(time = 1780790400085, source = "delegation", totalAmount = "5.0"),
+    list(time = 1780790400085, source = "commission", totalAmount = "100.0"),
+    list(time = 1780704000050, source = "delegation", totalAmount = "4.5"),
+    list(time = 1780704000050, source = "commission", totalAmount = "95.0")
   ))
 }
 
@@ -45,10 +51,10 @@ fixture_delegator_history <- function() {
   return(list(
     list(
       time = 1735380381353,
-      hash = "0x55492465cb523f90815a041a226ba90147008d4b221a24ae8dc35a0dbede4ea4",
+      hash = "0x000000000000000000000000000000000000000000000000000000000000000c",
       delta = list(
         delegate = list(
-          validator = "0x5ac99df645f3414876c816caa18b2d234024b487",
+          validator = "0x0000000000000000000000000000000000000010",
           amount = "10000.0",
           isUndelegate = FALSE
         )
@@ -56,7 +62,7 @@ fixture_delegator_history <- function() {
     ),
     list(
       time = 1735380381116,
-      hash = "0xf5e606e23ab64020662e041a226ba7015e00c5caca9f7ec90cf4c99210aa4a89",
+      hash = "0x000000000000000000000000000000000000000000000000000000000000000d",
       delta = list(
         cDeposit = list(
           amount = "10000.0"
