@@ -184,7 +184,7 @@ defaults to your own wallet).
 ``` r
 
 account <- HyperliquidAccount$new()
-addr <- "0x010461c14e146ac35fe42271bdc1134ee31c703a"
+addr <- "0x0000000000000000000000000000000000000001"
 ```
 
 ### Positions and Margin
@@ -210,7 +210,7 @@ account$get_margin_summary(addr)[, .(account_value, total_ntl_pos, withdrawable)
 
     #>    account_value total_ntl_pos withdrawable
     #>            <num>         <num>        <num>
-    #> 1:       2976575       3239785      2652596
+    #> 1:         1e+05        150000        95000
 
 ### Fills
 
@@ -288,12 +288,12 @@ key), and delegates / undelegates the native token with a key.
 ``` r
 
 staking <- HyperliquidStaking$new()
-staking$get_staking_summary("0x5ac99df645f3414876c816caa18b2d234024b487")
+staking$get_staking_summary("0x0000000000000000000000000000000000000010")
 ```
 
     #>    delegated undelegated total_pending_withdrawal n_pending_withdrawals
     #>        <num>       <num>                    <num>                 <int>
-    #> 1:  70064.73           0                        0                     0
+    #> 1:     50000           0                        0                     0
 
 ------------------------------------------------------------------------
 

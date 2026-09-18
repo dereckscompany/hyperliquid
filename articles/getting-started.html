@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">hyperliquid</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.7.2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.7.3</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -234,7 +234,7 @@ unauthenticated, so pass the address you want to inspect (when a signing
 key is set, <code>address</code> defaults to your own wallet).</p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">account</span> <span class="op">&lt;-</span> <span class="va"><a href="../reference/HyperliquidAccount.html">HyperliquidAccount</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="va">addr</span> <span class="op">&lt;-</span> <span class="st">"0x010461c14e146ac35fe42271bdc1134ee31c703a"</span></span></code></pre></div>
+<span><span class="va">addr</span> <span class="op">&lt;-</span> <span class="st">"0x0000000000000000000000000000000000000001"</span></span></code></pre></div>
 <div class="section level3">
 <h3 id="positions-and-margin">Positions and Margin<a class="anchor" aria-label="anchor" href="#positions-and-margin"></a>
 </h3>
@@ -251,7 +251,7 @@ position; the cross-margin summary is a sibling method
 <code class="sourceCode R"><span><span class="va">account</span><span class="op">$</span><span class="fu">get_margin_summary</span><span class="op">(</span><span class="va">addr</span><span class="op">)</span><span class="op">[</span>, <span class="fu">.</span><span class="op">(</span><span class="va">account_value</span>, <span class="va">total_ntl_pos</span>, <span class="va">withdrawable</span><span class="op">)</span><span class="op">]</span></span></code></pre></div>
 <pre><code><span><span class="co">#&gt;    account_value total_ntl_pos withdrawable</span></span>
 <span><span class="co">#&gt;            &lt;num&gt;         &lt;num&gt;        &lt;num&gt;</span></span>
-<span><span class="co">#&gt; 1:       2976575       3239785      2652596</span></span></code></pre>
+<span><span class="co">#&gt; 1:         1e+05        150000        95000</span></span></code></pre>
 </div>
 <div class="section level3">
 <h3 id="fills">Fills<a class="anchor" aria-label="anchor" href="#fills"></a>
@@ -318,10 +318,10 @@ from <code>/info</code> (no key), and delegates / undelegates the native
 token with a key.</p>
 <div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">staking</span> <span class="op">&lt;-</span> <span class="va"><a href="../reference/HyperliquidStaking.html">HyperliquidStaking</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="va">staking</span><span class="op">$</span><span class="fu">get_staking_summary</span><span class="op">(</span><span class="st">"0x5ac99df645f3414876c816caa18b2d234024b487"</span><span class="op">)</span></span></code></pre></div>
+<span><span class="va">staking</span><span class="op">$</span><span class="fu">get_staking_summary</span><span class="op">(</span><span class="st">"0x0000000000000000000000000000000000000010"</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">#&gt;    delegated undelegated total_pending_withdrawal n_pending_withdrawals</span></span>
 <span><span class="co">#&gt;        &lt;num&gt;       &lt;num&gt;                    &lt;num&gt;                 &lt;int&gt;</span></span>
-<span><span class="co">#&gt; 1:  70064.73           0                        0                     0</span></span></code></pre>
+<span><span class="co">#&gt; 1:     50000           0                        0                     0</span></span></code></pre>
 <hr>
 </div>
 <div class="section level2">
