@@ -1,5 +1,5 @@
 # Offline tests for HyperliquidAccount: every user-scoped /info parser against
-# its captured fixture (columns, types, no list columns, zero-row on empty),
+# its authored fixture (columns, types, no list columns, zero-row on empty),
 # plus end-to-end reads through a mocked transport asserting the posted body
 # carries the right `type` discriminator and `user` address. Account reads are
 # unauthenticated, so no signing is exercised here.
@@ -38,7 +38,7 @@ read_client <- function() {
   ))
 }
 
-ADDR <- "0x010461c14e146ac35fe42271bdc1134ee31c703a"
+ADDR <- "0x0000000000000000000000000000000000000001"
 
 # ---- parse_positions ---------------------------------------------------------
 
@@ -68,7 +68,7 @@ test_that("parse_positions returns one row per position with split leverage", {
   expect_equal(dt$leverage_value, c(20, 20))
   # BTC has a null liquidationPx -> NA; ETH carries one.
   expect_true(is.na(dt$liquidation_px[1]))
-  expect_equal(dt$liquidation_px[2], 7863059.5308084209)
+  expect_equal(dt$liquidation_px[2], 6500000.0)
   expect_type(dt$szi, "double")
   expect_true(no_list_cols(dt))
 })
@@ -116,10 +116,10 @@ test_that("parse_margin_summary flattens the summary to one typed row", {
       "cross_total_margin_used"
     )
   )
-  expect_equal(dt$account_value, 2976574.9037540001)
-  expect_equal(dt$total_margin_used, 161989.260803)
-  expect_equal(dt$withdrawable, 2652596.3820770001)
-  expect_equal(dt$cross_account_value, 2976574.9037540001)
+  expect_equal(dt$account_value, 100000.0)
+  expect_equal(dt$total_margin_used, 5000.0)
+  expect_equal(dt$withdrawable, 95000.0)
+  expect_equal(dt$cross_account_value, 100000.0)
   expect_type(dt$account_value, "double")
   expect_true(no_list_cols(dt))
 })
@@ -142,8 +142,8 @@ test_that("parse_spot_balances returns one row per balance", {
   expect_equal(nrow(dt), 3L)
   expect_equal(names(dt), c("coin", "total", "hold", "entry_ntl"))
   expect_equal(dt$coin, c("USDC", "PURR", "HFUN"))
-  expect_equal(dt$total, c(13967.93682455, 0, 0))
-  expect_equal(dt$hold, c(-5.92201599, 0, 0))
+  expect_equal(dt$total, c(10000.0, 0, 0))
+  expect_equal(dt$hold, c(-5.0, 0, 0))
   expect_type(dt$total, "double")
   expect_true(no_list_cols(dt))
 })
@@ -363,9 +363,9 @@ test_that("parse_portfolio melts value and pnl histories long", {
   expect_equal(unique(dt$period), c("day", "perpAllTime"))
   expect_equal(unique(dt$metric), c("account_value", "pnl"))
   expect_s3_class(dt$time, "POSIXct")
-  expect_equal(dt$value[1], 337097050.2698649764)
+  expect_equal(dt$value[1], 500000.0)
   # First pnl point of the day period is 0.
-  expect_equal(dt[period == "day" & metric == "pnl"]$value, c(0, 19805.730092))
+  expect_equal(dt[period == "day" & metric == "pnl"]$value, c(0, 20000.0))
   expect_type(dt$value, "double")
   expect_true(no_list_cols(dt))
 })
@@ -412,7 +412,7 @@ test_that("parse_user_volume returns one row per day from dailyUserVlm", {
   expect_equal(nrow(dt), 2L)
   expect_equal(names(dt), c("date", "exchange", "user_add", "user_cross"))
   expect_equal(dt$date, c("2026-05-24", "2026-05-25"))
-  expect_equal(dt$user_cross, c(7824407.5, 8038495.5700000003))
+  expect_equal(dt$user_cross, c(7000000.0, 7100000.0))
   expect_type(dt$exchange, "double")
   expect_true(no_list_cols(dt))
 })
@@ -428,7 +428,7 @@ test_that("parse_user_rate_limit flattens the rate-limit state", {
   dt <- hyperliquid:::parse_user_rate_limit(fixture_user_rate_limit())
   expect_equal(nrow(dt), 1L)
   expect_equal(names(dt), c("cum_vlm", "n_requests_used", "n_requests_cap"))
-  expect_equal(dt$cum_vlm, 190895644047.9899902344)
+  expect_equal(dt$cum_vlm, 190000000000.0)
   expect_equal(dt$n_requests_used, 51346860978)
   expect_equal(dt$n_requests_cap, 190895654047)
   expect_type(dt$cum_vlm, "double")
@@ -470,9 +470,9 @@ test_that("parse_sub_accounts flattens the per-sub-account summary", {
     )
   )
   expect_equal(dt$name, c("hyperliquid_1s2", "hyperliquid_1s3"))
-  expect_equal(dt$sub_account_user[1], "0x4cd2393c90a4e769972a9862540492b4bc19695c")
-  expect_equal(dt$account_value, c(50041.813241, 4581524.7700629998))
-  expect_equal(dt$withdrawable[1], 49985.412996)
+  expect_equal(dt$sub_account_user[1], "0x0000000000000000000000000000000000000005")
+  expect_equal(dt$account_value, c(50000.0, 500000.0))
+  expect_equal(dt$withdrawable[1], 49500.0)
   expect_type(dt$account_value, "double")
   expect_true(no_list_cols(dt))
 })
@@ -518,8 +518,8 @@ test_that("parse_user_vault_equities returns one row per vault", {
   dt <- hyperliquid:::parse_user_vault_equities(fixture_user_vault_equities())
   expect_equal(nrow(dt), 2L)
   expect_equal(names(dt), c("vault_address", "equity", "locked_until_timestamp"))
-  expect_equal(dt$vault_address[1], "0x010461c14e146ac35fe42271bdc1134ee31c703a")
-  expect_equal(dt$equity, c(2977223.0296200002, 999999.999999))
+  expect_equal(dt$vault_address[1], "0x0000000000000000000000000000000000000001")
+  expect_equal(dt$equity, c(100000.0, 999999.999999))
   expect_s3_class(dt$locked_until_timestamp, "POSIXct")
   expect_type(dt$equity, "double")
   expect_true(no_list_cols(dt))
@@ -563,7 +563,7 @@ test_that("get_margin_summary reads the same payload as a sibling method", {
 
   expect_equal(seen$body$type, "clearinghouseState")
   expect_equal(nrow(dt), 1L)
-  expect_equal(dt$account_value, 2976574.9037540001)
+  expect_equal(dt$account_value, 100000.0)
   expect_true(no_list_cols(dt))
 })
 

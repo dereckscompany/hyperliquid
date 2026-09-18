@@ -156,7 +156,7 @@ market$get_funding_history_raw(
 
 ```{r account}
 account <- HyperliquidAccount$new()
-addr <- "0x010461c14e146ac35fe42271bdc1134ee31c703a"
+addr <- "0x0000000000000000000000000000000000000001"
 ```
 
 ```{r account-positions}
@@ -221,7 +221,7 @@ transfers$usd_class_transfer(100, to_perp = TRUE)
 
 ```{r staking}
 staking <- HyperliquidStaking$new()
-staking$get_staking_summary("0x5ac99df645f3414876c816caa18b2d234024b487")
+staking$get_staking_summary("0x0000000000000000000000000000000000000010")
 ```
 
 ## Bulk Backfill

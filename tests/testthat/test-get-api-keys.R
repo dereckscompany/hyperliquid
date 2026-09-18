@@ -12,7 +12,7 @@ test_that("a private key yields signing credentials with a derived wallet addres
 })
 
 test_that("read-only mode: an address WITHOUT a key is kept, not discarded", {
-  address <- "0xdfc24b077bc1425ad1dea75bcb6f8158e10df303"
+  address <- "0x0000000000000000000000000000000000000002"
   expect_warning(
     keys <- get_api_keys(private_key = "", account_address = address),
     "READ-ONLY"
@@ -33,7 +33,7 @@ test_that("public mode: neither key nor address warns and yields all-NULL creden
 })
 
 test_that("read-only credentials resolve as the acting address on a client", {
-  address <- "0xdfc24b077bc1425ad1dea75bcb6f8158e10df303"
+  address <- "0x0000000000000000000000000000000000000002"
   keys <- suppressWarnings(get_api_keys(private_key = "", account_address = address))
   client <- HyperliquidAccount$new(keys = keys, async = FALSE)
   # The acting address (account_address first, wallet second) must be the

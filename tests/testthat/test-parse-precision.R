@@ -47,7 +47,7 @@ precision_client <- function() {
 # A tiny body-routed table covering exactly the three /info types this test
 # drives, built the same way the shared mock_router.R does (connectcore's
 # body_routes() + local_mock_api()), but with a synthetic high-precision
-# fixture instead of the captured real-shaped fixtures.
+# fixture instead of the authored real-shaped fixtures.
 precision_routes <- function() {
   return(connectcore::body_routes(
     "/info",

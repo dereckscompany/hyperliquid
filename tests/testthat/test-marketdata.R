@@ -1,5 +1,5 @@
 # Offline tests for HyperliquidMarketData: every /info parser against its
-# captured fixture (columns, types, no list columns, zero-row on empty), plus
+# authored fixture (columns, types, no list columns, zero-row on empty), plus
 # end-to-end reads through a mocked transport asserting the posted body carries
 # the right `type` discriminator and that the parsed data.table is correct.
 # MarketData is unauthenticated, so no signing is exercised here.
@@ -112,7 +112,7 @@ test_that("parse_spot_tokens returns the token table from the spotMeta payload",
   expect_equal(dt$index, c(0, 1))
   expect_equal(dt$sz_decimals, c(8, 0))
   expect_equal(dt$wei_decimals, c(8, 5))
-  expect_equal(dt$token_id, c("0x6d1e7cde53ba9467b783cb7c530ce054", "0xc1fb593aeffbeb02f85e0308e9956a90"))
+  expect_equal(dt$token_id, c("0x00000000000000000000000000000001", "0x00000000000000000000000000000002"))
   expect_equal(dt$is_canonical, c(TRUE, TRUE))
   expect_type(dt$token_id, "character")
   expect_true(no_list_cols(dt))
@@ -177,7 +177,7 @@ test_that("parse_spot_meta_and_asset_ctxs returns one row per spot coin", {
   expect_equal(dt$coin, c("PURR/USDC", "@1"))
   expect_equal(dt$mark_px, c(0.090784, 9.6794))
   expect_equal(dt$prev_day_px, c(0.08889, 9.7168))
-  expect_equal(dt$circulating_supply, c(595295911.3807499409, 995906.4607351))
+  expect_equal(dt$circulating_supply, c(595000000.0, 995000.0))
   expect_type(dt$mark_px, "double")
   expect_true(no_list_cols(dt))
 })
@@ -323,10 +323,10 @@ test_that("parse_perp_dexs skips the null core-dex sentinel", {
   expect_equal(names(dt), c("name", "full_name", "deployer", "oracle_updater", "fee_recipient"))
   expect_equal(dt$name, "xyz")
   expect_equal(dt$full_name, "XYZ")
-  expect_equal(dt$deployer, "0x88806a71d74ad0a510b350545c9ae490912f0888")
+  expect_equal(dt$deployer, "0x000000000000000000000000000000000000000a")
   # oracleUpdater is null in the fixture -> NA.
   expect_true(is.na(dt$oracle_updater))
-  expect_equal(dt$fee_recipient, "0x9cd0a696c7cbb9d44de99268194cb08e5684e5fe")
+  expect_equal(dt$fee_recipient, "0x000000000000000000000000000000000000000b")
   expect_type(dt$name, "character")
   expect_true(no_list_cols(dt))
 })
@@ -351,8 +351,8 @@ test_that("parse_recent_trades maps B/A sides and splits the [buyer, seller] use
   expect_equal(dt$px, c(61917, 61916))
   expect_equal(dt$sz, c(0.00032, 0.001))
   expect_s3_class(dt$time, "POSIXct")
-  expect_equal(dt$user_buyer[1], "0x28f0233472b6a44e170e002a72845ca100be4a7e")
-  expect_equal(dt$user_seller[1], "0x1c1c270b573d55b68b3d14722b5d5d401511bed0")
+  expect_equal(dt$user_buyer[1], "0x000000000000000000000000000000000000000c")
+  expect_equal(dt$user_seller[1], "0x000000000000000000000000000000000000000d")
   expect_type(dt$tid, "double")
   expect_type(dt$user_buyer, "character")
   expect_true(no_list_cols(dt))

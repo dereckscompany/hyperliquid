@@ -14,10 +14,10 @@ box::use(./mock_router[.mock_routes])
 .keys <- get_api_keys(private_key = paste0("0x", paste(rep("01", 32), collapse = "")))
 
 # A real-looking account/destination address and a spot token wire string.
-.addr <- "0x010461c14e146ac35fe42271bdc1134ee31c703a"
+.addr <- "0x0000000000000000000000000000000000000001"
 .dest <- "0x5e9ee1089755c3435139848e47e6635505d5a13a"
-.validator <- "0x5ac99df645f3414876c816caa18b2d234024b487"
-.token <- "PURR:0xc1fb593aeffbeb02f85e0308e9956a90"
+.validator <- "0x0000000000000000000000000000000000000010"
+.token <- "PURR:0x00000000000000000000000000000002"
 
 # Pre-seed the asset-lookup cache so Trading's name_to_asset / name_to_coin /
 # sz_decimals resolve "BTC" (perp asset 0, szDecimals 5) and "PURR/USDC" (spot
