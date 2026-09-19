@@ -66,7 +66,7 @@
 #' - szi (numeric) signed position size.
 #' - entry_px (numeric | NA) average entry price, `NA` when absent.
 #' - position_value (numeric) current notional value.
-#' - unrealized_pnl (numeric) unrealized profit/loss.
+#' - unrealized_pnl (numeric) unrealised profit/loss.
 #' - return_on_equity (numeric) return on equity.
 #' - leverage_type (character) `"cross"` or `"isolated"`.
 #' - leverage_value (numeric) the position leverage.
@@ -93,7 +93,7 @@
 #' - time (POSIXct) fill time.
 #' - start_position (numeric) signed position size before the fill.
 #' - dir (character) the human-readable direction label.
-#' - closed_pnl (numeric) realized pnl on the closing portion.
+#' - closed_pnl (numeric) realised pnl on the closing portion.
 #' - hash (character) the on-chain hash.
 #' - oid (numeric) the order id.
 #' - crossed (logical) whether the fill crossed the spread (taker).
