@@ -11,17 +11,19 @@ MIT](https://img.shields.io/badge/license-MIT-blue.svg)](https://opensource.org/
 <!-- badges: end -->
 
 **Hyperliquid is a decentralised cryptocurrency exchange, and this
-package is the R doorway to it.** You call plain R functions to read
-live prices, place and manage perpetual and spot trades, move funds, and
-stake, without hand-building web requests or untangling the raw replies.
-Because a decentralised exchange has no username and password, orders
-are authorised by signing them with your Ethereum wallet key; this
-package does that signing itself, in plain R with no compiled code, and
-checks it byte-for-byte against the exchange’s own reference tools so a
-signature that leaves your machine is provably correct. Every answer
-comes back as a tidy table with consistent column names, and any request
-can run right away or in the background so a slow call does not freeze
-your session. You bring the wallet; the package handles the plumbing.
+package is the R doorway to it.**
+
+You call plain R functions to read live prices, place and manage
+perpetual and spot trades, move funds, and stake, without hand-building
+web requests or untangling the raw replies. Because a decentralised
+exchange has no username and password, orders are authorised by signing
+them with your Ethereum wallet key; this package does that signing
+itself, in plain R with no compiled code, and checks it byte-for-byte
+against the exchange’s own reference tools so a signature that leaves
+your machine is provably correct. Every answer comes back as a tidy
+table with consistent column names, and any request can run right away
+or in the background so a slow call does not freeze your session. You
+bring the wallet; the package handles the plumbing.
 
 ## Technical overview
 
@@ -87,7 +89,7 @@ renv::install("dereckscompany/hyperliquid")
 # remotes::install_github("dereckscompany/hyperliquid")
 ```
 
-## Quick start
+## Authentication
 
 Public market-data and account reads (the `/info` endpoint) need no
 credentials. Signed `/exchange` actions (trading, transfers, staking
@@ -417,14 +419,13 @@ The rendered reference site is at
 Three vignettes take a reader from a first call to a live testnet trade,
 in this reading order:
 
-1.  `vignette("getting-started", package = "hyperliquid")` —
-    constructing a client, reading public market data and account state,
-    and signing an `/exchange` order against the mock, in synchronous
-    mode.
-2.  `vignette("trading-strategies", package = "hyperliquid")` — the
+1.  `vignette("getting-started", package = "hyperliquid")`: constructing
+    a client, reading public market data and account state, and signing
+    an `/exchange` order against the mock, in synchronous mode.
+2.  `vignette("trading-strategies", package = "hyperliquid")`: the
     vocabulary of derivatives trading, building up to a market-neutral
     pairs trade, still against the mock.
-3.  `vignette("live-testnet-walkthrough", package = "hyperliquid")` — a
+3.  `vignette("live-testnet-walkthrough", package = "hyperliquid")`: a
     plain-language, chronological account of funding a wallet and
     placing a real, filled trade on the Hyperliquid testnet.
 
@@ -432,11 +433,9 @@ The full release history is in [`NEWS.md`](NEWS.md).
 
 ## Citation
 
-Cite as:
-
-> Mezquita, D. (2026). hyperliquid: API Wrapper to the Hyperliquid
-> Exchange. R package version 0.7.5.
-> <https://github.com/dereckscompany/hyperliquid>.
+Cite as: Mezquita, D. (2026). hyperliquid: API Wrapper to the
+Hyperliquid Exchange. R package version 0.7.5.
+<https://github.com/dereckscompany/hyperliquid>.
 
 Author: Dereck Mezquita — [ORCID:
 0000-0002-9307-6762](https://orcid.org/0000-0002-9307-6762)
