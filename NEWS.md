@@ -1,3 +1,16 @@
+# hyperliquid 0.7.5
+
+**The README now follows the one shape used across the whole connector fleet, and it gains a citation and a map of the vignettes.** This release reshapes `README.Rmd` into the fleet's canonical section order (owner ruling 20, 2026-09-18): a plain-English lead, a technical overview, a design philosophy, installation, authentication and the rest of the per-surface sections, asynchronous usage, and finally a documentation index, a citation, and the licence. No sentence was rewritten and no code chunk's behaviour changed; existing sections were only renamed or moved into their new slots, and two sections that did not exist before, Documentation and Citation, were built from the package's own metadata.
+
+- Renamed `## Design` to `## Design philosophy` and `## Asynchronous Use` to `## Asynchronous usage`; the prose beneath both is unchanged.
+- `## Quick start` is omitted: `## Authentication` keeps its original name in the per-surface group, since its content is wallet-key authentication rather than a walkthrough, and the canonical shape only requires Quick start where a repository genuinely has one.
+- Moved `## Disclaimer` from between Technical overview and Design into the usage-surface group, now immediately after Authentication and before Market Data; moved `## Available Classes` from after Asynchronous Use to the end of the same group, now immediately before Asynchronous usage.
+- Merged `## Author` into the new `## Citation` section: same person, same ORCID link, no longer a separate heading.
+- Added `## Documentation`, naming the pkgdown site (the first, github.io URL in `DESCRIPTION`) and the three vignettes in their `_pkgdown.yml` reading order (getting-started, trading-strategies, live-testnet-walkthrough), each with a one-line description, plus a pointer to `NEWS.md`.
+- Added `## Citation`, a "Cite as" line built only from `DESCRIPTION` (`Authors@R`, `Title`, `Version`, and the repository URL) with the year taken from this entry; no DOI or journal, since neither exists.
+- `## Error handling` was omitted: the package has no dedicated error-handling documentation to move, only a passing mention of the error seam already kept under Design philosophy.
+- `README.md` re-rendered from `README.Rmd` against the shared mock router; no chunk options, `eval` flags, or fixtures changed.
+
 # hyperliquid 0.7.4
 
 **A prose sweep across the package's documentation: no more "In plain English" signposts, and full British spelling.** This release removes the visible plain-English/technical scaffolding labels from the README and NEWS -- the sentence each one introduced is kept exactly as written, just unlabelled -- and corrects a handful of American spellings left over in the README, the position and fill column docs, and a vignette screenshot note. No code, column name, argument name, or API field changed anywhere.
