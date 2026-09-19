@@ -1,13 +1,48 @@
 # Changelog
 
+## hyperliquid 0.7.4
+
+**A prose sweep across the package’s documentation: no more “In plain
+English” signposts, and full British spelling.** This release removes
+the visible plain-English/technical scaffolding labels from the README
+and NEWS – the sentence each one introduced is kept exactly as written,
+just unlabelled – and corrects a handful of American spellings left over
+in the README, the position and fill column docs, and a vignette
+screenshot note. No code, column name, argument name, or API field
+changed anywhere.
+
+- Removed 5 leading “In plain terms:” / “In plain English:” labels (1 in
+  README.Rmd, 4 in NEWS.md); the sentence following each one is
+  preserved unchanged.
+- Corrected 4 American spellings to British: `## License` -\>
+  `## Licence` (README.Rmd); “unrealized profit/loss” -\> “unrealised
+  profit/loss” and “realized pnl” -\> “realised pnl” (both column-doc
+  bullets in R/types.R, `Position$unrealized_pnl` and
+  `Fill$closed_pnl`); “deposit dialog” -\> “deposit dialogue”
+  (vignettes/live-testnet-walkthrough.Rmd).
+- 6 files touched: README.Rmd (README.md re-rendered from it), NEWS.md,
+  R/types.R, vignettes/live-testnet-walkthrough.Rmd, and DESCRIPTION
+  (the version bump).
+- Left untouched by design, all confirmed non-prose: every
+  `unrealized_pnl` / `closed_pnl` column name; the `"canceled"` /
+  `"filled"` order-status literals quoted verbatim from Hyperliquid’s
+  own API; the `Decimal normalize` comment in R/sign.R, which names
+  Python’s real `decimal.Decimal.normalize()` method; the
+  shields.io/opensource.org licence badge, held as written because both
+  its label and its URL are fixed; and the knitr `fig.align = "center"`
+  chunk option, a required option value inside executable code.
+- `man/` regenerated (roxygen2 7.3.3) against the corrected column docs;
+  no `.Rd` content changed, since roxyassert’s `@type` bullets feed only
+  the internal contract roclet, not rendered help text.
+
 ## hyperliquid 0.7.3
 
-**Test data is now entirely made up.** In plain English: this package’s
-test fixtures — the canned JSON and R-list responses that stand in for
-the real Hyperliquid API in tests, the README, and the vignettes — were,
-for the account, market-data, and staking domains, genuine responses
-captured from a live mainnet account. The JSON fixtures had already had
-their addresses and on-chain hashes replaced with placeholders, but the
+**Test data is now entirely made up.** This package’s test fixtures —
+the canned JSON and R-list responses that stand in for the real
+Hyperliquid API in tests, the README, and the vignettes — were, for the
+account, market-data, and staking domains, genuine responses captured
+from a live mainnet account. The JSON fixtures had already had their
+addresses and on-chain hashes replaced with placeholders, but the
 account balances underneath (accountValue, portfolio history,
 sub-account equity, staking delegations, and more) were left as the real
 captured numbers, recognisable by their long IEEE-float tails
@@ -71,17 +106,17 @@ scrubbed-and-shipped. This release brings hyperliquid into line.
 ## hyperliquid 0.7.2
 
 **A regression test that guards against price data ever being truncated
-again.** In plain English: on 2026-09-13 the fleet discovered that every
-Hyperliquid candle in the data lake had been stored to four decimal
-places for months, so a coin priced below a cent (e.g. “0.000212”) lost
-almost all of its information, and a strategy that ranks coins by
-calmness ranked them wrongly as a result. The cause was traced and
-proved NOT to be in this package — the wrapper parses Hyperliquid’s
-price strings into R numbers at full precision, verified live (the
-venue’s `"0.000212"` comes back as `0.00021200000000000000`) — it was a
-re-serialisation default in the data scraper, since fixed. This release
-adds a test that pins that correctness in place: if anyone later
-introduces [`round()`](https://rdrr.io/r/base/Round.html),
+again.** On 2026-09-13 the fleet discovered that every Hyperliquid
+candle in the data lake had been stored to four decimal places for
+months, so a coin priced below a cent (e.g. “0.000212”) lost almost all
+of its information, and a strategy that ranks coins by calmness ranked
+them wrongly as a result. The cause was traced and proved NOT to be in
+this package — the wrapper parses Hyperliquid’s price strings into R
+numbers at full precision, verified live (the venue’s `"0.000212"` comes
+back as `0.00021200000000000000`) — it was a re-serialisation default in
+the data scraper, since fixed. This release adds a test that pins that
+correctness in place: if anyone later introduces
+[`round()`](https://rdrr.io/r/base/Round.html),
 [`signif()`](https://rdrr.io/r/base/Round.html), `sprintf("%.4f")`,
 `format(nsmall = )`, or a narrowing cast into a parse helper, the test
 fails immediately.
@@ -102,14 +137,14 @@ fails immediately.
 ## hyperliquid 0.7.1
 
 **Read-only mode: an account address without a private key now works.**
-In plain English: you can now point the client at an account by its
-public address alone — every account-state read (positions, balances,
-margin summary) answers for that address, while placing orders stays
-physically impossible because there is no key to sign with. Previously
-the address was silently discarded whenever the key was absent, so a
-key-less client could read only public market data. The motivating use
-is the trading system’s forward test: watch a real account daily with
-credentials that cannot trade.
+You can now point the client at an account by its public address alone —
+every account-state read (positions, balances, margin summary) answers
+for that address, while placing orders stays physically impossible
+because there is no key to sign with. Previously the address was
+silently discarded whenever the key was absent, so a key-less client
+could read only public market data. The motivating use is the trading
+system’s forward test: watch a real account daily with credentials that
+cannot trade.
 
 - [`get_api_keys()`](https://dereckscompany.github.io/hyperliquid/reference/get_api_keys.md)
   keeps `account_address` when `private_key` is absent (it used to
@@ -125,18 +160,17 @@ credentials that cannot trade.
 A lossless raw accessor for funding history, alongside the typed
 surface, for byte-faithful bronze archival.
 
-In plain English: the typed `data.table` methods are the right default
-for analysis, but a raw-data archive wants the exchange’s own records
-untouched — the exact decimal strings it sent, in its own field order.
-Hyperliquid reports a funding rate and premium as strings
-(e.g. `"0.0000034197"`) and the settlement time as a raw
-epoch-millisecond number; the typed `get_funding_history()` converts
-those to doubles and a POSIXct and snake_cases the names, which is right
-for analysis but not for an archive that must keep exactly what the
-venue sent. This release adds a raw sibling for the funding surface the
-scraper’s `hyperliquid-funding` collector archives, so the archive
-stores Hyperliquid’s own bytes and the tidy table stays the analysis
-convenience.
+The typed `data.table` methods are the right default for analysis, but a
+raw-data archive wants the exchange’s own records untouched — the exact
+decimal strings it sent, in its own field order. Hyperliquid reports a
+funding rate and premium as strings (e.g. `"0.0000034197"`) and the
+settlement time as a raw epoch-millisecond number; the typed
+`get_funding_history()` converts those to doubles and a POSIXct and
+snake_cases the names, which is right for analysis but not for an
+archive that must keep exactly what the venue sent. This release adds a
+raw sibling for the funding surface the scraper’s `hyperliquid-funding`
+collector archives, so the archive stores Hyperliquid’s own bytes and
+the tidy table stays the analysis convenience.
 
 - `get_funding_history_raw()`: the parsed JSON array exactly as
   Hyperliquid returns it — one named list per settlement
