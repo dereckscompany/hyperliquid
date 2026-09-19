@@ -4,7 +4,7 @@
 
 - Removed 5 leading "In plain terms:" / "In plain English:" labels (1 in README.Rmd, 4 in NEWS.md); the sentence following each one is preserved unchanged.
 - Corrected 4 American spellings to British: `## License` -> `## Licence` (README.Rmd); "unrealized profit/loss" -> "unrealised profit/loss" and "realized pnl" -> "realised pnl" (both column-doc bullets in R/types.R, `Position$unrealized_pnl` and `Fill$closed_pnl`); "deposit dialog" -> "deposit dialogue" (vignettes/live-testnet-walkthrough.Rmd).
-- 5 files touched: README.Rmd (README.md re-rendered from it), NEWS.md, R/types.R, vignettes/live-testnet-walkthrough.Rmd.
+- 6 files touched: README.Rmd (README.md re-rendered from it), NEWS.md, R/types.R, vignettes/live-testnet-walkthrough.Rmd, and DESCRIPTION (the version bump).
 - Left untouched by design, all confirmed non-prose: every `unrealized_pnl` / `closed_pnl` column name; the `"canceled"` / `"filled"` order-status literals quoted verbatim from Hyperliquid's own API; the `Decimal normalize` comment in R/sign.R, which names Python's real `decimal.Decimal.normalize()` method; the shields.io/opensource.org licence badge, held as written because both its label and its URL are fixed; and the knitr `fig.align = "center"` chunk option, a required option value inside executable code.
 - `man/` regenerated (roxygen2 7.3.3) against the corrected column docs; no `.Rd` content changed, since roxyassert's `@type` bullets feed only the internal contract roclet, not rendered help text.
 
