@@ -56,17 +56,13 @@ KEYS <- get_api_keys(private_key = paste0("0x", .sk_hex))
 [![R-CMD-check](https://github.com/dereckscompany/hyperliquid/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/dereckscompany/hyperliquid/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
-Hyperliquid is a decentralised cryptocurrency exchange, and this package is the R doorway to it. You call plain R functions to read live prices, place and manage perpetual and spot trades, move funds, and stake, without hand-building web requests or untangling the raw replies. Because a decentralised exchange has no username and password, orders are authorised by signing them with your Ethereum wallet key; this package does that signing itself, in plain R with no compiled code, and checks it byte-for-byte against the exchange's own reference tools so a signature that leaves your machine is provably correct. Every answer comes back as a tidy table with consistent column names, and any request can run right away or in the background so a slow call does not freeze your session. You bring the wallet; the package handles the plumbing.
+**Hyperliquid is a decentralised cryptocurrency exchange, and this package is the R doorway to it.** You call plain R functions to read live prices, place and manage perpetual and spot trades, move funds, and stake, without hand-building web requests or untangling the raw replies. Because a decentralised exchange has no username and password, orders are authorised by signing them with your Ethereum wallet key; this package does that signing itself, in plain R with no compiled code, and checks it byte-for-byte against the exchange's own reference tools so a signature that leaves your machine is provably correct. Every answer comes back as a tidy table with consistent column names, and any request can run right away or in the background so a slow call does not freeze your session. You bring the wallet; the package handles the plumbing.
 
 ## Technical overview
 
 R API wrapper to the [Hyperliquid](https://hyperliquid.xyz) decentralised exchange supporting both synchronous and asynchronous (promise based) operations. Provides R6 classes for market data, perpetual and spot trading, account management, transfers, and staking. Every typed method returns a flat `data.table` (with lossless `*_raw()` siblings for byte-faithful archival). The `/exchange` endpoint is authenticated by an Ethereum wallet signature, computed in **pure R** via the companion [`ethsign`](https://github.com/dereckscompany/ethsign) package (no compiled code) and verified byte-for-byte against the official Hyperliquid SDKs.
 
-## Disclaimer
-
-This software is provided for educational and research purposes. Trading cryptocurrency carries substantial risk, and you are solely responsible for any orders, transfers, or withdrawals placed through this package. Test against testnet (`testnet = TRUE`) before signing anything on mainnet.
-
-## Design
+## Design philosophy
 
 - **One typed method, one `data.table`, no list columns — with a lossless escape hatch.** Every typed method returns a flat `data.table`; nested API objects are flattened into scalar columns, and heterogeneous rows are stacked with a discriminator column (`side`, `delta_type`, `status`, ...). Where a byte-faithful archive needs the venue's own records instead of a tidy table, a `*_raw()` sibling (e.g. `get_funding_history_raw()`) returns Hyperliquid's parsed JSON untouched — decimal strings, field order, and null-vs-absent all preserved.
 - **Sync and async.** Every method works in both modes. `async = TRUE` returns a [promise](https://rstudio.github.io/promises/); otherwise results are returned directly. There is a single sync/async branch point (`connectcore::then_or_now()`, which `hyperliquid_build_request()` delegates to).
@@ -85,7 +81,7 @@ renv::install("dereckscompany/hyperliquid")
 # remotes::install_github("dereckscompany/hyperliquid")
 ```
 
-## Authentication
+## Quick start
 
 Public market-data and account reads (the `/info` endpoint) need no credentials. Signed `/exchange` actions (trading, transfers, staking writes) are authenticated by an **Ethereum wallet signature**: Hyperliquid uses no API keys, only your wallet's secp256k1 private key.
 
@@ -114,6 +110,10 @@ The **same key serves both networks**. The network is selected by the explicit `
 # Sign and route against testnet
 trading <- HyperliquidTrading$new(testnet = TRUE)
 ```
+
+## Disclaimer
+
+This software is provided for educational and research purposes. Trading cryptocurrency carries substantial risk, and you are solely responsible for any orders, transfers, or withdrawals placed through this package. Test against testnet (`testnet = TRUE`) before signing anything on mainnet.
 
 ## Market Data (no auth)
 
@@ -243,7 +243,17 @@ A bundled sample dataset, `hyperliquid_ohlcv`, ships daily candles for `"BTC"`, 
 head(hyperliquid_ohlcv)
 ```
 
-## Asynchronous Use
+## Available Classes
+
+| Class | Purpose | Auth |
+|-------|---------|------|
+| `HyperliquidMarketData` | perp/spot meta, asset contexts, mids, L2 book, candles, funding, trades | No |
+| `HyperliquidAccount` | positions, margin, spot balances, orders, fills, ledgers, portfolio, fees | No |
+| `HyperliquidTrading` | place / modify / cancel orders, market open/close, leverage, margin, approvals | Yes |
+| `HyperliquidTransfers` | collateral class transfer, sends, withdrawals, sub-account and vault transfers | Yes |
+| `HyperliquidStaking` | delegator summary, delegations, rewards, history, delegate / undelegate | Mixed |
+
+## Asynchronous usage
 
 The package is written around promises for non-blocking, event-loop use. Pass `async = TRUE` to any class and its methods return a [promise](https://rstudio.github.io/promises/) instead of a `data.table`. Resolve it with `coro::async()` / `await()` for sequential-looking code, and drive the event loop with [later](https://r-lib.github.io/later/).
 
@@ -267,19 +277,25 @@ while (!later$loop_empty()) {
 }
 ```
 
-## Available Classes
+## Documentation
 
-| Class | Purpose | Auth |
-|-------|---------|------|
-| `HyperliquidMarketData` | perp/spot meta, asset contexts, mids, L2 book, candles, funding, trades | No |
-| `HyperliquidAccount` | positions, margin, spot balances, orders, fills, ledgers, portfolio, fees | No |
-| `HyperliquidTrading` | place / modify / cancel orders, market open/close, leverage, margin, approvals | Yes |
-| `HyperliquidTransfers` | collateral class transfer, sends, withdrawals, sub-account and vault transfers | Yes |
-| `HyperliquidStaking` | delegator summary, delegations, rewards, history, delegate / undelegate | Mixed |
+The rendered reference site is at [dereckscompany.github.io/hyperliquid](https://dereckscompany.github.io/hyperliquid).
 
-## Author
+Three vignettes take a reader from a first call to a live testnet trade, in this reading order:
 
-Dereck Mezquita — [ORCID: 0000-0002-9307-6762](https://orcid.org/0000-0002-9307-6762)
+1. `vignette("getting-started", package = "hyperliquid")` — constructing a client, reading public market data and account state, and signing an `/exchange` order against the mock, in synchronous mode.
+2. `vignette("trading-strategies", package = "hyperliquid")` — the vocabulary of derivatives trading, building up to a market-neutral pairs trade, still against the mock.
+3. `vignette("live-testnet-walkthrough", package = "hyperliquid")` — a plain-language, chronological account of funding a wallet and placing a real, filled trade on the Hyperliquid testnet.
+
+The full release history is in [`NEWS.md`](NEWS.md).
+
+## Citation
+
+Cite as:
+
+> Mezquita, D. (2026). hyperliquid: API Wrapper to the Hyperliquid Exchange. R package version 0.7.5. https://github.com/dereckscompany/hyperliquid.
+
+Author: Dereck Mezquita — [ORCID: 0000-0002-9307-6762](https://orcid.org/0000-0002-9307-6762)
 
 ## Licence
 
