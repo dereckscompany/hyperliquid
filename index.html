@@ -22,7 +22,7 @@
 
     <a class="navbar-brand me-2" href="index.html">hyperliquid</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.7.4</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.7.5</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -60,19 +60,15 @@
 </h1></div>
 <!-- badges: start -->
 
-<p>Hyperliquid is a decentralised cryptocurrency exchange, and this package is the R doorway to it. You call plain R functions to read live prices, place and manage perpetual and spot trades, move funds, and stake, without hand-building web requests or untangling the raw replies. Because a decentralised exchange has no username and password, orders are authorised by signing them with your Ethereum wallet key; this package does that signing itself, in plain R with no compiled code, and checks it byte-for-byte against the exchange’s own reference tools so a signature that leaves your machine is provably correct. Every answer comes back as a tidy table with consistent column names, and any request can run right away or in the background so a slow call does not freeze your session. You bring the wallet; the package handles the plumbing.</p>
+<p><strong>Hyperliquid is a decentralised cryptocurrency exchange, and this package is the R doorway to it.</strong></p>
+<p>You call plain R functions to read live prices, place and manage perpetual and spot trades, move funds, and stake, without hand-building web requests or untangling the raw replies. Because a decentralised exchange has no username and password, orders are authorised by signing them with your Ethereum wallet key; this package does that signing itself, in plain R with no compiled code, and checks it byte-for-byte against the exchange’s own reference tools so a signature that leaves your machine is provably correct. Every answer comes back as a tidy table with consistent column names, and any request can run right away or in the background so a slow call does not freeze your session. You bring the wallet; the package handles the plumbing.</p>
 <div class="section level2">
 <h2 id="technical-overview">Technical overview<a class="anchor" aria-label="anchor" href="#technical-overview"></a>
 </h2>
 <p>R API wrapper to the <a href="https://hyperliquid.xyz" class="external-link">Hyperliquid</a> decentralised exchange supporting both synchronous and asynchronous (promise based) operations. Provides R6 classes for market data, perpetual and spot trading, account management, transfers, and staking. Every typed method returns a flat <code>data.table</code> (with lossless <code>*_raw()</code> siblings for byte-faithful archival). The <code>/exchange</code> endpoint is authenticated by an Ethereum wallet signature, computed in <strong>pure R</strong> via the companion <a href="https://github.com/dereckscompany/ethsign" class="external-link"><code>ethsign</code></a> package (no compiled code) and verified byte-for-byte against the official Hyperliquid SDKs.</p>
 </div>
 <div class="section level2">
-<h2 id="disclaimer">Disclaimer<a class="anchor" aria-label="anchor" href="#disclaimer"></a>
-</h2>
-<p>This software is provided for educational and research purposes. Trading cryptocurrency carries substantial risk, and you are solely responsible for any orders, transfers, or withdrawals placed through this package. Test against testnet (<code>testnet = TRUE</code>) before signing anything on mainnet.</p>
-</div>
-<div class="section level2">
-<h2 id="design">Design<a class="anchor" aria-label="anchor" href="#design"></a>
+<h2 id="design-philosophy">Design philosophy<a class="anchor" aria-label="anchor" href="#design-philosophy"></a>
 </h2>
 <ul>
 <li>
@@ -118,6 +114,11 @@
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Sign and route against testnet</span></span>
 <span><span class="va">trading</span> <span class="op">&lt;-</span> <span class="va"><a href="reference/HyperliquidTrading.html">HyperliquidTrading</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span>testnet <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level2">
+<h2 id="disclaimer">Disclaimer<a class="anchor" aria-label="anchor" href="#disclaimer"></a>
+</h2>
+<p>This software is provided for educational and research purposes. Trading cryptocurrency carries substantial risk, and you are solely responsible for any orders, transfers, or withdrawals placed through this package. Test against testnet (<code>testnet = TRUE</code>) before signing anything on mainnet.</p>
 </div>
 <div class="section level2">
 <h2 id="market-data-no-auth">Market Data (no auth)<a class="anchor" aria-label="anchor" href="#market-data-no-auth"></a>
@@ -286,40 +287,6 @@
 <span id="cb30-8"><a href="#cb30-8" tabindex="-1"></a><span class="co">#&gt; 6:    BTC 2025-06-12 108667 108817 105600 105627 39646.83 426870</span></span></code></pre></div>
 </div>
 <div class="section level2">
-<h2 id="asynchronous-use">Asynchronous Use<a class="anchor" aria-label="anchor" href="#asynchronous-use"></a>
-</h2>
-<p>The package is written around promises for non-blocking, event-loop use. Pass <code>async = TRUE</code> to any class and its methods return a <a href="https://rstudio.github.io/promises/" class="external-link">promise</a> instead of a <code>data.table</code>. Resolve it with <code><a href="https://coro.r-lib.org/reference/async.html" class="external-link">coro::async()</a></code> / <code>await()</code> for sequential-looking code, and drive the event loop with <a href="https://r-lib.github.io/later/" class="external-link">later</a>.</p>
-<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">market_async</span> <span class="op">&lt;-</span> <span class="va"><a href="reference/HyperliquidMarketData.html">HyperliquidMarketData</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span>async <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">main</span> <span class="op">&lt;-</span> <span class="va">coro</span><span class="op">$</span><span class="fu">async</span><span class="op">(</span><span class="kw">function</span><span class="op">(</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="va">mids</span> <span class="op">&lt;-</span> <span class="fu">await</span><span class="op">(</span><span class="va">market_async</span><span class="op">$</span><span class="fu">get_all_mids</span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
-<span>  <span class="va">book</span> <span class="op">&lt;-</span> <span class="fu">await</span><span class="op">(</span><span class="va">market_async</span><span class="op">$</span><span class="fu">get_l2_book</span><span class="op">(</span><span class="st">"BTC"</span><span class="op">)</span><span class="op">)</span></span>
-<span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">mids</span><span class="op">)</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">book</span><span class="op">)</span></span>
-<span>  <span class="kw"><a href="https://rdrr.io/r/base/function.html" class="external-link">return</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/invisible.html" class="external-link">invisible</a></span><span class="op">(</span><span class="cn">NULL</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="op">}</span><span class="op">)</span></span>
-<span></span>
-<span><span class="fu">main</span><span class="op">(</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Drain the event loop until every promise has resolved.</span></span>
-<span><span class="kw">while</span> <span class="op">(</span><span class="op">!</span><span class="va">later</span><span class="op">$</span><span class="fu">loop_empty</span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="va">later</span><span class="op">$</span><span class="fu">run_now</span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="op">}</span></span></code></pre></div>
-<div class="sourceCode" id="cb32"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" tabindex="-1"></a><span class="co">#&gt;      coin        mid</span></span>
-<span id="cb32-2"><a href="#cb32-2" tabindex="-1"></a><span class="co">#&gt;    &lt;char&gt;      &lt;num&gt;</span></span>
-<span id="cb32-3"><a href="#cb32-3" tabindex="-1"></a><span class="co">#&gt; 1:    BTC 61958.5000</span></span>
-<span id="cb32-4"><a href="#cb32-4" tabindex="-1"></a><span class="co">#&gt; 2:    ETH  1605.4500</span></span>
-<span id="cb32-5"><a href="#cb32-5" tabindex="-1"></a><span class="co">#&gt; 3:     @1     9.6738</span></span>
-<span id="cb32-6"><a href="#cb32-6" tabindex="-1"></a><span class="co">#&gt;      side level    px       sz     n</span></span>
-<span id="cb32-7"><a href="#cb32-7" tabindex="-1"></a><span class="co">#&gt;    &lt;char&gt; &lt;int&gt; &lt;num&gt;    &lt;num&gt; &lt;num&gt;</span></span>
-<span id="cb32-8"><a href="#cb32-8" tabindex="-1"></a><span class="co">#&gt; 1:    bid     1 61945  0.03164     3</span></span>
-<span id="cb32-9"><a href="#cb32-9" tabindex="-1"></a><span class="co">#&gt; 2:    bid     2 61944  0.00085     4</span></span>
-<span id="cb32-10"><a href="#cb32-10" tabindex="-1"></a><span class="co">#&gt; 3:    ask     1 61946 13.32523    39</span></span>
-<span id="cb32-11"><a href="#cb32-11" tabindex="-1"></a><span class="co">#&gt; 4:    ask     2 61947  0.06724     6</span></span></code></pre></div>
-</div>
-<div class="section level2">
 <h2 id="available-classes">Available Classes<a class="anchor" aria-label="anchor" href="#available-classes"></a>
 </h2>
 <table class="table">
@@ -363,9 +330,59 @@
 </table>
 </div>
 <div class="section level2">
-<h2 id="author">Author<a class="anchor" aria-label="anchor" href="#author"></a>
+<h2 id="asynchronous-usage">Asynchronous usage<a class="anchor" aria-label="anchor" href="#asynchronous-usage"></a>
 </h2>
-<p>Dereck Mezquita — <a href="https://orcid.org/0000-0002-9307-6762" class="external-link">ORCID: 0000-0002-9307-6762</a></p>
+<p>The package is written around promises for non-blocking, event-loop use. Pass <code>async = TRUE</code> to any class and its methods return a <a href="https://rstudio.github.io/promises/" class="external-link">promise</a> instead of a <code>data.table</code>. Resolve it with <code><a href="https://coro.r-lib.org/reference/async.html" class="external-link">coro::async()</a></code> / <code>await()</code> for sequential-looking code, and drive the event loop with <a href="https://r-lib.github.io/later/" class="external-link">later</a>.</p>
+<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">market_async</span> <span class="op">&lt;-</span> <span class="va"><a href="reference/HyperliquidMarketData.html">HyperliquidMarketData</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span>async <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">main</span> <span class="op">&lt;-</span> <span class="va">coro</span><span class="op">$</span><span class="fu">async</span><span class="op">(</span><span class="kw">function</span><span class="op">(</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="va">mids</span> <span class="op">&lt;-</span> <span class="fu">await</span><span class="op">(</span><span class="va">market_async</span><span class="op">$</span><span class="fu">get_all_mids</span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
+<span>  <span class="va">book</span> <span class="op">&lt;-</span> <span class="fu">await</span><span class="op">(</span><span class="va">market_async</span><span class="op">$</span><span class="fu">get_l2_book</span><span class="op">(</span><span class="st">"BTC"</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">mids</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">book</span><span class="op">)</span></span>
+<span>  <span class="kw"><a href="https://rdrr.io/r/base/function.html" class="external-link">return</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/invisible.html" class="external-link">invisible</a></span><span class="op">(</span><span class="cn">NULL</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="op">}</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">main</span><span class="op">(</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Drain the event loop until every promise has resolved.</span></span>
+<span><span class="kw">while</span> <span class="op">(</span><span class="op">!</span><span class="va">later</span><span class="op">$</span><span class="fu">loop_empty</span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="va">later</span><span class="op">$</span><span class="fu">run_now</span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="op">}</span></span></code></pre></div>
+<div class="sourceCode" id="cb32"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" tabindex="-1"></a><span class="co">#&gt;      coin        mid</span></span>
+<span id="cb32-2"><a href="#cb32-2" tabindex="-1"></a><span class="co">#&gt;    &lt;char&gt;      &lt;num&gt;</span></span>
+<span id="cb32-3"><a href="#cb32-3" tabindex="-1"></a><span class="co">#&gt; 1:    BTC 61958.5000</span></span>
+<span id="cb32-4"><a href="#cb32-4" tabindex="-1"></a><span class="co">#&gt; 2:    ETH  1605.4500</span></span>
+<span id="cb32-5"><a href="#cb32-5" tabindex="-1"></a><span class="co">#&gt; 3:     @1     9.6738</span></span>
+<span id="cb32-6"><a href="#cb32-6" tabindex="-1"></a><span class="co">#&gt;      side level    px       sz     n</span></span>
+<span id="cb32-7"><a href="#cb32-7" tabindex="-1"></a><span class="co">#&gt;    &lt;char&gt; &lt;int&gt; &lt;num&gt;    &lt;num&gt; &lt;num&gt;</span></span>
+<span id="cb32-8"><a href="#cb32-8" tabindex="-1"></a><span class="co">#&gt; 1:    bid     1 61945  0.03164     3</span></span>
+<span id="cb32-9"><a href="#cb32-9" tabindex="-1"></a><span class="co">#&gt; 2:    bid     2 61944  0.00085     4</span></span>
+<span id="cb32-10"><a href="#cb32-10" tabindex="-1"></a><span class="co">#&gt; 3:    ask     1 61946 13.32523    39</span></span>
+<span id="cb32-11"><a href="#cb32-11" tabindex="-1"></a><span class="co">#&gt; 4:    ask     2 61947  0.06724     6</span></span></code></pre></div>
+</div>
+<div class="section level2">
+<h2 id="documentation">Documentation<a class="anchor" aria-label="anchor" href="#documentation"></a>
+</h2>
+<p>The rendered reference site is at <a href="https://dereckscompany.github.io/hyperliquid">dereckscompany.github.io/hyperliquid</a>.</p>
+<p>Three vignettes take a reader from a first call to a live testnet trade, in this reading order:</p>
+<ol style="list-style-type: decimal">
+<li>
+<code><a href="articles/getting-started.html">vignette("getting-started", package = "hyperliquid")</a></code>: constructing a client, reading public market data and account state, and signing an <code>/exchange</code> order against the mock, in synchronous mode.</li>
+<li>
+<code><a href="articles/trading-strategies.html">vignette("trading-strategies", package = "hyperliquid")</a></code>: the vocabulary of derivatives trading, building up to a market-neutral pairs trade, still against the mock.</li>
+<li>
+<code><a href="articles/live-testnet-walkthrough.html">vignette("live-testnet-walkthrough", package = "hyperliquid")</a></code>: a plain-language, chronological account of funding a wallet and placing a real, filled trade on the Hyperliquid testnet.</li>
+</ol>
+<p>The full release history is in <a href="NEWS.html"><code>NEWS.md</code></a>.</p>
+</div>
+<div class="section level2">
+<h2 id="citation">Citation<a class="anchor" aria-label="anchor" href="#citation"></a>
+</h2>
+<p>Cite as: Mezquita, D. (2026). hyperliquid: API Wrapper to the Hyperliquid Exchange. R package version 0.7.5. <a href="https://github.com/dereckscompany/hyperliquid" class="external-link uri">https://github.com/dereckscompany/hyperliquid</a>.</p>
+<p>Author: Dereck Mezquita — <a href="https://orcid.org/0000-0002-9307-6762" class="external-link">ORCID: 0000-0002-9307-6762</a></p>
 </div>
 <div class="section level2">
 <h2 id="licence">Licence<a class="anchor" aria-label="anchor" href="#licence"></a>

@@ -1,17 +1,19 @@
 # hyperliquid
 
-Hyperliquid is a decentralised cryptocurrency exchange, and this package
-is the R doorway to it. You call plain R functions to read live prices,
-place and manage perpetual and spot trades, move funds, and stake,
-without hand-building web requests or untangling the raw replies.
-Because a decentralised exchange has no username and password, orders
-are authorised by signing them with your Ethereum wallet key; this
-package does that signing itself, in plain R with no compiled code, and
-checks it byte-for-byte against the exchange’s own reference tools so a
-signature that leaves your machine is provably correct. Every answer
-comes back as a tidy table with consistent column names, and any request
-can run right away or in the background so a slow call does not freeze
-your session. You bring the wallet; the package handles the plumbing.
+**Hyperliquid is a decentralised cryptocurrency exchange, and this
+package is the R doorway to it.**
+
+You call plain R functions to read live prices, place and manage
+perpetual and spot trades, move funds, and stake, without hand-building
+web requests or untangling the raw replies. Because a decentralised
+exchange has no username and password, orders are authorised by signing
+them with your Ethereum wallet key; this package does that signing
+itself, in plain R with no compiled code, and checks it byte-for-byte
+against the exchange’s own reference tools so a signature that leaves
+your machine is provably correct. Every answer comes back as a tidy
+table with consistent column names, and any request can run right away
+or in the background so a slow call does not freeze your session. You
+bring the wallet; the package handles the plumbing.
 
 ## Technical overview
 
@@ -26,15 +28,7 @@ via the companion [`ethsign`](https://github.com/dereckscompany/ethsign)
 package (no compiled code) and verified byte-for-byte against the
 official Hyperliquid SDKs.
 
-## Disclaimer
-
-This software is provided for educational and research purposes. Trading
-cryptocurrency carries substantial risk, and you are solely responsible
-for any orders, transfers, or withdrawals placed through this package.
-Test against testnet (`testnet = TRUE`) before signing anything on
-mainnet.
-
-## Design
+## Design philosophy
 
 - **One typed method, one `data.table`, no list columns — with a
   lossless escape hatch.** Every typed method returns a flat
@@ -137,6 +131,14 @@ network changes the signature itself (the phantom-agent source and the
 # Sign and route against testnet
 trading <- HyperliquidTrading$new(testnet = TRUE)
 ```
+
+## Disclaimer
+
+This software is provided for educational and research purposes. Trading
+cryptocurrency carries substantial risk, and you are solely responsible
+for any orders, transfers, or withdrawals placed through this package.
+Test against testnet (`testnet = TRUE`) before signing anything on
+mainnet.
 
 ## Market Data (no auth)
 
@@ -394,7 +396,17 @@ head(hyperliquid_ohlcv)
 #> 6:    BTC 2025-06-12 108667 108817 105600 105627 39646.83 426870
 ```
 
-## Asynchronous Use
+## Available Classes
+
+| Class | Purpose | Auth |
+|----|----|----|
+| `HyperliquidMarketData` | perp/spot meta, asset contexts, mids, L2 book, candles, funding, trades | No |
+| `HyperliquidAccount` | positions, margin, spot balances, orders, fills, ledgers, portfolio, fees | No |
+| `HyperliquidTrading` | place / modify / cancel orders, market open/close, leverage, margin, approvals | Yes |
+| `HyperliquidTransfers` | collateral class transfer, sends, withdrawals, sub-account and vault transfers | Yes |
+| `HyperliquidStaking` | delegator summary, delegations, rewards, history, delegate / undelegate | Mixed |
+
+## Asynchronous usage
 
 The package is written around promises for non-blocking, event-loop use.
 Pass `async = TRUE` to any class and its methods return a
@@ -439,19 +451,35 @@ while (!later$loop_empty()) {
 #> 4:    ask     2 61947  0.06724     6
 ```
 
-## Available Classes
+## Documentation
 
-| Class | Purpose | Auth |
-|----|----|----|
-| `HyperliquidMarketData` | perp/spot meta, asset contexts, mids, L2 book, candles, funding, trades | No |
-| `HyperliquidAccount` | positions, margin, spot balances, orders, fills, ledgers, portfolio, fees | No |
-| `HyperliquidTrading` | place / modify / cancel orders, market open/close, leverage, margin, approvals | Yes |
-| `HyperliquidTransfers` | collateral class transfer, sends, withdrawals, sub-account and vault transfers | Yes |
-| `HyperliquidStaking` | delegator summary, delegations, rewards, history, delegate / undelegate | Mixed |
+The rendered reference site is at
+[dereckscompany.github.io/hyperliquid](https://dereckscompany.github.io/hyperliquid).
 
-## Author
+Three vignettes take a reader from a first call to a live testnet trade,
+in this reading order:
 
-Dereck Mezquita — [ORCID:
+1.  [`vignette("getting-started", package = "hyperliquid")`](https://dereckscompany.github.io/hyperliquid/articles/getting-started.md):
+    constructing a client, reading public market data and account state,
+    and signing an `/exchange` order against the mock, in synchronous
+    mode.
+2.  [`vignette("trading-strategies", package = "hyperliquid")`](https://dereckscompany.github.io/hyperliquid/articles/trading-strategies.md):
+    the vocabulary of derivatives trading, building up to a
+    market-neutral pairs trade, still against the mock.
+3.  [`vignette("live-testnet-walkthrough", package = "hyperliquid")`](https://dereckscompany.github.io/hyperliquid/articles/live-testnet-walkthrough.md):
+    a plain-language, chronological account of funding a wallet and
+    placing a real, filled trade on the Hyperliquid testnet.
+
+The full release history is in
+[`NEWS.md`](https://dereckscompany.github.io/hyperliquid/NEWS.md).
+
+## Citation
+
+Cite as: Mezquita, D. (2026). hyperliquid: API Wrapper to the
+Hyperliquid Exchange. R package version 0.7.5.
+<https://github.com/dereckscompany/hyperliquid>.
+
+Author: Dereck Mezquita — [ORCID:
 0000-0002-9307-6762](https://orcid.org/0000-0002-9307-6762)
 
 ## Licence

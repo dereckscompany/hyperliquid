@@ -8,16 +8,16 @@
 ## Citation
 
 Source:
-[`inst/CITATION`](https://github.com/dereckscompany/hyperliquid/blob/master/inst/CITATION)
+[`inst/CITATION`](https://github.com/dereckscompany/hyperliquid/blob/v0.7.5/inst/CITATION)
 
 Mezquita D (2026). *hyperliquid: API Wrapper to the Hyperliquid
-Exchange*. R package version 0.7.4,
+Exchange*. R package version 0.7.5,
 <https://dereckscompany.github.io/hyperliquid>.
 
     @Manual{hyperliquid-2026,
       title = {hyperliquid: API Wrapper to the Hyperliquid Exchange},
       author = {Dereck Mezquita},
       year = {2026},
-      note = {R package version 0.7.4},
+      note = {R package version 0.7.5},
       url = {https://dereckscompany.github.io/hyperliquid},
     }

@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">hyperliquid</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.7.4</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.7.5</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -36,9 +36,24 @@
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Changelog</h1>
-      <small>Source: <a href="https://github.com/dereckscompany/hyperliquid/blob/master/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
+      <small>Source: <a href="https://github.com/dereckscompany/hyperliquid/blob/v0.7.5/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.7.5" id="hyperliquid-075">hyperliquid 0.7.5<a class="anchor" aria-label="anchor" href="#hyperliquid-075"></a></h2>
+<p><strong>The README now follows the one shape used across the whole connector fleet, and it gains a citation and a map of the vignettes.</strong> This release reshapes <code>README.Rmd</code> into the fleet’s canonical section order (owner ruling 20, 2026-09-18): a plain-English lead, a technical overview, a design philosophy, installation, authentication and the rest of the per-surface sections, asynchronous usage, and finally a documentation index, a citation, and the licence. No sentence was rewritten and no code chunk’s behaviour changed; existing sections were only renamed or moved into their new slots, and two sections that did not exist before, Documentation and Citation, were built from the package’s own metadata.</p>
+<ul><li>Renamed <code>## Design</code> to <code>## Design philosophy</code> and <code>## Asynchronous Use</code> to <code>## Asynchronous usage</code>; the prose beneath both is unchanged.</li>
+<li>
+<code>## Quick start</code> is omitted: <code>## Authentication</code> keeps its original name in the per-surface group, since its content is wallet-key authentication rather than a walkthrough, and the canonical shape only requires Quick start where a repository genuinely has one.</li>
+<li>Moved <code>## Disclaimer</code> from between Technical overview and Design into the usage-surface group, now immediately after Authentication and before Market Data; moved <code>## Available Classes</code> from after Asynchronous Use to the end of the same group, now immediately before Asynchronous usage.</li>
+<li>Merged <code>## Author</code> into the new <code>## Citation</code> section: same person, same ORCID link, no longer a separate heading.</li>
+<li>Added <code>## Documentation</code>, naming the pkgdown site (the first, github.io URL in <code>DESCRIPTION</code>) and the three vignettes in their <code>_pkgdown.yml</code> reading order (getting-started, trading-strategies, live-testnet-walkthrough), each with a one-line description, plus a pointer to <code>NEWS.md</code>.</li>
+<li>Added <code>## Citation</code>, a “Cite as” line built only from <code>DESCRIPTION</code> (<code>Authors@R</code>, <code>Title</code>, <code>Version</code>, and the repository URL) with the year taken from this entry; no DOI or journal, since neither exists.</li>
+<li>
+<code>## Error handling</code> was omitted: the package has no dedicated error-handling documentation to move, only a passing mention of the error seam already kept under Design philosophy.</li>
+<li>
+<code>README.md</code> re-rendered from <code>README.Rmd</code> against the shared mock router; no chunk options, <code>eval</code> flags, or fixtures changed.</li>
+</ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.7.4" id="hyperliquid-074">hyperliquid 0.7.4<a class="anchor" aria-label="anchor" href="#hyperliquid-074"></a></h2>
 <p><strong>A prose sweep across the package’s documentation: no more “In plain English” signposts, and full British spelling.</strong> This release removes the visible plain-English/technical scaffolding labels from the README and NEWS – the sentence each one introduced is kept exactly as written, just unlabelled – and corrects a handful of American spellings left over in the README, the position and fill column docs, and a vignette screenshot note. No code, column name, argument name, or API field changed anywhere.</p>
