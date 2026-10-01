@@ -1,3 +1,11 @@
+# hyperliquid 0.7.6
+
+**This package now depends on a fixed version of the shared connector base, which stops one stuck network request from freezing every other request in flight.** A resident container recently asked Hyperliquid for its open positions and orders and got no answer for ten minutes, not because the venue was slow but because of a units bug in `connectcore`'s asynchronous request pool: one request that stalled could hold the whole shared curl pool hostage, so every later asynchronous call queued behind it rather than timing out on its own. `connectcore` 0.6.0 fixes this by giving every asynchronous request its own curl pool and racing it against an independent timer; if the timer wins, that one request is cancelled and fails on its own, while every other request keeps moving. This release re-locks hyperliquid against the fix. No code in this package changed.
+
+- Raised the `connectcore` floor in `DESCRIPTION` Imports from `(>= 0.5.0)` to `(>= 0.6.0)`.
+- `renv.lock` re-locked against `connectcore` 0.6.0 (GitHub tag `v0.6.0`); no other dependency changed.
+- No production behaviour change in hyperliquid itself: the asynchronous fix lives entirely inside `connectcore`'s `build_request()`, and this package's R6 clients call it exactly as before.
+
 # hyperliquid 0.7.5
 
 **The README now follows the one shape used across the whole connector fleet, and it gains a citation and a map of the vignettes.** This release reshapes `README.Rmd` into the fleet's canonical section order (owner ruling 20, 2026-09-18): a plain-English lead, a technical overview, a design philosophy, installation, authentication and the rest of the per-surface sections, asynchronous usage, and finally a documentation index, a citation, and the licence. No sentence was rewritten and no code chunk's behaviour changed; existing sections were only renamed or moved into their new slots, and two sections that did not exist before, Documentation and Citation, were built from the package's own metadata.
