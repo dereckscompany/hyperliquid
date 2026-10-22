@@ -1,3 +1,11 @@
+# hyperliquid 0.7.7
+
+**The README's "Cite as" line named an old version; it now names the current one.** This is a documentation-only release: the line is typed by hand in `README.Rmd` and was left at 0.7.5 when 0.7.6 re-locked against connectcore 0.6.0. Nothing the package does has changed.
+
+- `README.Rmd` / `README.md`: citation 0.7.5 -> 0.7.7 (fleet clean-up plan G.2-14); `README.md` re-rendered.
+- `DESCRIPTION`: version bumped 0.7.6 -> 0.7.7.
+- Verified against connectcore 0.7.0 (which removes the unused `load_keys()`): this package's suite passes unchanged (192 tests, 1201 expectations, 0 failures).
+
 # hyperliquid 0.7.6
 
 **This package now depends on a fixed version of the shared connector base, which stops one stuck network request from freezing every other request in flight.** A resident container recently asked Hyperliquid for its open positions and orders and got no answer for ten minutes, not because the venue was slow but because of a units bug in `connectcore`'s asynchronous request pool: one request that stalled could hold the whole shared curl pool hostage, so every later asynchronous call queued behind it rather than timing out on its own. `connectcore` 0.6.0 fixes this by giving every asynchronous request its own curl pool and racing it against an independent timer; if the timer wins, that one request is cancelled and fails on its own, while every other request keeps moving. This release re-locks hyperliquid against the fix. No code in this package changed.

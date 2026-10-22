@@ -293,7 +293,7 @@ The full release history is in [`NEWS.md`](NEWS.md).
 
 ## Citation
 
-Cite as: Mezquita, D. (2026). hyperliquid: API Wrapper to the Hyperliquid Exchange. R package version 0.7.5. https://github.com/dereckscompany/hyperliquid.
+Cite as: Mezquita, D. (2026). hyperliquid: API Wrapper to the Hyperliquid Exchange. R package version 0.7.7. https://github.com/dereckscompany/hyperliquid.
 
 Author: Dereck Mezquita — [ORCID: 0000-0002-9307-6762](https://orcid.org/0000-0002-9307-6762)
 
